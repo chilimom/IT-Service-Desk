@@ -13,6 +13,26 @@ function normalize(value) {
   return (value || '').toLowerCase()
 }
 
+function extractMaintenanceCode(ticket) {
+  const candidates = [ticket?.type, ticket?.title, ticket?.description]
+
+  for (const value of candidates) {
+    const raw = String(value || '').trim()
+    if (!raw) continue
+
+    const pipeMatch = raw.match(/\|\s*([A-Z0-9]{4,5})/i)
+    if (pipeMatch?.[1]) return pipeMatch[1].toUpperCase()
+
+    const bracketMatch = raw.match(/\[.*?\]\s*([A-Z0-9]{4,5})/i)
+    if (bracketMatch?.[1]) return bracketMatch[1].toUpperCase()
+
+    const directMatch = raw.match(/\b(PM0[1-5]|ZPM[567]|QMTD)\b/i)
+    if (directMatch?.[1]) return directMatch[1].toUpperCase()
+  }
+
+  return ''
+}
+
 export function isMaintenanceTicket(ticketOrType) {
   const rawType = typeof ticketOrType === 'string' ? ticketOrType : ticketOrType?.type
   const type = normalize(rawType)
@@ -26,8 +46,7 @@ export function isSupportTicket(ticketOrType) {
 }
 
 export function getMaintenanceCategory(ticket) {
-  const rawType = ticket?.type || ''
-  const [, categoryCode = ''] = rawType.split('|')
+  const categoryCode = extractMaintenanceCode(ticket)
   return maintenanceOptions.find((item) => item.code === categoryCode) || null
 }
 

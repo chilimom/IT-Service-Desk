@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { FiAlertCircle, FiCheckCircle, FiInfo } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
-import { getTicketById, getTicketLogs, updateAdminTicket, updateUserTicket } from '../services/ticketService'
-import { formatTicketCode, getMaintenanceCategory, getOrderCodeDisplay, getTicketTypeLabel, isMaintenanceTicket } from '../ultils/ticketMeta'
+import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
+import { getMaintenanceCategory, getOrderCodeDisplay, isMaintenanceTicket } from '../ultils/ticketMeta'
 import '../styles/ticket-details.css'
 
 function formatDate(value) {
@@ -20,12 +21,49 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
+function getStatusMeta(status) {
+  const normalized = (status || '').toLowerCase()
+
+  if (normalized === 'submitted') {
+    return {
+      className: 'ticket-details__status-banner ticket-details__status-banner--submitted',
+      icon: FiInfo,
+      title: 'Ticket da gui va chua duoc tiep nhan',
+      description: 'Ban co the sua noi dung ticket trong giai doan nay truoc khi bo phan xu ly bat dau tiep nhan.',
+    }
+  }
+
+  if (normalized === 'inprogress') {
+    return {
+      className: 'ticket-details__status-banner ticket-details__status-banner--progress',
+      icon: FiAlertCircle,
+      title: 'Ticket dang duoc tiep nhan va xu ly',
+      description: 'Ticket da vao quy trinh xu ly, noi dung yeu cau tam thoi khong con cho phep sua.',
+    }
+  }
+
+  if (normalized === 'done') {
+    return {
+      className: 'ticket-details__status-banner ticket-details__status-banner--done',
+      icon: FiCheckCircle,
+      title: 'Ticket da hoan tat',
+      description: 'Thong tin ticket duoc luu lai de theo doi, hien tai khong the sua noi dung.',
+    }
+  }
+
+  return {
+    className: 'ticket-details__status-banner',
+    icon: FiInfo,
+    title: 'Trang thai ticket',
+    description: 'Trang thai hien tai cua ticket dang duoc cap nhat.',
+  }
+}
+
 function TicketDetails() {
   const { ticketId } = useParams()
   const { user } = useAuth()
   const isAdmin = (user?.role || '').toLowerCase() === 'admin'
   const [ticket, setTicket] = useState(null)
-  const [logs, setLogs] = useState([])
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -45,10 +83,9 @@ function TicketDetails() {
     async function loadTicketDetails() {
       try {
         setError('')
-        const [ticketData, logData] = await Promise.all([getTicketById(ticketId), getTicketLogs(ticketId).catch(() => [])])
+        const ticketData = await getTicketById(ticketId)
 
         setTicket(ticketData)
-        setLogs(Array.isArray(logData) ? logData : [])
         setForm({
           title: ticketData.title || '',
           description: ticketData.description || '',
@@ -71,11 +108,15 @@ function TicketDetails() {
   const canUserEdit = useMemo(() => {
     if (isAdmin || !ticket) return false
     const normalizedStatus = (ticket.status || '').toLowerCase()
-    return normalizedStatus !== 'inprogress' && normalizedStatus !== 'done'
+    return normalizedStatus === 'submitted'
   }, [isAdmin, ticket])
   const isMaintenance = useMemo(() => isMaintenanceTicket(ticket), [ticket])
   const maintenanceCategory = useMemo(() => getMaintenanceCategory(ticket), [ticket])
   const orderCodeDisplay = useMemo(() => getOrderCodeDisplay(ticket), [ticket])
+  const maintenanceHeadline = maintenanceCategory ? `${maintenanceCategory.code} - ${maintenanceCategory.name}` : 'Khong ap dung'
+  const statusMeta = useMemo(() => getStatusMeta(statusText), [statusText])
+  const showEditButton = isAdmin || canUserEdit
+  const StatusIcon = statusMeta.icon
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -143,212 +184,204 @@ function TicketDetails() {
 
   return (
     <section className="ticket-details">
-      <div className="ticket-details__hero">
-        <div>
-          <p className="ticket-details__eyebrow">{isAdmin ? 'Admin xu ly ticket' : 'Xem va sua ticket'}</p>
-          <h1 className="ticket-details__title">{formatTicketCode(ticket)}</h1>
-          <p className="ticket-details__subtitle">
-            {isAdmin
-              ? 'Admin co the cap nhat trang thai xu ly va so order cho ticket bao tri.'
-              : 'User co the xem day du thong tin ticket va sua lai noi dung yeu cau da gui.'}
-          </p>
-        </div>
-        <span className={getStatusClass(statusText)}>{statusText}</span>
-      </div>
-
       {message && <div className="ticket-details__success">{message}</div>}
       {error && <div className="ticket-details__alert">{error}</div>}
+      <div className={statusMeta.className}>
+        <StatusIcon size={20} />
+        <div>
+          <strong>{statusMeta.title}</strong>
+          <p>{statusMeta.description}</p>
+        </div>
+      </div>
 
-      <div className="ticket-details__grid">
-        <section className="ticket-details__card">
-          <div className="ticket-details__card-header">
-            <h2>Thong tin Ticket</h2>
-            {(isAdmin || canUserEdit) && (
-              <button type="button" className="ticket-details__button" onClick={() => setIsEditing((prev) => !prev)}>
-                {isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'}
-              </button>
-            )}
-          </div>
-
-          <div className="ticket-details__summary">
-            <div>
-              <strong>Loai Ticket</strong>
-              <p>{getTicketTypeLabel(ticket)}</p>
+      <div className="ticket-details__grid ticket-details__grid--single">
+        <section className="ticket-details__card ticket-details__card--primary">
+          <div className="ticket-details__form-card">
+            <div className="ticket-details__card-header">
+              <div className="ticket-details__card-heading">
+                <h2>Thong tin Ticket</h2>
+                <span className={getStatusClass(statusText)}>{statusText}</span>
+              </div>
+              {showEditButton && (
+                <button type="button" className="ticket-details__button" onClick={() => setIsEditing((prev) => !prev)}>
+                  {isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'}
+                </button>
+              )}
             </div>
-            <div>
-              <strong>Requested By</strong>
-              <p>{ticket.requestedBy || 'Chua co'}</p>
-            </div>
-            <div>
-              <strong>Loai bao tri</strong>
-              <p>{maintenanceCategory ? `${maintenanceCategory.code} - ${maintenanceCategory.name}` : 'Khong ap dung'}</p>
-            </div>
-            <div>
-              <strong>So order</strong>
-              <p>{orderCodeDisplay}</p>
-            </div>
-            <div>
-              <strong>Thoi gian tao</strong>
-              <p>{formatDate(ticket.createdAt)}</p>
-            </div>
-            <div>
-              <strong>Thoi gian cap nhat</strong>
-              <p>{formatDate(ticket.updatedAt)}</p>
-            </div>
-          </div>
 
-          {isAdmin && !isEditing && (
-            <div className="ticket-details__view-grid">
-              <div className="ticket-details__static-field">
-                <strong>Tieu de</strong>
-                <p>{ticket.title || 'Chua co tieu de'}</p>
-              </div>
-              <div className="ticket-details__static-field">
-                <strong>Trang thai</strong>
-                <p>{ticket.status || 'Chua co trang thai'}</p>
-              </div>
-              <div className="ticket-details__static-field">
-                <strong>Ten thiet bi</strong>
-                <p>{ticket.equipmentCode || 'Chua co thiet bi'}</p>
-              </div>
-              <div className="ticket-details__static-field">
-                <strong>Equipment</strong>
-                <p>{ticket.area || 'Chua co equipment'}</p>
-              </div>
-              <div className="ticket-details__static-field">
-                <strong>Doi xu ly</strong>
-                <p>{ticket.assignedTeam || 'Chua phan cong'}</p>
-              </div>
-              <div className="ticket-details__static-field">
-                <strong>Han xu ly</strong>
-                <p>{formatDate(ticket.dueDate)}</p>
-              </div>
-              <div className="ticket-details__static-field ticket-details__static-field--full">
-                <strong>Mo ta</strong>
-                <p>{ticket.description || 'Chua co mo ta'}</p>
-              </div>
-              <div className="ticket-details__static-field ticket-details__static-field--full">
-                <strong>So order</strong>
-                <p>{orderCodeDisplay}</p>
-              </div>
-            </div>
-          )}
+            {!isEditing && (
+              <div className="ticket-details__form-view">
+                <label>Loai Ticket</label>
+                <div className="ticket-details__field-view">{isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}</div>
 
-          <form className="ticket-details__form" onSubmit={handleSave}>
-            {!isAdmin && (
-              <>
-                <label>
-                  <span>Tieu de</span>
-                  <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
-                </label>
+                {isMaintenance && (
+                  <>
+                    <label>Loai bao tri</label>
+                    <div className="ticket-details__field-view">{maintenanceHeadline}</div>
 
-                <label>
-                  <span>Mo ta</span>
-                  <textarea name="description" rows="6" value={form.description} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Ten thiet bi</span>
-                  <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Equipment</span>
-                  <input name="area" value={form.area} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Doi xu ly</span>
-                  <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Han xu ly</span>
-                  <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
-                </label>
-              </>
-            )}
-
-            {isAdmin && isEditing && (
-              <>
-                <label>
-                  <span>Tieu de</span>
-                  <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Mo ta</span>
-                  <textarea name="description" rows="6" value={form.description} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Ten thiet bi</span>
-                  <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Equipment</span>
-                  <input name="area" value={form.area} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Doi xu ly</span>
-                  <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Han xu ly</span>
-                  <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
-                </label>
-
-                <label>
-                  <span>Trang thai</span>
-                  <select name="status" value={form.status} onChange={handleChange} disabled={!isEditing}>
-                    <option value="Submitted">Submitted</option>
-                    <option value="InProgress">InProgress</option>
-                    <option value="Done">Done</option>
-                  </select>
-                </label>
-
-                {isMaintenance ? (
-                  <label>
-                    <span>So order</span>
-                    <input name="orderCode" value={form.orderCode} onChange={handleChange} disabled={!isEditing} />
-                  </label>
-                ) : (
-                  <div className="ticket-details__static-field">
-                    <strong>So order</strong>
-                    <p>Khong ap dung cho ticket ho tro CNTT.</p>
-                  </div>
+                    {/* <div className="ticket-details__field-note">
+                      Loai bao tri se duoc map vao thong tin ticket. So order se do admin cap nhat sau khi xu ly.
+                    </div> */}
+                  </>
                 )}
-              </>
+
+                {!isMaintenance && (
+                  <>
+                    <label>Tieu de ho tro</label>
+                    <div className="ticket-details__field-view">{ticket.title || 'Chua co tieu de'}</div>
+                  </>
+                )}
+
+                {isMaintenance && (
+                  <>
+                    <label>Equipment</label>
+                    <div className="ticket-details__field-view">{ticket.area || 'Chua co'}</div>
+
+                    <label>Ten thiet bi</label>
+                    <div className="ticket-details__field-view">{ticket.equipmentCode || 'Chua co'}</div>
+                  </>
+                )}
+
+                <label>Doi xu ly</label>
+                <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
+
+                <label>Mo ta</label>
+                <div className="ticket-details__field-view ticket-details__field-view--textarea">
+                  {ticket.description || 'Chua co mo ta'}
+                </div>
+
+                <label>Han xu ly</label>
+                <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
+
+                {/* <label>Requested By</label>
+                <div className="ticket-details__field-view">{ticket.requestedBy || 'Chua co'}</div> */}
+
+                <label>Thoi gian tao</label>
+                <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
+
+                {/* <label>Thoi gian cap nhat</label>
+                <div className="ticket-details__field-view">{formatDate(ticket.updatedAt)}</div> */}
+
+                {isMaintenance && (
+                  <>
+                    <label>So order</label>
+                    <div className="ticket-details__field-view">{orderCodeDisplay}</div>
+                  </>
+                )}
+              </div>
             )}
 
-            {isEditing && (isAdmin || canUserEdit) && (
-              <button type="submit" className="ticket-details__button" disabled={isSaving}>
-                {isSaving ? 'Dang luu...' : 'Luu thay doi'}
-              </button>
+            {isEditing && (
+              <form className="ticket-details__form" onSubmit={handleSave}>
+              {!isAdmin && (
+                <>
+                  {!isMaintenance && (
+                    <label className="ticket-details__form-field ticket-details__form-field--full">
+                      <span>Tieu de</span>
+                      <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+                  )}
+
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Mo ta</span>
+                    <textarea name="description" rows="6" value={form.description} onChange={handleChange} disabled={!isEditing} />
+                  </label>
+
+                  <div className="ticket-details__form-split">
+                    {isMaintenance && (
+                      <>
+                        <label className="ticket-details__form-field">
+                          <span>Ten thiet bi</span>
+                          <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} disabled={!isEditing} />
+                        </label>
+
+                        <label className="ticket-details__form-field">
+                          <span>Equipment</span>
+                          <input name="area" value={form.area} onChange={handleChange} disabled={!isEditing} />
+                        </label>
+                      </>
+                    )}
+
+                    <label className="ticket-details__form-field">
+                      <span>Doi xu ly</span>
+                      <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+
+                    <label className="ticket-details__form-field">
+                      <span>Han xu ly</span>
+                      <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {isAdmin && isEditing && (
+                <>
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Tieu de</span>
+                    <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
+                  </label>
+
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Mo ta</span>
+                    <textarea name="description" rows="6" value={form.description} onChange={handleChange} disabled={!isEditing} />
+                  </label>
+
+                  <div className="ticket-details__form-split">
+                    <label className="ticket-details__form-field">
+                      <span>Ten thiet bi</span>
+                      <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+
+                    <label className="ticket-details__form-field">
+                      <span>Equipment</span>
+                      <input name="area" value={form.area} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+
+                    <label className="ticket-details__form-field">
+                      <span>Doi xu ly</span>
+                      <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+
+                    <label className="ticket-details__form-field">
+                      <span>Han xu ly</span>
+                      <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
+                    </label>
+
+                    <label className="ticket-details__form-field">
+                      <span>Trang thai</span>
+                      <select name="status" value={form.status} onChange={handleChange} disabled={!isEditing}>
+                        <option value="Submitted">Submitted</option>
+                        <option value="InProgress">InProgress</option>
+                        <option value="Done">Done</option>
+                      </select>
+                    </label>
+
+                    {isMaintenance ? (
+                      <label className="ticket-details__form-field">
+                        <span>So order</span>
+                        <input name="orderCode" value={form.orderCode} onChange={handleChange} disabled={!isEditing} />
+                      </label>
+                    ) : (
+                      <div className="ticket-details__static-field">
+                        <strong>So order</strong>
+                        <p>Khong ap dung cho ticket ho tro CNTT.</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {(isAdmin || canUserEdit) && (
+                <button type="submit" className="ticket-details__button" disabled={isSaving}>
+                  {isSaving ? 'Dang luu...' : 'Luu thay doi'}
+                </button>
+              )}
+              </form>
             )}
-          </form>
-        </section>
-
-        <section className="ticket-details__card">
-          <div className="ticket-details__card-header">
-            <h2>Lich su Ticket</h2>
-          </div>
-
-          <div className="ticket-details__logs">
-            {logs.map((log) => (
-              <article key={log.id} className="ticket-details__log">
-                <strong>{log.action}</strong>
-                <p>{log.note || 'Khong co ghi chu'}</p>
-                <span>{formatDate(log.createdAt)}</span>
-              </article>
-            ))}
-
-            {logs.length === 0 && <p className="ticket-details__empty">Chua co log nao cho ticket nay.</p>}
           </div>
         </section>
+
       </div>
     </section>
   )
