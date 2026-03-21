@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FaEye, FaPen } from 'react-icons/fa'
+import { FiEdit2, FiEye } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import TicketInfoModal from '../components/Tickets/TicketInfoModal'
 import { getTickets } from '../services/ticketService'
 import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
+import { factoryOptions, formatTicketCode, getFactoryLabel, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -27,7 +27,7 @@ function MyRequests() {
   const [tickets, setTickets] = useState([])
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
-  const [selectedTicket, setSelectedTicket] = useState(null)
+  const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -49,11 +49,17 @@ function MyRequests() {
     return [...tickets]
       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
       .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.type === typeFilter))
+      .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factory || '') === factoryFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-  }, [statusFilter, tickets, typeFilter])
+  }, [factoryFilter, statusFilter, tickets, typeFilter])
 
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
   const types = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.type).filter(Boolean))], [tickets])
+  const factories = useMemo(() => {
+    const knownFactoryValues = new Set(factoryOptions.map((option) => option.code))
+    tickets.map((ticket) => ticket.factory).filter(Boolean).forEach((factory) => knownFactoryValues.add(factory))
+    return ['ALL', ...knownFactoryValues]
+  }, [tickets])
 
   const canEditTicket = (ticket) => {
     const normalizedStatus = (ticket?.status || '').toLowerCase()
@@ -63,10 +69,10 @@ function MyRequests() {
   return (
     <section className="requests-page">
       <div className="requests-page__hero">
-        <p className="requests-page__eyebrow">Tong hop danh sach</p>
-        <h1 className="requests-page__title">Yeu cau cua toi</h1>
+        <p className="requests-page__eyebrow">Tổng hợp danh sách</p>
+        <h1 className="requests-page__title">Yêu cầu của tôi</h1>
         <p className="requests-page__subtitle">
-          Trang nay chi hien thi cac ticket co `RequestedBy` trung voi user dang dang nhap.
+          Trang này chỉ hiển thị các ticket có `RequestedBy` trùng với user đang đăng nhập.
         </p>
       </div>
 
@@ -74,22 +80,33 @@ function MyRequests() {
 
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Loc theo trang thai</span>
+          <span>Lọc theo trạng thái</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tat ca trang thai' : status}
+                {status === 'ALL' ? 'Tất cả trạng thái' : status}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo loai ticket</span>
+          <span>Lọc theo loại ticket</span>
           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
             {types.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tat ca loai ticket' : getTicketTypeLabel({ type })}
+                {type === 'ALL' ? 'Tất cả loại ticket' : getTicketTypeLabel({ type })}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="requests-filters__field">
+          <span>Lọc theo nhà máy</span>
+          <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
+            {factories.map((factory) => (
+              <option key={factory} value={factory}>
+                {factory === 'ALL' ? 'Tất cả nhà máy' : getFactoryLabel(factory)}
               </option>
             ))}
           </select>
@@ -98,14 +115,14 @@ function MyRequests() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Ma ticket</span>
-          <span>Loai / Mo ta</span>
-          <span>Thiet bi / Khu vuc</span>
-          <span>Doi xu ly</span>
-          <span>So order</span>
-          <span>Thoi gian</span>
-          <span>Trang thai</span>
-          <span>Thao tac</span>
+          <span>Mã Ticket</span>
+          <span>Loại / Mô tả</span>
+          <span>Thiết bị / Khu vực</span>
+          <span>Đội xử lý</span>
+          <span>Số order</span>
+          <span>Thời gian</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
 
         <div className="requests-table__body">
@@ -121,7 +138,7 @@ function MyRequests() {
               </div>
               <div>
                 <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
-                <p>{ticket.area || 'Chua co khu vuc'}</p>
+                <p>{getFactoryLabel(ticket.factory)} / {ticket.area || 'Chua co khu vuc'}</p>
               </div>
               <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
               <span>{getOrderCodeDisplay(ticket)}</span>
@@ -130,27 +147,24 @@ function MyRequests() {
                 <p>Han: {formatDate(ticket.dueDate)}</p>
               </div>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-              <button type="button" className="requests-row__action" onClick={() => setSelectedTicket(ticket)}>
+              <Link
+                className="requests-row__action"
+                to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
+                title={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+                aria-label={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+                data-tooltip={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+              >
+                <span className="sr-only">{canEditTicket(ticket) ? 'Sua' : 'Xem'}</span>
                 <span className="requests-row__action-icon">
-                  {canEditTicket(ticket) ? <FaPen size={14} /> : <FaEye size={14} />}
+                  {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
                 </span>
-                <span>Xem</span>
-              </button>
+              </Link>
             </article>
           ))}
 
           {filteredTickets.length === 0 && <div className="requests-empty">Chua co ticket nao cua ban.</div>}
         </div>
       </section>
-
-      {selectedTicket && (
-        <TicketInfoModal
-          ticket={selectedTicket}
-          onClose={() => setSelectedTicket(null)}
-          detailPath={`/${path.USER}/${path.USER_TICKETS}/requests/${selectedTicket.id}`}
-          detailLabel={canEditTicket(selectedTicket) ? 'Mo trang sua ticket' : 'Mo chi tiet'}
-        />
-      )}
     </section>
   )
 }

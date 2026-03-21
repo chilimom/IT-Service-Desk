@@ -62,7 +62,7 @@ function Login() {
           {error && <div className="login-form__error">{error}</div>}
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang dang nhap...' : 'Dang nhap'}
+            {isSubmitting ? 'Dang dang nhap...' : 'Đăng nhập'}
           </button>
         </form>
       </div>

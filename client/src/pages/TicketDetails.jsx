@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { FiAlertCircle, FiCheckCircle, FiInfo } from 'react-icons/fi'
+import { FiAlertCircle, FiCheckCircle, FiEdit2, FiInfo, FiSave, FiSettings, FiX } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
-import { getMaintenanceCategory, getOrderCodeDisplay, isMaintenanceTicket } from '../ultils/ticketMeta'
+import { getUsers } from '../services/userService'
+import { factoryOptions, getFactoryLabel, getMaintenanceCategory, getOrderCodeDisplay, isMaintenanceTicket, maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/ticket-details.css'
 
 function formatDate(value) {
@@ -65,15 +66,20 @@ function TicketDetails() {
   const isAdmin = (user?.role || '').toLowerCase() === 'admin'
   const [ticket, setTicket] = useState(null)
   const [form, setForm] = useState({
+    type: 'Maintenance',
+    factory: '',
+    maintenanceCategory: 'PM01',
     title: '',
     description: '',
     equipmentCode: '',
     area: '',
+    assignedTo: '',
     assignedTeam: '',
     dueDate: '',
     status: '',
     orderCode: '',
   })
+  const [users, setUsers] = useState([])
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -86,11 +92,16 @@ function TicketDetails() {
         const ticketData = await getTicketById(ticketId)
 
         setTicket(ticketData)
+        const ticketMaintenanceCategory = getMaintenanceCategory(ticketData)
         setForm({
+          type: isMaintenanceTicket(ticketData) ? 'Maintenance' : 'IT',
+          factory: ticketData.factory || '',
+          maintenanceCategory: ticketMaintenanceCategory?.code || 'PM01',
           title: ticketData.title || '',
           description: ticketData.description || '',
           equipmentCode: ticketData.equipmentCode || '',
           area: ticketData.area || '',
+          assignedTo: ticketData.assignedTo ? String(ticketData.assignedTo) : '',
           assignedTeam: ticketData.assignedTeam || '',
           dueDate: ticketData.dueDate ? ticketData.dueDate.slice(0, 16) : '',
           status: ticketData.status || '',
@@ -103,6 +114,14 @@ function TicketDetails() {
 
     loadTicketDetails()
   }, [ticketId])
+
+  useEffect(() => {
+    if (!isAdmin) return
+
+    getUsers()
+      .then((data) => setUsers(Array.isArray(data) ? data : []))
+      .catch(() => setUsers([]))
+  }, [isAdmin])
 
   const statusText = useMemo(() => (ticket ? ticket.status || 'Unknown' : ''), [ticket])
   const canUserEdit = useMemo(() => {
@@ -117,11 +136,58 @@ function TicketDetails() {
   const statusMeta = useMemo(() => getStatusMeta(statusText), [statusText])
   const showEditButton = isAdmin || canUserEdit
   const StatusIcon = statusMeta.icon
+  const isEditingMaintenance = form.type === 'Maintenance'
+  const actionLabel = isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'
+  const ActionIcon = isEditing ? FiX : isAdmin ? FiSettings : FiEdit2
+  const requesterDisplay = useMemo(() => {
+    const requesterId = ticket?.requestedBy
+    const requesterName = ticket?.requestedByName || ticket?.requestedByUsername || ticket?.createdByName || ticket?.createdByUsername
+
+    if (requesterId && requesterName) return `${requesterId} - ${requesterName}`
+    if (requesterId) return String(requesterId)
+    if (requesterName) return requesterName
+    return 'Chua co'
+  }, [ticket])
+  const assigneeDisplay = useMemo(() => {
+    const assigneeId = ticket?.assignedTo
+    const assigneeName = ticket?.assignedToName || ticket?.assignedToUsername
+
+    if (assigneeId && assigneeName) return `${assigneeId} - ${assigneeName}`
+    if (assigneeId) return String(assigneeId)
+    if (assigneeName) return assigneeName
+    return 'Chua co nguoi tiep nhan'
+  }, [ticket])
 
   const handleChange = (event) => {
     const { name, value } = event.target
     setMessage('')
-    setForm((prev) => ({ ...prev, [name]: value }))
+    setForm((prev) => {
+      if (name === 'type') {
+        const nextIsMaintenance = value === 'Maintenance'
+        const selectedMaintenance = maintenanceOptions.find((item) => item.code === prev.maintenanceCategory) ?? maintenanceOptions[0]
+
+        return {
+          ...prev,
+          type: value,
+          title: nextIsMaintenance ? `${selectedMaintenance.code} - ${selectedMaintenance.name}` : '',
+          maintenanceCategory: nextIsMaintenance ? prev.maintenanceCategory || 'PM01' : '',
+          area: nextIsMaintenance ? prev.area : '',
+          equipmentCode: nextIsMaintenance ? prev.equipmentCode : '',
+        }
+      }
+
+      if (name === 'maintenanceCategory') {
+        const selectedMaintenance = maintenanceOptions.find((item) => item.code === value) ?? maintenanceOptions[0]
+
+        return {
+          ...prev,
+          maintenanceCategory: value,
+          title: `${selectedMaintenance.code} - ${selectedMaintenance.name}`,
+        }
+      }
+
+      return { ...prev, [name]: value }
+    })
   }
 
   const handleSave = async (event) => {
@@ -135,8 +201,10 @@ function TicketDetails() {
         await updateAdminTicket(ticketId, {
           title: form.title,
           description: form.description,
+          factory: form.factory || null,
           equipmentCode: form.equipmentCode,
           area: form.area,
+          assignedTo: form.assignedTo ? Number(form.assignedTo) : user?.id || null,
           assignedTeam: form.assignedTeam,
           dueDate: form.dueDate || null,
           status: form.status,
@@ -148,11 +216,16 @@ function TicketDetails() {
           return
         }
 
+        const selectedMaintenance = maintenanceOptions.find((item) => item.code === form.maintenanceCategory) ?? maintenanceOptions[0]
+        const isMaintenancePayload = form.type === 'Maintenance'
+
         await updateUserTicket(ticketId, {
-          title: form.title,
+          type: isMaintenancePayload ? `Maintenance|${selectedMaintenance.code}` : 'IT',
+          title: isMaintenancePayload ? `${selectedMaintenance.code} - ${selectedMaintenance.name}` : form.title,
           description: form.description,
-          equipmentCode: form.equipmentCode,
-          area: form.area,
+          factory: form.factory || null,
+          equipmentCode: isMaintenancePayload ? form.equipmentCode : '',
+          area: isMaintenancePayload ? form.area : '',
           assignedTeam: form.assignedTeam,
           dueDate: form.dueDate || null,
         })
@@ -160,11 +233,16 @@ function TicketDetails() {
 
       const updatedTicket = await getTicketById(ticketId)
       setTicket(updatedTicket)
+      const updatedMaintenanceCategory = getMaintenanceCategory(updatedTicket)
       setForm({
+        type: isMaintenanceTicket(updatedTicket) ? 'Maintenance' : 'IT',
+        factory: updatedTicket.factory || '',
+        maintenanceCategory: updatedMaintenanceCategory?.code || 'PM01',
         title: updatedTicket.title || '',
         description: updatedTicket.description || '',
         equipmentCode: updatedTicket.equipmentCode || '',
         area: updatedTicket.area || '',
+        assignedTo: updatedTicket.assignedTo ? String(updatedTicket.assignedTo) : '',
         assignedTeam: updatedTicket.assignedTeam || '',
         dueDate: updatedTicket.dueDate ? updatedTicket.dueDate.slice(0, 16) : '',
         status: updatedTicket.status || '',
@@ -203,8 +281,15 @@ function TicketDetails() {
                 <span className={getStatusClass(statusText)}>{statusText}</span>
               </div>
               {showEditButton && (
-                <button type="button" className="ticket-details__button" onClick={() => setIsEditing((prev) => !prev)}>
-                  {isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'}
+                <button
+                  type="button"
+                  className="ticket-details__button ticket-details__button--icon"
+                  onClick={() => setIsEditing((prev) => !prev)}
+                  title={actionLabel}
+                  aria-label={actionLabel}
+                  data-tooltip={actionLabel}
+                >
+                  <ActionIcon size={18} />
                 </button>
               )}
             </div>
@@ -213,6 +298,9 @@ function TicketDetails() {
               <div className="ticket-details__form-view">
                 <label>Loai Ticket</label>
                 <div className="ticket-details__field-view">{isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}</div>
+
+                <label>Nha may</label>
+                <div className="ticket-details__field-view">{getFactoryLabel(ticket.factory)}</div>
 
                 {isMaintenance && (
                   <>
@@ -245,6 +333,13 @@ function TicketDetails() {
                 <label>Doi xu ly</label>
                 <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
+                {!isAdmin && (
+                  <>
+                    <label>Nguoi tiep nhan</label>
+                    <div className="ticket-details__field-view">{assigneeDisplay}</div>
+                  </>
+                )}
+
                 <label>Mo ta</label>
                 <div className="ticket-details__field-view ticket-details__field-view--textarea">
                   {ticket.description || 'Chua co mo ta'}
@@ -253,8 +348,12 @@ function TicketDetails() {
                 <label>Han xu ly</label>
                 <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
 
-                {/* <label>Requested By</label>
-                <div className="ticket-details__field-view">{ticket.requestedBy || 'Chua co'}</div> */}
+                {isAdmin && (
+                  <>
+                    <label>Nguoi tao</label>
+                    <div className="ticket-details__field-view">{requesterDisplay}</div>
+                  </>
+                )}
 
                 <label>Thoi gian tao</label>
                 <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
@@ -275,7 +374,46 @@ function TicketDetails() {
               <form className="ticket-details__form" onSubmit={handleSave}>
               {!isAdmin && (
                 <>
-                  {!isMaintenance && (
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Loai Ticket</span>
+                    <select name="type" value={form.type} onChange={handleChange} disabled={!isEditing}>
+                      <option value="Maintenance">Lenh bao tri</option>
+                      <option value="IT">Ho tro CNTT</option>
+                    </select>
+                  </label>
+
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Nha may</span>
+                    <select name="factory" value={form.factory} onChange={handleChange} disabled={!isEditing}>
+                      <option value="">Chon nha may</option>
+                      {factoryOptions.map((option) => (
+                        <option key={option.code} value={option.code}>
+                          {option.code} - {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {isEditingMaintenance && (
+                    <>
+                      <label className="ticket-details__form-field ticket-details__form-field--full">
+                        <span>Loai bao tri</span>
+                        <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange} disabled={!isEditing}>
+                          {maintenanceOptions.map((option) => (
+                            <option key={option.code} value={option.code}>
+                              {option.code} - {option.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <div className="ticket-details__field-note">
+                        Loai bao tri se duoc map vao thong tin ticket. So order se do admin cap nhat sau khi xu ly.
+                      </div>
+                    </>
+                  )}
+
+                  {!isEditingMaintenance && (
                     <label className="ticket-details__form-field ticket-details__form-field--full">
                       <span>Tieu de</span>
                       <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
@@ -288,7 +426,7 @@ function TicketDetails() {
                   </label>
 
                   <div className="ticket-details__form-split">
-                    {isMaintenance && (
+                    {isEditingMaintenance && (
                       <>
                         <label className="ticket-details__form-field">
                           <span>Ten thiet bi</span>
@@ -308,6 +446,18 @@ function TicketDetails() {
                     </label>
 
                     <label className="ticket-details__form-field">
+                      <span>Nguoi tiep nhan</span>
+                      <select name="assignedTo" value={form.assignedTo} onChange={handleChange} disabled={!isEditing}>
+                        <option value="">Chua gan nguoi tiep nhan</option>
+                        {users.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.id} - {item.username} ({item.role})
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="ticket-details__form-field">
                       <span>Han xu ly</span>
                       <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
                     </label>
@@ -317,6 +467,18 @@ function TicketDetails() {
 
               {isAdmin && isEditing && (
                 <>
+                  <label className="ticket-details__form-field ticket-details__form-field--full">
+                    <span>Nha may</span>
+                    <select name="factory" value={form.factory} onChange={handleChange} disabled={!isEditing}>
+                      <option value="">Chon nha may</option>
+                      {factoryOptions.map((option) => (
+                        <option key={option.code} value={option.code}>
+                          {option.code} - {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
                   <label className="ticket-details__form-field ticket-details__form-field--full">
                     <span>Tieu de</span>
                     <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
@@ -348,6 +510,11 @@ function TicketDetails() {
                       <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
                     </label>
 
+                    <div className="ticket-details__static-field">
+                      <strong>Nguoi tao</strong>
+                      <p>{requesterDisplay}</p>
+                    </div>
+
                     <label className="ticket-details__form-field">
                       <span>Trang thai</span>
                       <select name="status" value={form.status} onChange={handleChange} disabled={!isEditing}>
@@ -373,8 +540,15 @@ function TicketDetails() {
               )}
 
               {(isAdmin || canUserEdit) && (
-                <button type="submit" className="ticket-details__button" disabled={isSaving}>
-                  {isSaving ? 'Dang luu...' : 'Luu thay doi'}
+                <button
+                  type="submit"
+                  className="ticket-details__button ticket-details__button--icon"
+                  disabled={isSaving}
+                  title={isSaving ? 'Dang luu...' : 'Luu thay doi'}
+                  aria-label={isSaving ? 'Dang luu...' : 'Luu thay doi'}
+                  data-tooltip={isSaving ? 'Dang luu...' : 'Luu thay doi'}
+                >
+                  <FiSave size={18} />
                 </button>
               )}
               </form>

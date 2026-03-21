@@ -51,10 +51,10 @@ function Dashboard() {
     }).length
 
     return [
-      { label: 'Tong ticket', value: dashboard.total ?? tickets.length },
-      { label: 'Tao hom nay', value: dashboard.today ?? 0 },
-      { label: 'Dang xu ly', value: openCount },
-      { label: 'Qua han', value: overdueCount },
+      { label: 'Tổng Ticket', value: dashboard.total ?? tickets.length },
+      { label: 'Tạo hôm nay', value: dashboard.today ?? 0 },
+      { label: 'Đang xử lý', value: openCount },
+      { label: 'Quá hạn', value: overdueCount },
     ]
   }, [dashboard.total, dashboard.today, tickets])
 
@@ -81,7 +81,7 @@ function Dashboard() {
       <div className="dashboard-page__hero">
         <div>
           <p className="dashboard-page__eyebrow">IT Service Desk</p>
-          <h1 className="dashboard-page__title">Tổng quan hệ thống ticket</h1>
+          <h1 className="dashboard-page__title">Tổng quan hệ thống Ticket</h1>
           {/* <p className="dashboard-page__subtitle">
             Giao dien nay dang bam theo backend hien co: Tickets, TicketLogs va Users. Dashboard uu tien cac truong nghiep vu quan trong nhu status, area, assigned team, due date va ma thiet bi.
           </p> */}
@@ -151,12 +151,12 @@ function Dashboard() {
 
         <div className="ticket-table">
           <div className="ticket-table__head">
-            <span>Ma ticket</span>
-            <span>Loai</span>
-            <span>Thiet bi / Khu vuc</span>
-            <span>Doi xu ly</span>
-            <span>Han xu ly</span>
-            <span>Trang thai</span>
+            <span>Mã Ticket</span>
+            <span>Loại</span>
+            <span>Thiết bị / Khu vực</span>
+            <span>Đội xử lý</span>
+            <span>Hạn xử lý</span>
+            <span>Trạng thái</span>
           </div>
 
           <div className="ticket-table__body">

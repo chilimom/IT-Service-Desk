@@ -27,10 +27,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.ExecuteSqlRaw(@"
+        IF COL_LENGTH('Tickets', 'Factory') IS NULL
+        BEGIN
+            ALTER TABLE Tickets ADD Factory NVARCHAR(100) NULL;
+        END
+    ");
+}
 
 if (app.Environment.IsDevelopment())
 {

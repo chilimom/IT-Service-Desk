@@ -60,6 +60,7 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
   if (!ticket) return null
 
   const isMaintenance = isMaintenanceTicket(ticket)
+  const isDone = (ticket.status || '').toLowerCase() === 'done'
   const maintenanceCategory = getMaintenanceCategory(ticket)
   const maintenanceHeadline = maintenanceCategory ? `${maintenanceCategory.code} - ${maintenanceCategory.name}` : 'Khong ap dung'
   const orderCodeDisplay = getOrderCodeDisplay(ticket)
@@ -86,7 +87,7 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
           <div className="ticket-details__form-card">
             <div className="ticket-details__card-header">
               <div className="ticket-details__card-heading">
-                <h2>Thong tin Ticket</h2>
+                <h2>Thông tin Ticket</h2>
                 <span className={getStatusClass(statusText)}>{statusText}</span>
               </div>
             </div>
@@ -97,7 +98,7 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
 
               {isMaintenance && (
                 <>
-                  <label>Loai bao tri</label>
+                  <label>Loại bảo trì</label>
                   <div className="ticket-details__field-view">{maintenanceHeadline}</div>
 
                   {/* <div className="ticket-details__field-note">
@@ -108,7 +109,7 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
 
               {!isMaintenance && (
                 <>
-                  <label>Tieu de ho tro</label>
+                  <label>Tiêu đề hỗ trợ</label>
                   <div className="ticket-details__field-view">{ticket.title || 'Chua co tieu de'}</div>
                 </>
               )}
@@ -118,21 +119,16 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
                   <label>Equipment</label>
                   <div className="ticket-details__field-view">{ticket.area || 'Chua co'}</div>
 
-                  <label>Ten thiet bi</label>
+                  <label>Tên thiết bị</label>
                   <div className="ticket-details__field-view">{ticket.equipmentCode || 'Chua co'}</div>
                 </>
               )}
 
-              <label>Doi xu ly</label>
+              <label>Tổ bảo trì</label>
               <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
-              <label>Mo ta</label>
-              <div className="ticket-details__field-view ticket-details__field-view--textarea">
-                {ticket.description || 'Chua co mo ta'}
-              </div>
-
-              <label>Han xu ly</label>
-              <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
+              <label>{isDone ? 'Thoi gian hoan thanh' : 'Han xu ly'}</label>
+              <div className="ticket-details__field-view">{formatDate(isDone ? ticket.updatedAt : ticket.dueDate)}</div>
 
               {/* <label>Requested By</label>
               <div className="ticket-details__field-view">{ticket.requestedBy || 'Chua co'}</div> */}
@@ -145,7 +141,7 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
 
               {isMaintenance && (
                 <>
-                  <label>So order</label>
+                  <label>Số Order</label>
                   <div className="ticket-details__field-view">{orderCodeDisplay}</div>
                 </>
               )}

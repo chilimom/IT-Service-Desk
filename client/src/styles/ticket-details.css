@@ -205,6 +205,7 @@
 }
 
 .ticket-details__button {
+  position: relative;
   min-width: 140px;
   padding: 10px 18px;
   border: none;
@@ -218,6 +219,40 @@
 .ticket-details__button:disabled {
   opacity: 0.75;
   cursor: wait;
+}
+
+.ticket-details__button--icon {
+  min-width: 46px;
+  width: 46px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ticket-details__button--icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(16, 47, 77, 0.95);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.ticket-details__button--icon:hover::after,
+.ticket-details__button--icon:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .ticket-preview-modal {

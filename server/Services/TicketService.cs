@@ -13,14 +13,71 @@ namespace ITServiceDesk.Api.Services
             _context = context;
         }
 
-        public List<Ticket> GetAll()
+        public List<TicketResponseDto> GetAll()
         {
-            return _context.Tickets.ToList();
+            return _context.Tickets
+                .Select(ticket => new TicketResponseDto
+                {
+                    Id = ticket.Id,
+                    Code = ticket.Code,
+                    Type = ticket.Type,
+                    Title = ticket.Title,
+                    Description = ticket.Description,
+                    Factory = ticket.Factory,
+                    EquipmentCode = ticket.EquipmentCode,
+                    Area = ticket.Area,
+                    RequestedBy = ticket.RequestedBy,
+                    RequestedByName = _context.Users
+                        .Where(user => user.Id == ticket.RequestedBy)
+                        .Select(user => user.Username)
+                        .FirstOrDefault(),
+                    AssignedTo = ticket.AssignedTo,
+                    AssignedToName = _context.Users
+                        .Where(user => user.Id == ticket.AssignedTo)
+                        .Select(user => user.Username)
+                        .FirstOrDefault(),
+                    AssignedTeam = ticket.AssignedTeam,
+                    Status = ticket.Status,
+                    OrderCode = ticket.OrderCode,
+                    CreatedAt = ticket.CreatedAt,
+                    UpdatedAt = ticket.UpdatedAt,
+                    DueDate = ticket.DueDate
+                })
+                .ToList();
         }
 
-        public Ticket? GetById(int id)
+        public TicketResponseDto? GetById(int id)
         {
-            return _context.Tickets.FirstOrDefault(ticket => ticket.Id == id);
+            return _context.Tickets
+                .Where(ticket => ticket.Id == id)
+                .Select(ticket => new TicketResponseDto
+                {
+                    Id = ticket.Id,
+                    Code = ticket.Code,
+                    Type = ticket.Type,
+                    Title = ticket.Title,
+                    Description = ticket.Description,
+                    Factory = ticket.Factory,
+                    EquipmentCode = ticket.EquipmentCode,
+                    Area = ticket.Area,
+                    RequestedBy = ticket.RequestedBy,
+                    RequestedByName = _context.Users
+                        .Where(user => user.Id == ticket.RequestedBy)
+                        .Select(user => user.Username)
+                        .FirstOrDefault(),
+                    AssignedTo = ticket.AssignedTo,
+                    AssignedToName = _context.Users
+                        .Where(user => user.Id == ticket.AssignedTo)
+                        .Select(user => user.Username)
+                        .FirstOrDefault(),
+                    AssignedTeam = ticket.AssignedTeam,
+                    Status = ticket.Status,
+                    OrderCode = ticket.OrderCode,
+                    CreatedAt = ticket.CreatedAt,
+                    UpdatedAt = ticket.UpdatedAt,
+                    DueDate = ticket.DueDate
+                })
+                .FirstOrDefault();
         }
 
         public Ticket Create(CreateTicketDto dto)
@@ -33,6 +90,7 @@ namespace ITServiceDesk.Api.Services
                 Type = dto.Type,
                 Title = dto.Title,
                 Description = dto.Description,
+                Factory = dto.Factory,
                 EquipmentCode = dto.EquipmentCode,
                 Area = dto.Area,
                 RequestedBy = createdBy,
@@ -84,6 +142,9 @@ namespace ITServiceDesk.Api.Services
             if (dto.Description != null)
                 ticket.Description = dto.Description;
 
+            if (dto.Factory != null)
+                ticket.Factory = dto.Factory;
+
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
 
@@ -102,6 +163,11 @@ namespace ITServiceDesk.Api.Services
             if (dto.AssignedTo != null)
                 ticket.AssignedTo = dto.AssignedTo;
 
+            var nextStatus = dto.Status ?? ticket.Status;
+            var normalizedNextStatus = (nextStatus ?? string.Empty).ToLower();
+            if (ticket.AssignedTo == null && (normalizedNextStatus == "inprogress" || normalizedNextStatus == "done"))
+                ticket.AssignedTo = 1;
+
             var normalizedType = (ticket.Type ?? string.Empty).ToLower();
             var isMaintenanceTicket = normalizedType.Contains("maintenance") || normalizedType.Contains("bao tri");
 
@@ -115,7 +181,7 @@ namespace ITServiceDesk.Api.Services
             {
                 TicketId = ticket.Id,
                 Action = "Updated",
-                Note = $"Cap nhat ticket: Title={dto.Title}, Description={dto.Description}, EquipmentCode={dto.EquipmentCode}, Area={dto.Area}, AssignedTeam={dto.AssignedTeam}, DueDate={dto.DueDate}, Status={dto.Status}, AssignedTo={dto.AssignedTo}, OrderCode={dto.OrderCode}",
+                Note = $"Cap nhat ticket: Title={dto.Title}, Description={dto.Description}, Factory={dto.Factory}, EquipmentCode={dto.EquipmentCode}, Area={dto.Area}, AssignedTeam={dto.AssignedTeam}, DueDate={dto.DueDate}, Status={dto.Status}, AssignedTo={dto.AssignedTo}, OrderCode={dto.OrderCode}",
                 CreatedBy = 1,
                 CreatedAt = DateTime.UtcNow
             });
@@ -141,6 +207,9 @@ namespace ITServiceDesk.Api.Services
             if (dto.Description != null)
                 ticket.Description = dto.Description;
 
+            if (dto.Factory != null)
+                ticket.Factory = dto.Factory;
+
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
 
@@ -162,6 +231,23 @@ namespace ITServiceDesk.Api.Services
                 CreatedBy = ticket.RequestedBy,
                 CreatedAt = DateTime.UtcNow
             });
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public bool Delete(int id)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+
+            if (ticket == null)
+                return false;
+
+            var logs = _context.TicketLogs.Where(log => log.TicketId == id).ToList();
+            if (logs.Count > 0)
+                _context.TicketLogs.RemoveRange(logs);
+
+            _context.Tickets.Remove(ticket);
             _context.SaveChanges();
 
             return true;

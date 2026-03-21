@@ -83,6 +83,17 @@ namespace ITServiceDesk.Api.Controllers
             return Ok("Nguoi dung cap nhat ticket thanh cong");
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var result = _ticketService.Delete(id);
+
+            if (!result)
+                return NotFound($"Khong tim thay ticket id = {id}");
+
+            return Ok("Xoa ticket thanh cong");
+        }
+
         [HttpGet("dashboard")]
         public IActionResult GetDashboard()
         {

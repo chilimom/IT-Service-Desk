@@ -9,6 +9,12 @@ export const maintenanceOptions = [
   { code: 'QMTD', name: 'Hieu chuan - kiem dinh' },
 ]
 
+export const factoryOptions = [
+  { code: 'NM01', name: 'Nha may 1' },
+  { code: 'NM02', name: 'Nha may 2' },
+  { code: 'NM03', name: 'Nha may 3' },
+]
+
 function normalize(value) {
   return (value || '').toLowerCase()
 }
@@ -61,6 +67,17 @@ export function getTicketTypeLabel(ticket) {
   }
 
   return ticket?.type || 'Chua xac dinh'
+}
+
+export function getFactoryLabel(factoryValue) {
+  const normalizedFactory = String(factoryValue || '').trim()
+  if (!normalizedFactory) return 'Chua chon nha may'
+
+  const matchedFactory = factoryOptions.find(
+    (item) => item.code.toLowerCase() === normalizedFactory.toLowerCase() || item.name.toLowerCase() === normalizedFactory.toLowerCase(),
+  )
+
+  return matchedFactory ? `${matchedFactory.code} - ${matchedFactory.name}` : normalizedFactory
 }
 
 export function getOrderCodeDisplay(ticket) {

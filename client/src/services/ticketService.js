@@ -73,3 +73,15 @@ export async function updateAdminTicket(ticketId, payload) {
 
   return response.text()
 }
+
+export async function deleteTicket(ticketId) {
+  const response = await fetch(`${API_URL}/${ticketId}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`)
+  }
+
+  return response.text()
+}

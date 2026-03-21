@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { createTicket } from '../services/ticketService'
-import { maintenanceOptions } from '../ultils/ticketMeta'
+import { factoryOptions, maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/form.css'
 
 const initialForm = {
   type: 'Maintenance',
+  factory: '',
   maintenanceCategory: 'PM01',
   title: '',
   description: '',
@@ -42,8 +43,9 @@ function CreateTicket() {
     if (!isMaintenance) {
       return {
         type: 'IT',
-        title: form.title?.trim() || 'Ho tro CNTT',
+        title: form.title?.trim() || ' Hỗ trợ CNTT',
         description,
+        factory: form.factory || null,
         equipmentCode: '',
         area: '',
         assignedTeam: form.assignedTeam,
@@ -56,6 +58,7 @@ function CreateTicket() {
       type: `Maintenance|${selectedMaintenance.code}`,
       title: `${selectedMaintenance.code} - ${selectedMaintenance.name}`,
       description,
+      factory: form.factory || null,
       equipmentCode: form.equipmentCode,
       area: form.area,
       assignedTeam: form.assignedTeam,
@@ -66,6 +69,11 @@ function CreateTicket() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (!form.factory) {
+      setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
+      return
+    }
 
     if (isMaintenance) {
       if (!form.area.trim()) {
@@ -116,18 +124,28 @@ function CreateTicket() {
   return (
     <section className="create-ticket-page">
       <div className="form-container">
-        <h2>Tao Ticket</h2>
+        <h2>Tạo Ticket</h2>
 
         <form onSubmit={handleSubmit}>
-          <label>Loai Ticket</label>
+          <label>Loại Ticket</label>
           <select name="type" value={form.type} onChange={handleChange}>
-            <option value="Maintenance">Lenh bao tri</option>
-            <option value="IT">Ho tro CNTT</option>
+            <option value="Maintenance">Lệnh bảo trì</option>
+            <option value="IT">Hỗ trợ CNTT</option>
+          </select>
+
+          <label>Nhà máy</label>
+          <select name="factory" value={form.factory} onChange={handleChange}>
+            <option value="">Chọn nhà máy</option>
+            {factoryOptions.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.code} - {option.name}
+              </option>
+            ))}
           </select>
 
           {isMaintenance && (
             <>
-              <label>Loai bao tri</label>
+              <label>Loại bảo trì</label>
               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
                 {maintenanceOptions.map((option) => (
                   <option key={option.code} value={option.code}>
@@ -161,24 +179,24 @@ function CreateTicket() {
               <label>Equipment</label>
               <input name="area" value={form.area} onChange={handleChange} />
 
-              <label>Ten thiet bi</label>
+              <label>Tên thiết bị</label>
               <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} />
             </>
           )}
 
-          <label>Doi xu ly</label>
+          <label>Tổ bảo trì</label>
           <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} />
 
-          <label>Mo ta</label>
+          <label>Mô tả</label>
           <textarea name="description" value={form.description} onChange={handleChange} />
 
-          <label>Han xu ly</label>
+          <label>Hạn xử lý</label>
           <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
 
           {errorMessage && <div className="form-error">{errorMessage}</div>}
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang tao...' : 'Tao ticket'}
+            {isSubmitting ? 'Dang tao...' : 'Tạo Ticket'}
           </button>
         </form>
       </div>

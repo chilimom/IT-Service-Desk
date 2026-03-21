@@ -14,8 +14,12 @@ namespace ITServiceDesk.Api.Services
 
         public object? Login(LoginDto dto)
         {
+            var username = (dto.Username ?? string.Empty).Trim();
+            var password = (dto.Password ?? string.Empty).Trim();
+
             var user = _context.Users.FirstOrDefault(item =>
-                item.Username == dto.Username && item.PasswordHash == dto.Password);
+                item.Username.Trim().ToLower() == username.ToLower() &&
+                item.PasswordHash.Trim() == password);
 
             if (user == null)
                 return null;
