@@ -175,12 +175,14 @@
   min-width: 120px;
   padding: 10px 12px;
   gap: 8px;
+  border: none;
   border-radius: 12px;
   background: #0f4c97;
   color: #fff;
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 10px 24px rgba(15, 76, 151, 0.16);
+  cursor: pointer;
 }
 
 .requests-row__action-icon {

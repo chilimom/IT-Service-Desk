@@ -220,6 +220,62 @@
   cursor: wait;
 }
 
+.ticket-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 36px 20px;
+  background: rgba(10, 31, 55, 0.32);
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+}
+
+.ticket-preview-modal__dialog {
+  position: relative;
+  width: min(100%, 940px);
+}
+
+.ticket-preview-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #234a73;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(15, 76, 151, 0.12);
+}
+
+.ticket-preview-modal__content {
+  align-items: stretch;
+}
+
+.ticket-preview-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.ticket-preview-modal__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #1f5ea8;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .ticket-details__logs {
   display: flex;
   flex-direction: column;
@@ -281,6 +337,10 @@
   .ticket-details__form-card {
     padding: 22px 20px;
     border-radius: 22px;
+  }
+
+  .ticket-preview-modal {
+    padding: 18px 12px;
   }
 
   .ticket-details__form-split {

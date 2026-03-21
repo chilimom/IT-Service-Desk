@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaEye, FaPen } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import TicketInfoModal from '../components/Tickets/TicketInfoModal'
 import { getTickets } from '../services/ticketService'
 import path from '../ultils/path'
 import { formatTicketCode, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
@@ -27,6 +27,7 @@ function MyRequests() {
   const [tickets, setTickets] = useState([])
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
+  const [selectedTicket, setSelectedTicket] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -129,18 +130,27 @@ function MyRequests() {
                 <p>Han: {formatDate(ticket.dueDate)}</p>
               </div>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-              <Link className="requests-row__action" to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}>
+              <button type="button" className="requests-row__action" onClick={() => setSelectedTicket(ticket)}>
                 <span className="requests-row__action-icon">
                   {canEditTicket(ticket) ? <FaPen size={14} /> : <FaEye size={14} />}
                 </span>
-                <span>{canEditTicket(ticket) ? 'Sua' : 'Xem'}</span>
-              </Link>
+                <span>Xem</span>
+              </button>
             </article>
           ))}
 
           {filteredTickets.length === 0 && <div className="requests-empty">Chua co ticket nao cua ban.</div>}
         </div>
       </section>
+
+      {selectedTicket && (
+        <TicketInfoModal
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+          detailPath={`/${path.USER}/${path.USER_TICKETS}/requests/${selectedTicket.id}`}
+          detailLabel={canEditTicket(selectedTicket) ? 'Mo trang sua ticket' : 'Mo chi tiet'}
+        />
+      )}
     </section>
   )
 }

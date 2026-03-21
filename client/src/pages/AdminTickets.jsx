@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import TicketInfoModal from '../components/Tickets/TicketInfoModal'
 import { getTickets } from '../services/ticketService'
 import path from '../ultils/path'
 import { formatTicketCode, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
@@ -24,6 +24,7 @@ function getStatusClass(status) {
 function AdminTickets() {
   const [tickets, setTickets] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTicket, setSelectedTicket] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -120,9 +121,9 @@ function AdminTickets() {
                 <p>Han: {formatDate(ticket.dueDate)}</p>
               </div>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-              <Link className="requests-row__action" to={`/${path.ADMIN}/${path.ADMIN_TICKETS}/${ticket.id}`}>
+              <button type="button" className="requests-row__action" onClick={() => setSelectedTicket(ticket)}>
                 Config
-              </Link>
+              </button>
             </article>
           ))}
 
@@ -131,6 +132,15 @@ function AdminTickets() {
           )}
         </div>
       </section>
+
+      {selectedTicket && (
+        <TicketInfoModal
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+          detailPath={`/${path.ADMIN}/${path.ADMIN_TICKETS}/${selectedTicket.id}`}
+          detailLabel="Mo trang config"
+        />
+      )}
     </section>
   )
 }
