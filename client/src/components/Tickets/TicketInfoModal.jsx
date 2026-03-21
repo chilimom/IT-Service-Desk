@@ -100,9 +100,9 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
                   <label>Loai bao tri</label>
                   <div className="ticket-details__field-view">{maintenanceHeadline}</div>
 
-                  <div className="ticket-details__field-note">
+                  {/* <div className="ticket-details__field-note">
                     Loai bao tri se duoc map vao thong tin ticket. So order se do admin cap nhat sau khi xu ly.
-                  </div>
+                  </div> */}
                 </>
               )}
 
@@ -134,14 +134,14 @@ function TicketInfoModal({ ticket, onClose, detailPath, detailLabel = 'Mo chi ti
               <label>Han xu ly</label>
               <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
 
-              <label>Requested By</label>
-              <div className="ticket-details__field-view">{ticket.requestedBy || 'Chua co'}</div>
+              {/* <label>Requested By</label>
+              <div className="ticket-details__field-view">{ticket.requestedBy || 'Chua co'}</div> */}
 
-              <label>Thoi gian tao</label>
+              {/* <label>Thoi gian tao</label>
               <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
 
               <label>Thoi gian cap nhat</label>
-              <div className="ticket-details__field-view">{formatDate(ticket.updatedAt)}</div>
+              <div className="ticket-details__field-view">{formatDate(ticket.updatedAt)}</div> */}
 
               {isMaintenance && (
                 <>
