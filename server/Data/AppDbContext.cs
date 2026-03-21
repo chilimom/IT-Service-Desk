@@ -1,0 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using ITServiceDesk.Api.Models;
+
+namespace ITServiceDesk.Api.Data
+{
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<TicketLog> TicketLogs { get; set; }
+    }
+
+
+}

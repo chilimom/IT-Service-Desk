@@ -1,0 +1,226 @@
+.requests-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.requests-page__hero {
+  padding: 28px 32px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(46, 112, 199, 0.18), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
+  border: 1px solid #d8e1ec;
+  box-shadow: 0 20px 40px rgba(15, 76, 151, 0.08);
+}
+
+.requests-page__eyebrow {
+  margin: 0 0 8px;
+  color: #2d6db5;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.requests-page__title {
+  margin: 0;
+  color: #102f4d;
+  font-size: 34px;
+}
+
+.requests-page__subtitle {
+  max-width: 840px;
+  margin-top: 12px;
+  color: #4e6a86;
+  font-size: 16px;
+}
+
+.requests-page__alert {
+  padding: 14px 16px;
+  border: 1px solid #f1c4c4;
+  border-radius: 18px;
+  background: #fff5f5;
+  color: #b44747;
+  font-weight: 600;
+}
+
+.requests-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  gap: 16px;
+}
+
+.requests-search {
+  display: flex;
+}
+
+.requests-search__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(100%, 520px);
+}
+
+.requests-search__field span {
+  color: #35506c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.requests-search__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #d6e1ec;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 76, 151, 0.05);
+}
+
+.requests-search__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b87a3;
+}
+
+.requests-search__input-wrap input {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: #183a59;
+  outline: none;
+}
+
+.requests-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.requests-filters__field span {
+  color: #35506c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.requests-filters__field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d6e1ec;
+  border-radius: 14px;
+  background: #fff;
+  color: #183a59;
+  outline: none;
+}
+
+.requests-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e1ebf5;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(15, 76, 151, 0.08);
+}
+
+.requests-table__head,
+.requests-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr 0.9fr 0.9fr 1.1fr 0.8fr 0.8fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.requests-table__head {
+  padding: 14px 18px;
+  background: #f2f8ff;
+  color: #5a7693;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.requests-table__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.requests-row {
+  padding: 16px 18px;
+  border-top: 1px solid #edf3f9;
+  color: #35506c;
+  font-size: 14px;
+}
+
+.requests-row strong {
+  display: block;
+  color: #102f4d;
+}
+
+.requests-row p {
+  margin-top: 4px;
+  color: #728aa4;
+  font-size: 13px;
+}
+
+.requests-row__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 10px 12px;
+  gap: 8px;
+  border-radius: 12px;
+  background: #0f4c97;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(15, 76, 151, 0.16);
+}
+
+.requests-row__action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.requests-empty {
+  padding: 24px 18px;
+  color: #7d95ad;
+}
+
+@media (max-width: 1200px) {
+  .requests-table__head,
+  .requests-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .requests-page__hero {
+    padding: 22px 20px;
+    border-radius: 22px;
+  }
+
+  .requests-page__title {
+    font-size: 28px;
+  }
+
+  .requests-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .requests-table__head {
+    display: none;
+  }
+
+  .requests-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

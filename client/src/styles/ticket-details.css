@@ -1,0 +1,248 @@
+.ticket-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ticket-details__hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(46, 112, 199, 0.18), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
+  border: 1px solid #d8e1ec;
+  box-shadow: 0 20px 40px rgba(15, 76, 151, 0.08);
+}
+
+.ticket-details__eyebrow {
+  margin: 0 0 8px;
+  color: #2d6db5;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ticket-details__title {
+  margin: 0;
+  color: #102f4d;
+  font-size: 34px;
+}
+
+.ticket-details__subtitle {
+  margin-top: 12px;
+  max-width: 640px;
+  color: #4e6a86;
+  font-size: 16px;
+}
+
+.ticket-details__grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 18px;
+}
+
+.ticket-details__card {
+  padding: 22px;
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid #d8e1ec;
+  box-shadow: 0 16px 36px rgba(15, 76, 151, 0.08);
+}
+
+.ticket-details__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ticket-details__card-header h2 {
+  margin: 0;
+  color: #102f4d;
+  font-size: 22px;
+}
+
+.ticket-details__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ticket-details__summary strong {
+  display: block;
+  color: #35506c;
+  font-size: 14px;
+}
+
+.ticket-details__summary p {
+  margin-top: 4px;
+  color: #4e6a86;
+}
+
+.ticket-details__static-field {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f7fbff;
+  border: 1px solid #e1ebf5;
+}
+
+.ticket-details__static-field strong {
+  display: block;
+  color: #35506c;
+  font-size: 14px;
+}
+
+.ticket-details__static-field p {
+  margin-top: 6px;
+  color: #4e6a86;
+}
+
+.ticket-details__view-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ticket-details__static-field--full {
+  grid-column: 1 / -1;
+}
+
+.ticket-details__form {
+  display: grid;
+  gap: 14px;
+}
+
+.ticket-details__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ticket-details__form span {
+  color: #35506c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ticket-details__form input,
+.ticket-details__form select,
+.ticket-details__form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d6e1ec;
+  border-radius: 14px;
+  background: #f9fbfe;
+  color: #183a59;
+  outline: none;
+}
+
+.ticket-details__form textarea {
+  resize: vertical;
+}
+
+.ticket-details__button {
+  min-width: 140px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f4c97 0%, #2d6db5 100%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ticket-details__button:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.ticket-details__logs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ticket-details__log {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f7fbff;
+  border: 1px solid #e1ebf5;
+}
+
+.ticket-details__log strong {
+  display: block;
+  color: #102f4d;
+}
+
+.ticket-details__log p {
+  margin: 6px 0;
+  color: #52708f;
+}
+
+.ticket-details__log span {
+  color: #7d95ad;
+  font-size: 13px;
+}
+
+.ticket-details__alert,
+.ticket-details__success {
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-weight: 600;
+}
+
+.ticket-details__alert {
+  border: 1px solid #f1c4c4;
+  background: #fff5f5;
+  color: #b44747;
+}
+
+.ticket-details__success {
+  border: 1px solid #cfe8d8;
+  background: #f2fff6;
+  color: #236443;
+}
+
+.ticket-details__empty {
+  color: #7d95ad;
+}
+
+@media (max-width: 980px) {
+  .ticket-details__hero {
+    flex-direction: column;
+  }
+
+  .ticket-details__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ticket-details__hero {
+    padding: 22px 20px;
+    border-radius: 22px;
+  }
+
+  .ticket-details__title {
+    font-size: 28px;
+  }
+
+  .ticket-details__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-details__view-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-details__static-field--full {
+    grid-column: auto;
+  }
+}
