@@ -87,7 +87,7 @@ export function getOrderCodeDisplay(ticket) {
     return 'Khong ap dung'
   }
 
-  return ticket?.orderCode || 'Admin chua cap nhat'
+  return ticket?.orderCode || 'Chờ cấp Order Code'
 }
 
 export function formatTicketCode(ticket) {
