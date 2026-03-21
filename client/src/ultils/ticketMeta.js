@@ -10,9 +10,11 @@ export const maintenanceOptions = [
 ]
 
 export const factoryOptions = [
-  { code: 'NM01', name: 'Nha may 1' },
-  { code: 'NM02', name: 'Nha may 2' },
-  { code: 'NM03', name: 'Nha may 3' },
+  { code: 'NM01', name: 'Nhà máy Luyện Gang 1' },
+  { code: 'NM02', name: 'Nhà máy Luyện Gang 2' },
+  { code: 'NM03', name: 'Nhà máy Nhiệt Điện 1' },
+  { code: 'NM04', name: 'Nhà máy Nhiệt Điện 2' },
+  { code: 'NM05', name: 'Xưởng Năng Lượng' },
 ]
 
 function normalize(value) {
