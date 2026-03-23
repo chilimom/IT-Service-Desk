@@ -1,6 +1,7 @@
 using ITServiceDesk.Api.DTOs;
 using ITServiceDesk.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using ITServiceDesk.Api.Data;   // 👈 THÊM
 
 
 [ApiController]
