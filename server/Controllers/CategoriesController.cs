@@ -23,6 +23,6 @@ public class CategoriesController : ControllerBase
         .ToList();
 
 
-        return Ok(data);
+
     }
 }
