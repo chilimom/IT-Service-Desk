@@ -87,7 +87,8 @@ namespace ITServiceDesk.Api.Services
             var ticket = new Ticket
             {
                 Code = GenerateCode(),
-                Type = dto.Type,
+                // Type = dto.Type,
+                CategoryId = dto.CategoryId,
                 Title = dto.Title,
                 Description = dto.Description,
                 Factory = dto.Factory,
