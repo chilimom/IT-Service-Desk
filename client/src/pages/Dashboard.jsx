@@ -130,17 +130,6 @@ function Dashboard() {
               <h2 className="dashboard-panel__title">Trạng thái xử lý</h2>
             </div>
           </div>
-          {/* <div className="status-summary">
-            {(dashboard.byStatus || []).map((item) => (
-              <div key={item.status} className="status-summary__item">
-                <span className={getStatusClass(item.status)}>{item.status || 'Unknown'}</span>
-                <strong>{item.count}</strong>
-              </div>
-            ))}
-            {(!dashboard.byStatus || dashboard.byStatus.length === 0) && (
-              <p className="dashboard-empty">Chua co du lieu trang thai.</p>
-            )}
-          </div> */}
           <div className="chart-container">
   <ResponsiveContainer width="100%" height="100%">
     <PieChart>
@@ -185,9 +174,6 @@ function Dashboard() {
         <div className="dashboard-panel__header">
           <div>
             <h2 className="dashboard-panel__title">Ticket gần đây</h2>
-            {/* <p className="dashboard-panel__caption">
-              Hien thi cac truong quan trong trong bang Tickets: Code, Type, EquipmentCode, Area, AssignedTeam, DueDate, Status
-            </p> */}
           </div>
         </div>
 
