@@ -87,7 +87,7 @@ function CreateTicket() {
     // }
     return {
       categoryId: form.categoryId,   // 👈 QUAN TRỌNG
-  title: form.title,
+  title: form.title || '',
   description: form.description,
   factory: form.factory || null,
   equipmentCode: form.equipmentCode || '',
@@ -100,6 +100,15 @@ function CreateTicket() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (!form.categoryId) {
+  alert("Vui lòng chọn danh mục")
+  return
+}
+
+if (!form.title && form.type === 'IT') {
+  alert("Vui lòng nhập tiêu đề")
+  return
+}
 
     if (!form.factory) {
       setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
