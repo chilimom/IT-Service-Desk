@@ -31,19 +31,23 @@ function CreateTicket() {
   }, [form.maintenanceCategory]) 
 
     // hàm lấy category từ server khi component mount
-  useEffect(() => {
-  const typeMap = {
-    IT: 'Support',
-    Maintenance: 'Maintenance',
-  }
+//   useEffect(() => {
+//   const typeMap = {
+//     IT: 'Support',
+//     Maintenance: 'Maintenance',
+//   }
 
-  const apiType = typeMap[form.type]
+//   const apiType = typeMap[form.type]
 
-  fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
+//   fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
+//     .then(res => res.json())
+//     .then(data => setCategories(data))
+// }, [form.type])
+useEffect(() => {
+  fetch('http://localhost:5017/api/categories')   // 👈 KHÔNG cần type
     .then(res => res.json())
     .then(data => setCategories(data))
-}, [form.type])
-
+}, [])
   const handleChange = (event) => {
     const { name, value } = event.target
     setErrorMessage('')

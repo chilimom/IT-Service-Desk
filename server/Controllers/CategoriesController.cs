@@ -16,11 +16,11 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get(string type)
+    public IActionResult Get()
     {
-        var data = _context.Categories
-            .Where(x => x.Type == type)
-            .ToList();
+        var data = _context.Categories.ToList();
+
+
 
         return Ok(data);
     }
