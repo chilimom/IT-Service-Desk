@@ -44,19 +44,23 @@ function Dashboard() {
   }, [])
 
   const stats = useMemo(() => {
-    const openCount = tickets.filter((ticket) => ticket.status !== 'Done').length
-    const overdueCount = tickets.filter((ticket) => {
-      if (!ticket.dueDate || ticket.status === 'Done') return false
-      return new Date(ticket.dueDate) < new Date()
-    }).length
+    const total = tickets.length
+    const done = tickets.filter((t) => (t.status || '').toLowerCase() === 'done').length
+    const inProgress = tickets.filter(
+    (t) => (t.status || '').toLowerCase() === 'inprogress'
+  ).length
+
+  const submitted = tickets.filter(
+    (t) => (t.status || '').toLowerCase() === 'submitted'
+  ).length
 
     return [
-      { label: 'Tổng Ticket', value: dashboard.total ?? tickets.length },
-      { label: 'Tạo hôm nay', value: dashboard.today ?? 0 },
-      { label: 'Đang xử lý', value: openCount },
-      { label: 'Quá hạn', value: overdueCount },
-    ]
-  }, [dashboard.total, dashboard.today, tickets])
+    { label: 'Tổng Ticket', value: total },
+    { label: 'Done', value: done },
+    { label: 'InProgress', value: inProgress },
+    { label: 'Submitted', value: submitted },
+  ]
+  }, [tickets])
 
   const recentTickets = useMemo(() => {
     return [...tickets]
