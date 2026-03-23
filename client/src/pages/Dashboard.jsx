@@ -46,8 +46,7 @@ function Dashboard() {
   // thêm ở trên component
 const [activeIndex, setActiveIndex] = useState(null)
 
-// tính tổng
-const total = tickets.length
+
 
 // item đang hover
 const activeItem = activeIndex !== null ? chartData[activeIndex] : null
@@ -73,6 +72,8 @@ const percent = activeItem
     { label: 'Submitted', value: submitted },
   ]
   }, [tickets])
+  // tính tổng
+const total = tickets.length
 
   const recentTickets = useMemo(() => {
     return [...tickets]
