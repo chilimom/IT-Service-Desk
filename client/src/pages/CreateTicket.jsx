@@ -58,54 +58,27 @@ function CreateTicket() {
   }
 
   const buildPayload = () => {
-    // const description = form.description?.trim() || ''
-
-    // if (!isMaintenance) {
-    //   return {
-    //     type: 'IT',
-    //     title: form.title?.trim() || ' Hỗ trợ CNTT',
-    //     description,
-    //     factory: form.factory || null,
-    //     equipmentCode: '',
-    //     area: '',
-    //     assignedTeam: form.assignedTeam,
-    //     dueDate: form.dueDate || null,
-    //     requestedBy: user?.id,
-    //   }
-    // }
-
-    // return {
-    //   type: `Maintenance|${selectedMaintenance.code}`,
-    //   title: `${selectedMaintenance.code} - ${selectedMaintenance.name}`,
-    //   description,
-    //   factory: form.factory || null,
-    //   equipmentCode: form.equipmentCode,
-    //   area: form.area,
-    //   assignedTeam: form.assignedTeam,
-    //   dueDate: form.dueDate || null,
-    //   requestedBy: user?.id,
-    // }
     return {
       categoryId: form.categoryId,   // 👈 QUAN TRỌNG
-  title: form.title || '',
-  description: form.description,
-  factory: form.factory || null,
-  equipmentCode: form.equipmentCode || '',
-  area: form.area || '',
-  assignedTeam: form.assignedTeam,
-  dueDate: form.dueDate || null,
-  requestedBy: user?.id,
+      title: form.title || '',
+      description: form.description,
+      factory: form.factory || null,
+      equipmentCode: form.equipmentCode || '',
+      area: form.area || '',
+      assignedTeam: form.assignedTeam,
+      dueDate: form.dueDate || null,
+      equestedBy: user?.id,
     }
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (!form.categoryId) {
-  alert("Vui lòng chọn danh mục")
+    alert("Vui lòng chọn danh mục")
   return
 }
 
-if (!form.title && form.type === 'IT') {
+if (!form.title && form.type === 'Support') {
   alert("Vui lòng nhập tiêu đề")
   return
 }

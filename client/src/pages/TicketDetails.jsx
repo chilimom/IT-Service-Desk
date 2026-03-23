@@ -85,6 +85,7 @@ function TicketDetails() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
+  // user
   useEffect(() => {
     async function loadTicketDetails() {
       try {
@@ -118,6 +119,8 @@ function TicketDetails() {
     loadTicketDetails()
   }, [ticketId])
 
+
+  //admin
   useEffect(() => {
     if (!isAdmin) return
 
@@ -164,6 +167,8 @@ function TicketDetails() {
     return 'Chua co nguoi tiep nhan'
   }, [ticket])
 
+
+  
   const handleChange = (event) => {
     const { name, value } = event.target
     setMessage('')
