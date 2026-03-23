@@ -159,9 +159,11 @@ function CreateTicket() {
 
         <form onSubmit={handleSubmit}>
           <label>Loại Ticket</label>
-          // Loại ticket sẽ quyết định các trường thông tin cần nhập và cách xử lý sau này. Người dùng nên chọn đúng loại để đảm bảo ticket được xử lý nhanh chóng và chính xác.
-
-          <label>Danh mục</label>
+          <select name="type" value={form.type} onChange={handleChange}>
+            <option value="Maintenance">Tạo Lệnh bảo trì</option>
+            <option value="IT">Hỗ trợ CNTT</option>
+          </select>
+          <label>Lĩnh vực</label>
 <select name="categoryId" value={form.categoryId} onChange={handleChange}>
   <option value="">Chọn danh mục</option>
   {categories.map((c) => (
@@ -170,10 +172,6 @@ function CreateTicket() {
     </option>
   ))}
 </select>
-          <select name="type" value={form.type} onChange={handleChange}>
-            <option value="Maintenance">Lệnh bảo trì</option>
-            <option value="IT">Hỗ trợ CNTT</option>
-          </select>
 
           <label>Nhà máy</label>
           <select name="factory" value={form.factory} onChange={handleChange}>
