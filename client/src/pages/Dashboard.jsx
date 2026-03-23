@@ -148,7 +148,7 @@ function Dashboard() {
   data={chartData}
   dataKey="value"
   nameKey="name"
-  outerRadius={100}
+  outerRadius={120}
   label
 >
   {chartData.map((entry, index) => (
