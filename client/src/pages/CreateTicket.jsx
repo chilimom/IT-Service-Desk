@@ -53,7 +53,7 @@ function CreateTicket() {
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'categoryId' ? Number(value) :value,
     }))
   }
 
