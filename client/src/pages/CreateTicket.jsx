@@ -31,7 +31,7 @@ function CreateTicket() {
   }, [form.maintenanceCategory]) 
 
     // hàm lấy category từ server khi component mount
-    useEffect (() => {
+  useEffect(() => {
   const typeMap = {
     IT: 'Support',
     Maintenance: 'Maintenance',
@@ -39,11 +39,10 @@ function CreateTicket() {
 
   const apiType = typeMap[form.type]
 
-  fetch(`/api/categories?type=${apiType}`)
+  fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
     .then(res => res.json())
     .then(data => setCategories(data))
 }, [form.type])
-
 
   const handleChange = (event) => {
     const { name, value } = event.target
