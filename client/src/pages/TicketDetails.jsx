@@ -4,7 +4,7 @@ import { FiAlertCircle, FiCheckCircle, FiEdit2, FiInfo, FiSave, FiSettings, FiX 
 import { useAuth } from '../context/AuthContext'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
-import { factoryOptions, getFactoryLabel, getMaintenanceCategory, getOrderCodeDisplay, isMaintenanceTicket, maintenanceOptions } from '../ultils/ticketMeta'
+import { factoryOptions, getFactoryLabel, getMaintenanceCategory, getOrderCodeDisplay, maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/ticket-details.css'
 
 function formatDate(value) {
@@ -66,7 +66,7 @@ function TicketDetails() {
   const isAdmin = (user?.role || '').toLowerCase() === 'admin'
   const [ticket, setTicket] = useState(null)
   const [form, setForm] = useState({
-    type: 'Maintenance',
+    // type: 'Maintenance',
     factory: '',
     maintenanceCategory: 'PM01',
     title: '',
@@ -96,9 +96,10 @@ function TicketDetails() {
         const ticketMaintenanceCategory = getMaintenanceCategory(ticketData)
         setForm({
           // type: isMaintenanceTicket(ticketData) ? 'Maintenance' : 'IT',
-          type: ticketData.categoryName?.includes('Bảo trì')
-  ? 'Maintenance'
-  : 'IT',
+  //         type: ticketData.categoryName?.includes('Bảo trì')
+  // ? 'Maintenance'
+  // : 'IT',
+          
           factory: ticketData.factory || '',
           maintenanceCategory: ticketMaintenanceCategory?.code || 'PM01',
           title: ticketData.title || '',
