@@ -244,7 +244,9 @@ const isMaintenance = useMemo(() => {
       setTicket(updatedTicket)
       const updatedMaintenanceCategory = getMaintenanceCategory(updatedTicket)
       setForm({
-        type: isMaintenanceTicket(updatedTicket) ? 'Maintenance' : 'IT',
+        // type: isMaintenanceTicket(updatedTicket) ? 'Maintenance' : 'IT',
+        // ✅ MỚI
+categoryId: updatedTicket.categoryId,
         factory: updatedTicket.factory || '',
         maintenanceCategory: updatedMaintenanceCategory?.code || 'PM01',
         title: updatedTicket.title || '',
