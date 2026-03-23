@@ -154,7 +154,7 @@ function Dashboard() {
   </ResponsiveContainer> */}
   <ResponsiveContainer width="100%" height={320}>
   <PieChart>
-    <Pie
+    {/* <Pie
       data={chartData}
       dataKey="value"
       nameKey="name"
@@ -168,7 +168,24 @@ function Dashboard() {
       {chartData.map((entry, index) => (
         <Cell key={index} fill={entry.color} />
       ))}
-    </Pie>
+    </Pie> */}
+    <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius="60%"
+            outerRadius="90%"
+            paddingAngle={3}
+            cornerRadius={10}
+            onMouseEnter={(_, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(null)}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={index} fill={entry.color} />
+            ))}
+          </Pie>
 
     {/* TEXT Ở GIỮA */}
     <text
