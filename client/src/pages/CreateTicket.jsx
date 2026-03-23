@@ -14,7 +14,7 @@ const initialForm = {
   area: '',
   assignedTeam: '',
   dueDate: '',
-  categotyId: '',// thêm categoryId vào form để lưu giá trị category được chọn
+  categoryId: '',// thêm categoryId vào form để lưu giá trị category được chọn
 
 }
 
