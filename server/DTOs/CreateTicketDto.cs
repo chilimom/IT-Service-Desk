@@ -10,6 +10,7 @@ namespace ITServiceDesk.Api.DTOs
         public string? Area { get; set; }
         public int? RequestedBy { get; set; }
         public string? AssignedTeam { get; set; }
+        public string CategoryId { get; set; }// Thêm trường CategoryId
         public DateTime? DueDate { get; set; }
     }
 }
