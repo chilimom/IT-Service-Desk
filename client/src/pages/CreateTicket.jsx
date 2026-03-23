@@ -88,7 +88,7 @@ function CreateTicket() {
     return {
       categoryId: form.categoryId,   // 👈 QUAN TRỌNG
   title: form.title,
-  description: description,
+  description: form.description,
   factory: form.factory || null,
   equipmentCode: form.equipmentCode || '',
   area: form.area || '',
