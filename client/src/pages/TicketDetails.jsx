@@ -78,6 +78,7 @@ function TicketDetails() {
     dueDate: '',
     status: '',
     orderCode: '',
+     categoryId: '',   // 👈 THÊM DÒNG NÀY
   })
   const [users, setUsers] = useState([])
   const [isEditing, setIsEditing] = useState(false)
@@ -133,8 +134,9 @@ function TicketDetails() {
     return normalizedStatus === 'submitted'
   }, [isAdmin, ticket])
   // const isMaintenance = useMemo(() => isMaintenanceTicket(ticket), [ticket])
-  const isMaintenance = useMemo(() => {
-  return ticket?.categoryName?.toLowerCase().includes('bảo trì')
+ // ✅ MỚI (ví dụ: 1 = Maintenance)
+const isMaintenance = useMemo(() => {
+  return ticket?.categoryId === 1   // 👈 đổi ID đúng DB của bạn
 }, [ticket])
   const maintenanceCategory = useMemo(() => getMaintenanceCategory(ticket), [ticket])
   const orderCodeDisplay = useMemo(() => getOrderCodeDisplay(ticket), [ticket])
@@ -303,9 +305,7 @@ function TicketDetails() {
             {!isEditing && (
               <div className="ticket-details__form-view">
                 <label>Loai Ticket</label>
-                <div className="ticket-details__field-view">{ticket?.categoryName?.toLowerCase().includes('bảo trì')
-  ? 'Lenh bao tri'
-  : 'Ho tro CNTT'}</div>
+                <div className="ticket-details__field-view">{ticket?.categoryName} </div>
 
                 <label>Nha may</label>
                 <div className="ticket-details__field-view">{getFactoryLabel(ticket.factory)}</div>
