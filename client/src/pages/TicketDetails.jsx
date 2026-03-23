@@ -228,7 +228,8 @@ const isMaintenance = useMemo(() => {
         const isMaintenancePayload = form.type === 'Maintenance'
 
         await updateUserTicket(ticketId, {
-          type: isMaintenancePayload ? `Maintenance|${selectedMaintenance.code}` : 'IT',
+          // type: isMaintenancePayload ? `Maintenance|${selectedMaintenance.code}` : 'IT',
+          categoryId: form.categoryId,
           title: isMaintenancePayload ? `${selectedMaintenance.code} - ${selectedMaintenance.name}` : form.title,
           description: form.description,
           factory: form.factory || null,
