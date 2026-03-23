@@ -116,7 +116,41 @@ namespace ITServiceDesk.Api.Services
 
         //     return ticket;
         // }
-        public Ticket Create(CreateTicketDto dto)
+        // public Ticket Create(CreateTicketDto dto)
+        // {
+        //     if (dto.CategoryId <= 0)
+        //         throw new Exception("CategoryId khong hop le");
+
+        //     var category = _context.Categories.Find(dto.CategoryId);
+        //     if (category == null)
+        //         throw new Exception("Category khong ton tai");
+
+        //     var createdBy = dto.RequestedBy ?? 1;
+
+        //     var ticket = new Ticket
+        //     {
+        //         Code = GenerateCode(),
+        //         CategoryId = dto.CategoryId,
+        //         Title = string.IsNullOrWhiteSpace(dto.Title)
+        //             ? category.Name
+        //             : dto.Title,
+        //         Description = dto.Description ?? "",
+        //         Factory = dto.Factory,
+        //         EquipmentCode = dto.EquipmentCode ?? "",
+        //         Area = dto.Area ?? "",
+        //         RequestedBy = createdBy,
+        //         AssignedTeam = dto.AssignedTeam ?? "",
+        //         DueDate = dto.DueDate,
+        //         Status = "Submitted",
+        //         CreatedAt = DateTime.UtcNow
+        //     };
+
+        //     _context.Tickets.Add(ticket);
+        //     _context.SaveChanges();
+
+        //     return ticket;
+        // }
+        public object Create(CreateTicketDto dto)
         {
             if (dto.CategoryId <= 0)
                 throw new Exception("CategoryId khong hop le");
@@ -148,7 +182,18 @@ namespace ITServiceDesk.Api.Services
             _context.Tickets.Add(ticket);
             _context.SaveChanges();
 
-            return ticket;
+            // 🔥 FIX LỖI 500 Ở ĐÂY
+            return new
+            {
+                ticket.Id,
+                ticket.Code,
+                ticket.Title,
+                ticket.Description,
+                ticket.CategoryId,
+                CategoryName = category.Name,
+                ticket.Status,
+                ticket.CreatedAt
+            };
         }
         public List<TicketLog> GetTicketLogs(int ticketId)
         {
