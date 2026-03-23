@@ -145,16 +145,16 @@ function Dashboard() {
   <ResponsiveContainer>
     <PieChart>
       <Pie
-        data={chartData}
-        dataKey="value"
-        nameKey="name"
-        outerRadius={100}
-        label
-      >
-        <Cell />
-        <Cell />
-        <Cell />
-      </Pie>
+  data={chartData}
+  dataKey="value"
+  nameKey="name"
+  outerRadius={100}
+  label
+>
+  {chartData.map((entry, index) => (
+    <Cell key={index} fill={entry.color} />
+  ))}
+</Pie>
       <Tooltip />
       <Legend />
     </PieChart>
