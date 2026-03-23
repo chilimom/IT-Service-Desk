@@ -94,9 +94,9 @@ function Dashboard() {
   ).length
 
   return [
-    { name: 'Done', value: done },
-    { name: 'InProgress', value: inProgress },
-    { name: 'Submitted', value: submitted },
+    { name: 'Submitted', value: submitted, color: '#f59e0b' },
+  { name: 'InProgress', value: inProgress, color: '#3b82f6' },
+  { name: 'Done', value: done, color: '#22c55e' },
   ]
 }, [tickets])
 
