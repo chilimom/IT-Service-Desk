@@ -94,7 +94,10 @@ function TicketDetails() {
         setTicket(ticketData)
         const ticketMaintenanceCategory = getMaintenanceCategory(ticketData)
         setForm({
-          type: isMaintenanceTicket(ticketData) ? 'Maintenance' : 'IT',
+          // type: isMaintenanceTicket(ticketData) ? 'Maintenance' : 'IT',
+          type: ticketData.categoryName?.includes('Bảo trì')
+  ? 'Maintenance'
+  : 'IT',
           factory: ticketData.factory || '',
           maintenanceCategory: ticketMaintenanceCategory?.code || 'PM01',
           title: ticketData.title || '',
@@ -129,7 +132,10 @@ function TicketDetails() {
     const normalizedStatus = (ticket.status || '').toLowerCase()
     return normalizedStatus === 'submitted'
   }, [isAdmin, ticket])
-  const isMaintenance = useMemo(() => isMaintenanceTicket(ticket), [ticket])
+  // const isMaintenance = useMemo(() => isMaintenanceTicket(ticket), [ticket])
+  const isMaintenance = useMemo(() => {
+  return ticket?.categoryName?.toLowerCase().includes('bảo trì')
+}, [ticket])
   const maintenanceCategory = useMemo(() => getMaintenanceCategory(ticket), [ticket])
   const orderCodeDisplay = useMemo(() => getOrderCodeDisplay(ticket), [ticket])
   const maintenanceHeadline = maintenanceCategory ? `${maintenanceCategory.code} - ${maintenanceCategory.name}` : 'Khong ap dung'
@@ -297,7 +303,9 @@ function TicketDetails() {
             {!isEditing && (
               <div className="ticket-details__form-view">
                 <label>Loai Ticket</label>
-                <div className="ticket-details__field-view">{isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}</div>
+                <div className="ticket-details__field-view">{ticket?.categoryName?.toLowerCase().includes('bảo trì')
+  ? 'Lenh bao tri'
+  : 'Ho tro CNTT'}</div>
 
                 <label>Nha may</label>
                 <div className="ticket-details__field-view">{getFactoryLabel(ticket.factory)}</div>
