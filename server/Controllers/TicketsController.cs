@@ -51,14 +51,27 @@ namespace ITServiceDesk.Api.Controllers
             return Ok(logs);
         }
 
+        // [HttpPost]
+        // public IActionResult Create([FromBody] CreateTicketDto dto)
+        // {
+        //     if (!ModelState.IsValid)
+        //         return BadRequest(ModelState);
+
+        //     var ticket = _ticketService.Create(dto);
+        //     return Ok(ticket);
+        // }
         [HttpPost]
         public IActionResult Create([FromBody] CreateTicketDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var ticket = _ticketService.Create(dto);
-            return Ok(ticket);
+            try
+            {
+                var ticket = _ticketService.Create(dto);
+                return Ok(ticket);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });  // 👈 QUAN TRỌNG
+            }
         }
 
         [HttpPut("{id}")]
