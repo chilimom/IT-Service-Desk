@@ -21,7 +21,7 @@ public class CategoriesController : ControllerBase
         var data = _context.Categories
         .Where(x => x.Type == type)
         .ToList();
-
+        return Ok(data);
 
 
     }
