@@ -43,17 +43,18 @@ function Dashboard() {
 
     loadData()
   }, [])
-  // thêm ở trên component
-const [activeIndex, setActiveIndex] = useState(null)
+//   // thêm ở trên component
+// const [activeIndex, setActiveIndex] = useState(null)
 
+// // tính tổng
+// const total = tickets.length
 
+// // item đang hover
+// const activeItem = activeIndex !== null ? chartData[activeIndex] : null
 
-// item đang hover
-const activeItem = activeIndex !== null ? chartData[activeIndex] : null
-
-const percent = activeItem
-  ? Math.round((activeItem.value / total) * 100)
-  : 100
+// const percent = activeItem
+//   ? Math.round((activeItem.value / total) * 100)
+//   : 100
   const stats = useMemo(() => {
     const total = tickets.length
     const done = tickets.filter((t) => (t.status || '').toLowerCase() === 'done').length
@@ -72,8 +73,6 @@ const percent = activeItem
     { label: 'Submitted', value: submitted },
   ]
   }, [tickets])
-  // tính tổng
-const total = tickets.length
 
   const recentTickets = useMemo(() => {
     return [...tickets]
@@ -92,6 +91,11 @@ const total = tickets.length
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
   }, [tickets])
+
+
+  // 1. state trước
+const [activeIndex, setActiveIndex] = useState(null)
+
   const chartData = useMemo(() => {
   const done = tickets.filter(
     (t) => (t.status || '').toLowerCase() === 'done'
@@ -111,6 +115,16 @@ const total = tickets.length
   { name: 'Submitted', value: submitted, color: '#f97316' },   // cam
   ]
 }, [tickets])
+
+// 3. rồi mới dùng chartData
+const total = tickets.length
+
+const activeItem =
+  activeIndex !== null ? chartData[activeIndex] : null
+
+const percent = activeItem
+  ? Math.round((activeItem.value / total) * 100)
+  : 100
 
   return (
     <section className="dashboard-page">
