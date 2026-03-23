@@ -55,32 +55,43 @@ function CreateTicket() {
   }
 
   const buildPayload = () => {
-    const description = form.description?.trim() || ''
+    // const description = form.description?.trim() || ''
 
-    if (!isMaintenance) {
-      return {
-        type: 'IT',
-        title: form.title?.trim() || ' Hỗ trợ CNTT',
-        description,
-        factory: form.factory || null,
-        equipmentCode: '',
-        area: '',
-        assignedTeam: form.assignedTeam,
-        dueDate: form.dueDate || null,
-        requestedBy: user?.id,
-      }
-    }
+    // if (!isMaintenance) {
+    //   return {
+    //     type: 'IT',
+    //     title: form.title?.trim() || ' Hỗ trợ CNTT',
+    //     description,
+    //     factory: form.factory || null,
+    //     equipmentCode: '',
+    //     area: '',
+    //     assignedTeam: form.assignedTeam,
+    //     dueDate: form.dueDate || null,
+    //     requestedBy: user?.id,
+    //   }
+    // }
 
+    // return {
+    //   type: `Maintenance|${selectedMaintenance.code}`,
+    //   title: `${selectedMaintenance.code} - ${selectedMaintenance.name}`,
+    //   description,
+    //   factory: form.factory || null,
+    //   equipmentCode: form.equipmentCode,
+    //   area: form.area,
+    //   assignedTeam: form.assignedTeam,
+    //   dueDate: form.dueDate || null,
+    //   requestedBy: user?.id,
+    // }
     return {
-      type: `Maintenance|${selectedMaintenance.code}`,
-      title: `${selectedMaintenance.code} - ${selectedMaintenance.name}`,
-      description,
-      factory: form.factory || null,
-      equipmentCode: form.equipmentCode,
-      area: form.area,
-      assignedTeam: form.assignedTeam,
-      dueDate: form.dueDate || null,
-      requestedBy: user?.id,
+      categoryId: form.categoryId,   // 👈 QUAN TRỌNG
+  title: form.title,
+  description: description,
+  factory: form.factory || null,
+  equipmentCode: form.equipmentCode || '',
+  area: form.area || '',
+  assignedTeam: form.assignedTeam,
+  dueDate: form.dueDate || null,
+  requestedBy: user?.id,
     }
   }
 
