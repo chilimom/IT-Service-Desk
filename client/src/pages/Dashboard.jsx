@@ -141,8 +141,8 @@ function Dashboard() {
               <p className="dashboard-empty">Chua co du lieu trang thai.</p>
             )}
           </div> */}
-          <div style={{ width: '100%', height: 300 }}>
-  <ResponsiveContainer>
+          <div className="chart-container">
+  <ResponsiveContainer width="100%" height="100%">
     <PieChart>
       <Pie
   data={chartData}
