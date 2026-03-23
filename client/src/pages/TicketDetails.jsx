@@ -4,7 +4,7 @@ import { FiAlertCircle, FiCheckCircle, FiEdit2, FiInfo, FiSave, FiSettings, FiX 
 import { useAuth } from '../context/AuthContext'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
-import { factoryOptions, getFactoryLabel, getMaintenanceCategory, getOrderCodeDisplay, maintenanceOptions } from '../ultils/ticketMeta'
+import { factoryOptions, getFactoryLabel, getMaintenanceCategory, getOrderCodeDisplay, isMaintenanceTicket, maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/ticket-details.css'
 
 function formatDate(value) {
@@ -66,7 +66,7 @@ function TicketDetails() {
   const isAdmin = (user?.role || '').toLowerCase() === 'admin'
   const [ticket, setTicket] = useState(null)
   const [form, setForm] = useState({
-    // type: 'Maintenance',
+    type: 'Maintenance',
     factory: '',
     maintenanceCategory: 'PM01',
     title: '',
@@ -78,7 +78,6 @@ function TicketDetails() {
     dueDate: '',
     status: '',
     orderCode: '',
-     categoryId: '',   // 👈 THÊM DÒNG NÀY
   })
   const [users, setUsers] = useState([])
   const [isEditing, setIsEditing] = useState(false)
@@ -96,10 +95,9 @@ function TicketDetails() {
         const ticketMaintenanceCategory = getMaintenanceCategory(ticketData)
         setForm({
           // type: isMaintenanceTicket(ticketData) ? 'Maintenance' : 'IT',
-  //         type: ticketData.categoryName?.includes('Bảo trì')
-  // ? 'Maintenance'
-  // : 'IT',
-          
+          type: ticketData.categoryName?.includes('Bảo trì')
+  ? 'Maintenance'
+  : 'IT',
           factory: ticketData.factory || '',
           maintenanceCategory: ticketMaintenanceCategory?.code || 'PM01',
           title: ticketData.title || '',
@@ -135,9 +133,8 @@ function TicketDetails() {
     return normalizedStatus === 'submitted'
   }, [isAdmin, ticket])
   // const isMaintenance = useMemo(() => isMaintenanceTicket(ticket), [ticket])
- // ✅ MỚI (ví dụ: 1 = Maintenance)
-const isMaintenance = useMemo(() => {
-  return ticket?.categoryId === 1   // 👈 đổi ID đúng DB của bạn
+  const isMaintenance = useMemo(() => {
+  return ticket?.categoryName?.toLowerCase().includes('bảo trì')
 }, [ticket])
   const maintenanceCategory = useMemo(() => getMaintenanceCategory(ticket), [ticket])
   const orderCodeDisplay = useMemo(() => getOrderCodeDisplay(ticket), [ticket])
@@ -229,8 +226,7 @@ const isMaintenance = useMemo(() => {
         const isMaintenancePayload = form.type === 'Maintenance'
 
         await updateUserTicket(ticketId, {
-          // type: isMaintenancePayload ? `Maintenance|${selectedMaintenance.code}` : 'IT',
-          categoryId: form.categoryId,
+          type: isMaintenancePayload ? `Maintenance|${selectedMaintenance.code}` : 'IT',
           title: isMaintenancePayload ? `${selectedMaintenance.code} - ${selectedMaintenance.name}` : form.title,
           description: form.description,
           factory: form.factory || null,
@@ -245,9 +241,7 @@ const isMaintenance = useMemo(() => {
       setTicket(updatedTicket)
       const updatedMaintenanceCategory = getMaintenanceCategory(updatedTicket)
       setForm({
-        // type: isMaintenanceTicket(updatedTicket) ? 'Maintenance' : 'IT',
-        // ✅ MỚI
-categoryId: updatedTicket.categoryId,
+        type: isMaintenanceTicket(updatedTicket) ? 'Maintenance' : 'IT',
         factory: updatedTicket.factory || '',
         maintenanceCategory: updatedMaintenanceCategory?.code || 'PM01',
         title: updatedTicket.title || '',
@@ -309,7 +303,9 @@ categoryId: updatedTicket.categoryId,
             {!isEditing && (
               <div className="ticket-details__form-view">
                 <label>Loai Ticket</label>
-                <div className="ticket-details__field-view">{ticket?.categoryName} </div>
+                <div className="ticket-details__field-view">{ticket?.categoryName?.toLowerCase().includes('bảo trì')
+  ? 'Lenh bao tri'
+  : 'Ho tro CNTT'}</div>
 
                 <label>Nha may</label>
                 <div className="ticket-details__field-view">{getFactoryLabel(ticket.factory)}</div>
