@@ -94,9 +94,9 @@ function Dashboard() {
   ).length
 
   return [
-    { name: 'Submitted', value: submitted, color: '#f59e0b' },
-  { name: 'InProgress', value: inProgress, color: '#3b82f6' },
-  { name: 'Done', value: done, color: '#22c55e' },
+    { name: 'Done', value: done, color: '#10b981' },       // xanh lá
+  { name: 'InProgress', value: inProgress, color: '#3b82f6' }, // xanh dương
+  { name: 'Submitted', value: submitted, color: '#f97316' },   // cam
   ]
 }, [tickets])
 
