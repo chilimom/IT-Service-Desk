@@ -100,5 +100,6 @@ namespace ITServiceDesk.Api.Controllers
             var data = _ticketService.GetDashboard();
             return Ok(data);
         }
+
     }
 }
