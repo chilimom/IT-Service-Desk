@@ -108,7 +108,6 @@ function Dashboard() {
           <div className="dashboard-panel__header">
             <div>
               <h2 className="dashboard-panel__title">Trạng thái xử lý</h2>
-              {/* <p className="dashboard-panel__caption">ổng hợp theo trường `Status` của bảng Tickets</p> */}
             </div>
           </div>
           <div className="status-summary">
