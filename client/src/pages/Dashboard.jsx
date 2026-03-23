@@ -131,13 +131,13 @@ function Dashboard() {
             </div>
           </div>
           <div className="chart-container">
-  <ResponsiveContainer width="100%" height="220">
+  <ResponsiveContainer width="100%" height="250">
     <PieChart>
       <Pie
   data={chartData}
   dataKey="value"
   nameKey="name"
-  outerRadius="70%"
+  outerRadius="120%"
   label
 >
   {chartData.map((entry, index) => (
