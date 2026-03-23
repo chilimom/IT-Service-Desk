@@ -21,6 +21,9 @@ export async function getTicketById(ticketId) {
 export async function getTicketLogs(ticketId) {
   return request(`${API_URL}/${ticketId}/logs`)
 }
+// export async function getCategoryId(Categories) {
+//   return request(`${API_URL}/categories`)
+// }
 
 export async function getTicketDashboard() {
   return request(`${API_URL}/dashboard`)
