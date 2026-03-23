@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { createTicket } from '../services/ticketService'
 import { factoryOptions, maintenanceOptions } from '../ultils/ticketMeta'
@@ -14,6 +14,8 @@ const initialForm = {
   area: '',
   assignedTeam: '',
   dueDate: '',
+  categotyId: '',// thêm categoryId vào form để lưu giá trị category được chọn
+
 }
 
 function CreateTicket() {
@@ -21,12 +23,27 @@ function CreateTicket() {
   const [form, setForm] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-
+  const [categories, setCategories] = useState([])// thêm state categories để lưu danh sách category từ server
   const isMaintenance = form.type === 'Maintenance'
 
   const selectedMaintenance = useMemo(() => {
     return maintenanceOptions.find((item) => item.code === form.maintenanceCategory) ?? maintenanceOptions[0]
-  }, [form.maintenanceCategory])
+  }, [form.maintenanceCategory]) 
+
+    // hàm lấy category từ server khi component mount
+    useEffect (() => {
+  const typeMap = {
+    IT: 'Support',
+    Maintenance: 'Maintenance',
+  }
+
+  const apiType = typeMap[form.type]
+
+  fetch(`/api/categories?type=${apiType}`)
+    .then(res => res.json())
+    .then(data => setCategories(data))
+}, [form.type])
+
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -128,6 +145,17 @@ function CreateTicket() {
 
         <form onSubmit={handleSubmit}>
           <label>Loại Ticket</label>
+          // Loại ticket sẽ quyết định các trường thông tin cần nhập và cách xử lý sau này. Người dùng nên chọn đúng loại để đảm bảo ticket được xử lý nhanh chóng và chính xác.
+
+          <label>Danh mục</label>
+<select name="categoryId" value={form.categoryId} onChange={handleChange}>
+  <option value="">Chọn danh mục</option>
+  {categories.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name}
+    </option>
+  ))}
+</select>
           <select name="type" value={form.type} onChange={handleChange}>
             <option value="Maintenance">Lệnh bảo trì</option>
             <option value="IT">Hỗ trợ CNTT</option>
