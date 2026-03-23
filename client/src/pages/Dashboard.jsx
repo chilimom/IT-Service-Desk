@@ -131,7 +131,7 @@ function Dashboard() {
             </div>
           </div>
           <div className="chart-container">
-  <ResponsiveContainer width="100%" height={320}>
+  {/* <ResponsiveContainer width="100%" height={320}>
     <PieChart>
       <Pie
   data={chartData}
@@ -151,7 +151,49 @@ function Dashboard() {
       <Tooltip />
       <Legend verticalAlign="bottom" height={40} />
     </PieChart>
-  </ResponsiveContainer>
+  </ResponsiveContainer> */}
+  <ResponsiveContainer width="100%" height={320}>
+  <PieChart>
+    <Pie
+      data={chartData}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      innerRadius="60%"   // 👈 tạo lỗ ở giữa
+      outerRadius="90%"   // 👈 kích thước ngoài
+      paddingAngle={3}    // 👈 tạo khoảng cách giữa các phần
+      cornerRadius={10}   // 👈 bo tròn (giống hình bạn gửi)
+    >
+      {chartData.map((entry, index) => (
+        <Cell key={index} fill={entry.color} />
+      ))}
+    </Pie>
+
+    {/* TEXT Ở GIỮA */}
+    <text
+      x="50%"
+      y="45%"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      style={{ fontSize: 14, fill: '#64748b' }}
+    >
+      Tổng số
+    </text>
+
+    <text
+      x="50%"
+      y="55%"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      style={{ fontSize: 32, fontWeight: 'bold', fill: '#2563eb' }}
+    >
+      {tickets.length}
+    </text>
+
+    <Tooltip />
+  </PieChart>
+</ResponsiveContainer>
 </div>
         </section>
 
