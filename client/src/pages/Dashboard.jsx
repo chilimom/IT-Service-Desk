@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getTicketDashboard, getTickets } from '../services/ticketService'
 import { formatTicketCode, getTicketTypeLabel } from '../ultils/ticketMeta'
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import '../styles/dashboard.css'
 
 function formatDate(dateValue) {
@@ -79,6 +80,25 @@ function Dashboard() {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
   }, [tickets])
+  const chartData = useMemo(() => {
+  const done = tickets.filter(
+    (t) => (t.status || '').toLowerCase() === 'done'
+  ).length
+
+  const inProgress = tickets.filter(
+    (t) => (t.status || '').toLowerCase() === 'inprogress'
+  ).length
+
+  const submitted = tickets.filter(
+    (t) => (t.status || '').toLowerCase() === 'submitted'
+  ).length
+
+  return [
+    { name: 'Done', value: done },
+    { name: 'InProgress', value: inProgress },
+    { name: 'Submitted', value: submitted },
+  ]
+}, [tickets])
 
   return (
     <section className="dashboard-page">
@@ -110,7 +130,7 @@ function Dashboard() {
               <h2 className="dashboard-panel__title">Trạng thái xử lý</h2>
             </div>
           </div>
-          <div className="status-summary">
+          {/* <div className="status-summary">
             {(dashboard.byStatus || []).map((item) => (
               <div key={item.status} className="status-summary__item">
                 <span className={getStatusClass(item.status)}>{item.status || 'Unknown'}</span>
@@ -120,7 +140,26 @@ function Dashboard() {
             {(!dashboard.byStatus || dashboard.byStatus.length === 0) && (
               <p className="dashboard-empty">Chua co du lieu trang thai.</p>
             )}
-          </div>
+          </div> */}
+          <div style={{ width: '100%', height: 300 }}>
+  <ResponsiveContainer>
+    <PieChart>
+      <Pie
+        data={chartData}
+        dataKey="value"
+        nameKey="name"
+        outerRadius={100}
+        label
+      >
+        <Cell />
+        <Cell />
+        <Cell />
+      </Pie>
+      <Tooltip />
+      <Legend />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
         </section>
 
         <section className="dashboard-panel">
