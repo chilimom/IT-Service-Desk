@@ -13,6 +13,38 @@ namespace ITServiceDesk.Api.Services
             _context = context;
         }
 
+        // public List<TicketResponseDto> GetAll()
+        // {
+        //     return _context.Tickets
+        //         .Select(ticket => new TicketResponseDto
+        //         {
+        //             Id = ticket.Id,
+        //             Code = ticket.Code,
+        //             Type = ticket.Type,
+        //             Title = ticket.Title,
+        //             Description = ticket.Description,
+        //             Factory = ticket.Factory,
+        //             EquipmentCode = ticket.EquipmentCode,
+        //             Area = ticket.Area,
+        //             RequestedBy = ticket.RequestedBy,
+        //             RequestedByName = _context.Users
+        //                 .Where(user => user.Id == ticket.RequestedBy)
+        //                 .Select(user => user.Username)
+        //                 .FirstOrDefault(),
+        //             AssignedTo = ticket.AssignedTo,
+        //             AssignedToName = _context.Users
+        //                 .Where(user => user.Id == ticket.AssignedTo)
+        //                 .Select(user => user.Username)
+        //                 .FirstOrDefault(),
+        //             AssignedTeam = ticket.AssignedTeam,
+        //             Status = ticket.Status,
+        //             OrderCode = ticket.OrderCode,
+        //             CreatedAt = ticket.CreatedAt,
+        //             UpdatedAt = ticket.UpdatedAt,
+        //             DueDate = ticket.DueDate
+        //         })
+        //         .ToList();
+        // }
         public List<TicketResponseDto> GetAll()
         {
             return _context.Tickets
@@ -20,32 +52,41 @@ namespace ITServiceDesk.Api.Services
                 {
                     Id = ticket.Id,
                     Code = ticket.Code,
-                    Type = ticket.Type,
+
                     Title = ticket.Title,
                     Description = ticket.Description,
-                    Factory = ticket.Factory,
+
+                    CategoryName = _context.Categories
+                        .Where(c => c.Id == ticket.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault(),
+
+                    LoaiTicket = _context.LoaiTicket
+                        .Where(lt => lt.Id == _context.Categories
+                            .Where(c => c.Id == ticket.CategoryId)
+                            .Select(c => c.LoaiTicketId)
+                            .FirstOrDefault())
+                        .Select(lt => lt.TenLoai)
+                        .FirstOrDefault(),
+
+                    FactoryName = _context.Factories
+                        .Where(f => f.Id == ticket.FactoryId)
+                        .Select(f => f.Name)
+                        .FirstOrDefault(),
+
+                    Status = _context.Statuses
+                        .Where(s => s.Id == ticket.StatusId)
+                        .Select(s => s.Name)
+                        .FirstOrDefault(),
+
                     EquipmentCode = ticket.EquipmentCode,
                     Area = ticket.Area,
-                    RequestedBy = ticket.RequestedBy,
-                    RequestedByName = _context.Users
-                        .Where(user => user.Id == ticket.RequestedBy)
-                        .Select(user => user.Username)
-                        .FirstOrDefault(),
-                    AssignedTo = ticket.AssignedTo,
-                    AssignedToName = _context.Users
-                        .Where(user => user.Id == ticket.AssignedTo)
-                        .Select(user => user.Username)
-                        .FirstOrDefault(),
                     AssignedTeam = ticket.AssignedTeam,
-                    Status = ticket.Status,
-                    OrderCode = ticket.OrderCode,
                     CreatedAt = ticket.CreatedAt,
-                    UpdatedAt = ticket.UpdatedAt,
                     DueDate = ticket.DueDate
                 })
                 .ToList();
         }
-
         public TicketResponseDto? GetById(int id)
         {
             return _context.Tickets
@@ -79,44 +120,7 @@ namespace ITServiceDesk.Api.Services
                 })
                 .FirstOrDefault();
         }
-
-        // public Ticket Create(CreateTicketDto dto)
-        // {
-        //     var createdBy = dto.RequestedBy ?? 1;
-
-        //     var ticket = new Ticket
-        //     {
-        //         Code = GenerateCode(),
-        //         // Type = dto.Type,
-        //         CategoryId = dto.CategoryId,
-        //         Title = dto.Title,
-        //         Description = dto.Description,
-        //         Factory = dto.Factory,
-        //         EquipmentCode = dto.EquipmentCode,
-        //         Area = dto.Area,
-        //         RequestedBy = createdBy,
-        //         AssignedTeam = dto.AssignedTeam,
-        //         DueDate = dto.DueDate,
-        //         Status = "Submitted",
-        //         CreatedAt = DateTime.UtcNow
-        //     };
-
-        //     _context.Tickets.Add(ticket);
-        //     _context.SaveChanges();
-
-        //     _context.TicketLogs.Add(new TicketLog
-        //     {
-        //         TicketId = ticket.Id,
-        //         Action = "Created",
-        //         Note = "Tao ticket",
-        //         CreatedBy = createdBy,
-        //         CreatedAt = DateTime.UtcNow
-        //     });
-        //     _context.SaveChanges();
-
-        //     return ticket;
-        // }
-        // public Ticket Create(CreateTicketDto dto)
+        // public object Create(CreateTicketDto dto)
         // {
         //     if (dto.CategoryId <= 0)
         //         throw new Exception("CategoryId khong hop le");
@@ -148,7 +152,18 @@ namespace ITServiceDesk.Api.Services
         //     _context.Tickets.Add(ticket);
         //     _context.SaveChanges();
 
-        //     return ticket;
+        //     // 🔥 FIX LỖI 500 Ở ĐÂY
+        //     return new
+        //     {
+        //         ticket.Id,
+        //         ticket.Code,
+        //         ticket.Title,
+        //         ticket.Description,
+        //         ticket.CategoryId,
+        //         CategoryName = category.Name,
+        //         ticket.Status,
+        //         ticket.CreatedAt
+        //     };
         // }
         public object Create(CreateTicketDto dto)
         {
@@ -159,39 +174,49 @@ namespace ITServiceDesk.Api.Services
             if (category == null)
                 throw new Exception("Category khong ton tai");
 
+            if (dto.FactoryId <= 0)
+                throw new Exception("FactoryId khong hop le");
+
+            var factory = _context.Factories.Find(dto.FactoryId);
+            if (factory == null)
+                throw new Exception("Factory khong ton tai");
+
             var createdBy = dto.RequestedBy ?? 1;
 
             var ticket = new Ticket
             {
                 Code = GenerateCode(),
                 CategoryId = dto.CategoryId,
+                FactoryId = dto.FactoryId,   // ✅ FIX
+
                 Title = string.IsNullOrWhiteSpace(dto.Title)
                     ? category.Name
                     : dto.Title,
+
                 Description = dto.Description ?? "",
-                Factory = dto.Factory,
                 EquipmentCode = dto.EquipmentCode ?? "",
                 Area = dto.Area ?? "",
                 RequestedBy = createdBy,
                 AssignedTeam = dto.AssignedTeam ?? "",
                 DueDate = dto.DueDate,
-                Status = "Submitted",
+
+                StatusId = 1,  // ✅ Submitted
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.Tickets.Add(ticket);
             _context.SaveChanges();
 
-            // 🔥 FIX LỖI 500 Ở ĐÂY
             return new
             {
                 ticket.Id,
                 ticket.Code,
                 ticket.Title,
-                ticket.Description,
                 ticket.CategoryId,
                 CategoryName = category.Name,
-                ticket.Status,
+                ticket.FactoryId,
+                FactoryName = factory.Name,
+                ticket.StatusId,
                 ticket.CreatedAt
             };
         }
@@ -221,9 +246,10 @@ namespace ITServiceDesk.Api.Services
             if (dto.Description != null)
                 ticket.Description = dto.Description;
 
-            if (dto.Factory != null)
-                ticket.Factory = dto.Factory;
-
+            // if (dto.Factory != null)
+            //     ticket.Factory = dto.Factory;
+            if (dto.FactoryId != null)
+                ticket.FactoryId = dto.FactoryId.Value;
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
 
@@ -236,9 +262,10 @@ namespace ITServiceDesk.Api.Services
             if (dto.DueDate != null)
                 ticket.DueDate = dto.DueDate;
 
-            if (dto.Status != null)
-                ticket.Status = dto.Status;
-
+            // if (dto.Status != null)
+            //     ticket.Status = dto.Status;
+            if (dto.StatusId != null)
+                ticket.StatusId = dto.StatusId.Value;
             if (dto.AssignedTo != null)
                 ticket.AssignedTo = dto.AssignedTo;
 
