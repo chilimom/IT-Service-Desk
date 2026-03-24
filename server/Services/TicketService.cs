@@ -233,10 +233,71 @@ namespace ITServiceDesk.Api.Services
             return $"TKT-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N")[..6]}";
         }
 
+        // public bool Update(int id, UpdateTicketDto dto)
+        // {
+        //     var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+
+        //     if (ticket == null)
+        //         return false;
+
+        //     if (dto.Title != null)
+        //         ticket.Title = dto.Title;
+
+        //     if (dto.Description != null)
+        //         ticket.Description = dto.Description;
+
+        //     // if (dto.Factory != null)
+        //     //     ticket.Factory = dto.Factory;
+        //     if (dto.FactoryId != null)
+        //         ticket.FactoryId = dto.FactoryId.Value;
+        //     if (dto.EquipmentCode != null)
+        //         ticket.EquipmentCode = dto.EquipmentCode;
+
+        //     if (dto.Area != null)
+        //         ticket.Area = dto.Area;
+
+        //     if (dto.AssignedTeam != null)
+        //         ticket.AssignedTeam = dto.AssignedTeam;
+
+        //     if (dto.DueDate != null)
+        //         ticket.DueDate = dto.DueDate;
+
+        //     // if (dto.Status != null)
+        //     //     ticket.Status = dto.Status;
+        //     if (dto.StatusId != null)
+        //         ticket.StatusId = dto.StatusId.Value;
+        //     if (dto.AssignedTo != null)
+        //         ticket.AssignedTo = dto.AssignedTo;
+
+        //     var nextStatus = dto.Status ?? ticket.Status;
+        //     var normalizedNextStatus = (nextStatus ?? string.Empty).ToLower();
+        //     if (ticket.AssignedTo == null && (normalizedNextStatus == "inprogress" || normalizedNextStatus == "done"))
+        //         ticket.AssignedTo = 1;
+
+        //     var normalizedType = (ticket.Type ?? string.Empty).ToLower();
+        //     var isMaintenanceTicket = normalizedType.Contains("maintenance") || normalizedType.Contains("bao tri");
+
+        //     if (dto.OrderCode != null && isMaintenanceTicket)
+        //         ticket.OrderCode = dto.OrderCode;
+
+        //     ticket.UpdatedAt = DateTime.UtcNow;
+
+        //     _context.SaveChanges();
+        //     _context.TicketLogs.Add(new TicketLog
+        //     {
+        //         TicketId = ticket.Id,
+        //         Action = "Updated",
+        //         Note = $"Cap nhat ticket: Title={dto.Title}, Description={dto.Description}, Factory={dto.Factory}, EquipmentCode={dto.EquipmentCode}, Area={dto.Area}, AssignedTeam={dto.AssignedTeam}, DueDate={dto.DueDate}, Status={dto.Status}, AssignedTo={dto.AssignedTo}, OrderCode={dto.OrderCode}",
+        //         CreatedBy = 1,
+        //         CreatedAt = DateTime.UtcNow
+        //     });
+        //     _context.SaveChanges();
+
+        //     return true;
+        // }
         public bool Update(int id, UpdateTicketDto dto)
         {
             var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-
             if (ticket == null)
                 return false;
 
@@ -246,10 +307,12 @@ namespace ITServiceDesk.Api.Services
             if (dto.Description != null)
                 ticket.Description = dto.Description;
 
-            // if (dto.Factory != null)
-            //     ticket.Factory = dto.Factory;
             if (dto.FactoryId != null)
                 ticket.FactoryId = dto.FactoryId.Value;
+
+            if (dto.CategoryId != null)
+                ticket.CategoryId = dto.CategoryId.Value;
+
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
 
@@ -262,40 +325,32 @@ namespace ITServiceDesk.Api.Services
             if (dto.DueDate != null)
                 ticket.DueDate = dto.DueDate;
 
-            // if (dto.Status != null)
-            //     ticket.Status = dto.Status;
             if (dto.StatusId != null)
                 ticket.StatusId = dto.StatusId.Value;
+
             if (dto.AssignedTo != null)
                 ticket.AssignedTo = dto.AssignedTo;
 
-            var nextStatus = dto.Status ?? ticket.Status;
-            var normalizedNextStatus = (nextStatus ?? string.Empty).ToLower();
-            if (ticket.AssignedTo == null && (normalizedNextStatus == "inprogress" || normalizedNextStatus == "done"))
-                ticket.AssignedTo = 1;
-
-            var normalizedType = (ticket.Type ?? string.Empty).ToLower();
-            var isMaintenanceTicket = normalizedType.Contains("maintenance") || normalizedType.Contains("bao tri");
-
-            if (dto.OrderCode != null && isMaintenanceTicket)
+            if (dto.OrderCode != null)
                 ticket.OrderCode = dto.OrderCode;
 
             ticket.UpdatedAt = DateTime.UtcNow;
 
             _context.SaveChanges();
+
             _context.TicketLogs.Add(new TicketLog
             {
                 TicketId = ticket.Id,
                 Action = "Updated",
-                Note = $"Cap nhat ticket: Title={dto.Title}, Description={dto.Description}, Factory={dto.Factory}, EquipmentCode={dto.EquipmentCode}, Area={dto.Area}, AssignedTeam={dto.AssignedTeam}, DueDate={dto.DueDate}, Status={dto.Status}, AssignedTo={dto.AssignedTo}, OrderCode={dto.OrderCode}",
+                Note = $"Update ticket: StatusId={dto.StatusId}, FactoryId={dto.FactoryId}",
                 CreatedBy = 1,
                 CreatedAt = DateTime.UtcNow
             });
+
             _context.SaveChanges();
 
             return true;
         }
-
         public bool UserUpdate(int id, UserUpdateTicketDto dto)
         {
             var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
