@@ -23,5 +23,9 @@ namespace ITServiceDesk.Api.DTOs
         public int CategoryId { get; set; }
         public int FactoryId { get; set; }
         public int? StatusId { get; set; }
+        public string CategoryName { get; set; }   // ✅ THÊM
+        public string LoaiTicket { get; set; }     // ✅ THÊM
+        public string FactoryName { get; set; }    // ✅ THÊM
+        public string Status { get; set; }         // ✅ THÊM
     }
 }

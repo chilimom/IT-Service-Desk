@@ -7,7 +7,9 @@ public class Category
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public int LoaiTicketId { get; set; }   // ✅ THÊM
     public string Type { get; set; }
     [JsonIgnore]   // 👈 THÊM DÒNG NÀY
+
     public ICollection<Ticket> Tickets { get; set; }
 }
