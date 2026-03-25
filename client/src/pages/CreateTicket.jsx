@@ -64,31 +64,26 @@
 //   }
 
 //   const buildPayload = () => {
-//     // Check user
 //     if (!user || !user.id) {
 //       setErrorMessage("Không tìm thấy thông tin người dùng")
 //       return null
 //     }
 
-//     // Check category - bắt buộc vì database yêu cầu
 //     if (!form.categoryId) {
 //       setErrorMessage("Vui lòng chọn lĩnh vực")
 //       return null
 //     }
 
-//     // Check factory - bắt buộc vì database yêu cầu
 //     if (!form.factoryId) {
 //       setErrorMessage("Vui lòng chọn nhà máy")
 //       return null
 //     }
 
-//     // Validate description
 //     if (!form.description || form.description.trim() === "") {
 //       setErrorMessage("Vui lòng nhập mô tả")
 //       return null
 //     }
 
-//     // Validate maintenance specific fields
 //     if (isMaintenance) {
 //       if (!form.area || !form.area.trim()) {
 //         setErrorMessage('Vui lòng nhập Equipment')
@@ -105,14 +100,12 @@
 //         return null
 //       }
 //     } else {
-//       // Support ticket validation
 //       if (!form.title || !form.title.trim()) {
 //         setErrorMessage('Vui lòng nhập Tiêu đề hỗ trợ')
 //         return null
 //       }
 //     }
 
-//     // Create title for maintenance if empty
 //     let title = form.title
 //     if (isMaintenance && (!title || title.trim() === "")) {
 //       const parts = []
@@ -125,27 +118,19 @@
 //       title = parts.length > 0 ? `Bảo trì: ${parts.join(' - ')}` : "Bảo trì thiết bị"
 //     }
 
-//     // Build payload theo đúng CreateTicketDto
 //     const payload = {
-//       // Bắt buộc
 //       categoryId: Number(form.categoryId),
 //       factoryId: Number(form.factoryId),
-//       type: form.type, // QUAN TRỌNG: Thêm type vì database yêu cầu NOT NULL
-      
-//       // Có thể null
-//       statusId: 1, // Set status mặc định là "Submitted" hoặc tương ứng
-//       title: title?.trim() || null,
+//       requestedBy: Number(user.id),
 //       description: form.description.trim(),
+//       title: title?.trim() || null,
 //       equipmentCode: form.equipmentCode?.trim() || null,
 //       area: form.area?.trim() || null,
-//       requestedBy: Number(user.id),
 //       assignedTeam: form.assignedTeam?.trim() || null,
 //       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
+//       statusId: 1,
 //     }
 
-//     // Log để debug
-//     console.log("📦 Payload gửi đi:", JSON.stringify(payload, null, 2))
-    
 //     return payload
 //   }
 
@@ -153,10 +138,7 @@
 //     event.preventDefault()
     
 //     const payload = buildPayload()
-//      console.log("🔍 FORM DATA:", form) // Thêm log này
 //     if (!payload) return
-//     // THÊM LOG NÀY ĐỂ XEM DỮ LIỆU GỬI ĐI
-//   console.log("🚀 DỮ LIỆU GỬI ĐI:", JSON.stringify(payload, null, 2))
 
 //     try {
 //       setIsSubmitting(true)
@@ -195,11 +177,7 @@
 //           </select>
 
 //           <label>Nhà máy</label>
-//           <select
-//             name="factoryId"
-//             value={form.factoryId || ""}
-//             onChange={handleChange}
-//           >
+//           <select name="factoryId" value={form.factoryId || ""} onChange={handleChange}>
 //             <option value="">Chọn nhà máy</option>
 //             {factories.map((f) => (
 //               <option key={f.id} value={f.id}>
@@ -320,30 +298,44 @@ function CreateTicket() {
   const [form, setForm] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [categories, setCategories] = useState([])
+  const [allCategories, setAllCategories] = useState([])
   const [factories, setFactories] = useState([])
   const isMaintenance = form.type === 'Maintenance'
 
-  // Fetch categories
+  // Fetch tất cả categories
   useEffect(() => {
-    fetch('http://localhost:5017/api/categories?type=Maintenance')
+    fetch('http://localhost:5017/api/categories')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setCategories(data)
+          setAllCategories(data)
+          console.log("📋 All categories:", data) // Debug
         } else {
-          setCategories([])
+          setAllCategories([])
         }
       })
       .catch(err => console.error('Error fetching categories:', err))
   }, [])
+
+  // Filter categories dựa trên loại ticket
+  const getFilteredCategories = () => {
+    if (isMaintenance) {
+      // Lọc categories có Type là 'Maintenance'
+      return allCategories.filter(cat => cat.type === 'Maintenance')
+    } else {
+      // Lọc categories có Type là 'Support'
+      return allCategories.filter(cat => cat.type === 'Support')
+    }
+  }
+
+  const filteredCategories = getFilteredCategories()
 
   // Fetch factories
   useEffect(() => {
     fetch("http://localhost:5017/api/Tickets/factories")
       .then(res => res.json())
       .then(data => {
-        console.log("FACTORIES:", data)
+        console.log("🏭 Factories:", data)
         setFactories(data)
       })
       .catch(err => console.error('Error fetching factories:', err))
@@ -352,12 +344,22 @@ function CreateTicket() {
   const handleChange = (event) => {
     const { name, value } = event.target
     setErrorMessage('')
-    setForm((prev) => ({
-      ...prev,
-      [name]: ['categoryId', 'factoryId'].includes(name)
-        ? (value ? Number(value) : '')
-        : value,
-    }))
+    
+    // Khi đổi loại ticket, reset categoryId
+    if (name === 'type') {
+      setForm((prev) => ({
+        ...prev,
+        type: value,
+        categoryId: '', // Reset category khi đổi loại ticket
+      }))
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: ['categoryId', 'factoryId'].includes(name)
+          ? (value ? Number(value) : '')
+          : value,
+      }))
+    }
   }
 
   const buildPayload = () => {
@@ -428,6 +430,7 @@ function CreateTicket() {
       statusId: 1,
     }
 
+    console.log("📦 Payload:", payload)
     return payload
   }
 
@@ -466,7 +469,7 @@ function CreateTicket() {
           <label>Lĩnh vực</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">Chọn danh mục</option>
-            {categories?.map((c) => (
+            {filteredCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
