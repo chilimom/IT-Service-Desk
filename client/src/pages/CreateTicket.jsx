@@ -165,9 +165,9 @@ if (!form.title && form.type === 'Support') {
           <label>Nhà máy</label>
           <select name="factoryId" value={form.factoryId} onChange={handleChange}>
             <option value="">Chọn nhà máy</option>
-            {factoryOptions.map((option) => (
-              <option key={option.code} value={option.code}>  // sửa id thành code
-                {option.code} - {option.name}
+            {factoryOptions.map((f) => (
+              <option key={f.id} value={f.id}>  
+                {f.code} - {f.name}
               </option>
             ))}
           </select>
