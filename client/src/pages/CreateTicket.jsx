@@ -202,7 +202,7 @@ if (!form.title && form.type === 'Support') {
     try {
       setIsSubmitting(true)
       setErrorMessage('')
-      await createTicket(buildPayload())
+      await createTicket(payload())
       alert('Tao ticket thanh cong!')
       setForm(initialForm)
     } catch (error) {
