@@ -47,10 +47,16 @@ function CreateTicket() {
 //     .then(data => setCategories(data))
 // }, [form.type])
 
-      useEffect(() => {
-  fetch('http://localhost:5017/api/categories')
+   useEffect(() => {
+  fetch('http://localhost:5017/api/categories?type=Maintenance')
     .then(res => res.json())
-    .then(data => setCategories(data))
+    .then(data => {
+      if (Array.isArray(data)) {
+        setCategories(data)
+      } else {
+        setCategories([])
+      }
+    })
 }, [])
 // useEffect(() => {
 //   fetch('http://localhost:5017/api/categories')   // 👈 KHÔNG cần type
