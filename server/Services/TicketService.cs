@@ -115,7 +115,7 @@ namespace ITServiceDesk.Api.Services
             var factory = _context.Factories.Find(dto.FactoryId);
             if (factory == null)
                 throw new Exception("Factory khong ton tai");
-
+            //có sửa
             var createdBy = dto.RequestedBy;
             if (createdBy == null || createdBy <= 0)
                 throw new Exception("RequestedBy khong hop le");
