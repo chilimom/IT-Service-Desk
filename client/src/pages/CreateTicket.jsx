@@ -56,34 +56,96 @@ function CreateTicket() {
     } 
     const [factories, setFactories] = useState([])
 
-useEffect(() => {
-  fetch("http://localhost:5017/api/Tickets/factories")
-    .then(res => res.json())
-    .then(data => {
-      console.log("FACTORIES:", data)
-      setFactories(data)
-    })
-    .catch(err => console.error(err))
-}, [])
-  const buildPayload = () => {
-    return {
-      categoryId: Number(form.categoryId),
-    factoryId: form.factoryId ? Number(form.factoryId) : null,
-    statusId: null, // backend tự set cũng được
-    requestedBy: Number(user?.id),
+  useEffect(() => {
+    fetch("http://localhost:5017/api/Tickets/factories")
+        .then(res => res.json())
+        .then(data => {
+          console.log("FACTORIES:", data)
+        setFactories(data)
+        })
+        .catch(err => console.error(err))
+        }, [])
+  // const buildPayload = () => {
+  //     if (!user?.id) {
+  //   alert("Chưa có user")
+  //   return null
+  // }
 
-    // giữ nguyên
-    title: form.title || '',
-    description: form.description || '',
-    equipmentCode: form.equipmentCode || '',
-    area: form.area || '',
-    assignedTeam: form.assignedTeam || '',
-    dueDate: form.dueDate || null,
-    }
+  // if (!form.factoryId) {
+  //   alert("Chưa chọn nhà máy")
+  //   return null
+  // }
+  //   return {
+  //     categoryId: Number(form.categoryId),
+  //   factoryId: form.factoryId ? Number(form.factoryId) : null,
+  //   statusId: null, // backend tự set cũng được
+  //   requestedBy: Number(user?.id),
+
+  //   // giữ nguyên
+  //   title: form.title || '',
+  //   description: form.description || '',
+  //   equipmentCode: form.equipmentCode || '',
+  //   area: form.area || '',
+  //   assignedTeam: form.assignedTeam || '',
+  //   dueDate: form.dueDate || null,
+  //   }
+  // }
+    const buildPayload = () => {
+  // ✅ check user
+  if (!user || !user.id) {
+    alert("Chưa có user")
+    return null
   }
-  
+
+  // ✅ check category
+  if (!form.categoryId) {
+    alert("Chưa chọn lĩnh vực")
+    return null
+  }
+
+  // ✅ check factory (backend bắt buộc int)
+  if (!form.factoryId) {
+    alert("Chưa chọn nhà máy")
+    return null
+  }
+
+  return {
+    // 🔥 bắt buộc đúng kiểu number
+    categoryId: Number(form.categoryId),
+    factoryId: Number(form.factoryId),
+
+    // backend có thể tự set nhưng cứ gửi null
+    statusId: null,
+
+    // 🔥 bắt buộc có
+    requestedBy: Number(user.id),
+
+    // ===== dữ liệu form =====
+    title: form.title ? form.title.trim() : "",
+    description: form.description ? form.description.trim() : "",
+
+    equipmentCode: form.equipmentCode
+      ? form.equipmentCode.trim()
+      : "",
+
+    area: form.area ? form.area.trim() : "",
+
+    assignedTeam: form.assignedTeam
+      ? form.assignedTeam.trim()
+      : "",
+
+    // 🔥 format đúng ISO cho backend
+    dueDate: form.dueDate
+      ? new Date(form.dueDate).toISOString()
+      : null,
+  }
+}
   const handleSubmit = async (event) => {
     event.preventDefault()
+  const payload = buildPayload()
+if (!payload) return
+
+console.log("PAYLOAD:", payload) // 👈 bắt buộc để debug
     if (!user?.id) {
   alert("Chưa có user")
   return
