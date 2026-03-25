@@ -232,7 +232,7 @@ namespace ITServiceDesk.Api.Services
             if (ticket == null)
                 return false;
 
-            var normalizedStatus = (ticket.StatusId ?? string.Empty).ToLower();
+            var normalizedStatus = ticket.StatusId = dto.StatusId ?? 1;
             if (ticket.StatusId == 2 || ticket.StatusId == 1)
                 return false;
 
