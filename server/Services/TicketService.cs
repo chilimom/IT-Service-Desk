@@ -116,7 +116,9 @@ namespace ITServiceDesk.Api.Services
             if (factory == null)
                 throw new Exception("Factory khong ton tai");
 
-            var createdBy = dto.RequestedBy ?? 1;
+            var createdBy = dto.RequestedBy;
+            if (createdBy == null || createdBy <= 0)
+                throw new Exception("RequestedBy khong hop le");
 
             var ticket = new Ticket
             {
