@@ -30,32 +30,29 @@ function MyRequests() {
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [error, setError] = useState('')
 
-  // useEffect(() => {
-  //   async function loadTickets() {
-  //     try {
-  //       const data = await getTickets()
-        
-  //       const ownTickets = Array.isArray(data) ? data.filter((ticket) => Number(ticket.requestedBy) === Number(user?.id)) : []
-  //       setTickets(ownTickets)
-  //     } catch {
-  //       setError('Khong the tai danh sach yeu cau da gui.')
-  //       setTickets([])
-  //     }
-  //   }
-
-  //   loadTickets()
-  // }, [user?.id])
-
-      useEffect(() => {
+  useEffect(() => {
   async function loadTickets() {
     try {
       const data = await getTickets()
 
-      // ✅ CHỈ SỬA DÒNG NÀY
-      const ownTickets = data
+      // 🔥 FILTER CHUẨN THEO USER
+      const ownTickets = Array.isArray(data)
+        ? data.filter((ticket) =>
+            ticket.requestedBy && user?.id
+              ? Number(ticket.requestedBy) === Number(user.id)
+              : false
+          )
+        : []
 
       setTickets(ownTickets)
-    } catch {
+
+      // 🔍 debug (có thể xoá sau)
+      console.log('USER ID:', user?.id)
+      console.log('ALL TICKETS:', data)
+      console.log('OWN TICKETS:', ownTickets)
+
+    } catch (err) {
+      console.error(err)
       setError('Khong the tai danh sach yeu cau da gui.')
       setTickets([])
     }
@@ -63,6 +60,24 @@ function MyRequests() {
 
   loadTickets()
 }, [user?.id])
+
+      // useEffect(() => {
+      //   async function loadTickets() {
+      //      try {
+      //       const data = await getTickets()
+
+      // // ✅ CHỈ SỬA DÒNG NÀY
+      //       const ownTickets = data
+
+      //       setTickets(ownTickets)
+      //     } catch {
+      //       setError('Khong the tai danh sach yeu cau da gui.')
+      //       setTickets([])
+      //     }
+      //   }
+
+      // loadTickets()
+      // }, [user?.id])
   const filteredTickets = useMemo(() => {
     return [...tickets]
       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
