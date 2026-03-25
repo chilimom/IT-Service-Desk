@@ -15,14 +15,34 @@ public class CategoriesController : ControllerBase
         _context = context;
     }
 
+    // [HttpGet]
+    // public IActionResult Get(string type)
+    // {
+    //     var data = _context.Categories
+    //     .Where(x => x.Type == type)
+    //     .ToList();
+    //     return Ok(data);
+
+
+    // }
     [HttpGet]
-    public IActionResult Get(string type)
+    public IActionResult GetCategories([FromQuery] string? type = null)
     {
-        var data = _context.Categories
-        .Where(x => x.Type == type)
-        .ToList();
-        return Ok(data);
+        try
+        {
+            var query = _context.Categories.AsQueryable();
 
+            if (!string.IsNullOrEmpty(type))
+            {
+                query = query.Where(c => c.Type == type);
+            }
 
+            var categories = query.ToList();
+            return Ok(categories); // Trả về array, không phải object
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 }
