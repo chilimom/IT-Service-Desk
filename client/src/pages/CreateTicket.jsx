@@ -57,7 +57,7 @@ function CreateTicket() {
     const [factories, setFactories] = useState([])
 
 useEffect(() => {
-  fetch("http://localhost:5017/api/factories")
+  fetch("http://localhost:5017/api/Tickets/factories")
     .then(res => res.json())
     .then(data => {
       console.log("FACTORIES:", data)
