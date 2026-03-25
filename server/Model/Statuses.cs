@@ -1,6 +1,6 @@
 namespace ITServiceDesk.Api.Models
 {
-    public class Statuses
+    public class Status
     {
         public int Id { get; set; }
         public string Name { get; set; }
