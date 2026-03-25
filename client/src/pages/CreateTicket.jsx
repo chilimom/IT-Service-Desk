@@ -53,7 +53,7 @@ function CreateTicket() {
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      [name]: name === ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,// sửa
+      [name]: ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,// sửa
     }))
   }
 
@@ -158,7 +158,7 @@ if (!form.title && form.type === 'Support') {
 </select>
 
           <label>Nhà máy</label>
-          <select name="factory" value={form.factoryId} onChange={handleChange}>
+          <select name="factoryId" value={form.factoryId} onChange={handleChange}>
             <option value="">Chọn nhà máy</option>
             {factoryOptions.map((option) => (
               <option key={option.id} value={option.id}>
