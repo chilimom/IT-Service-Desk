@@ -94,9 +94,13 @@ function CreateTicket() {
     dueDate: form.dueDate || null,
     }
   }
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (!user?.id) {
+  alert("Chưa có user")
+  return
+}
     if (!form.categoryId) {
     alert("Vui lòng chọn danh mục")
   return
