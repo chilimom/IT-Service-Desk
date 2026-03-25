@@ -36,13 +36,20 @@ function MyRequests() {
       const data = await getTickets()
 
       // 🔥 FILTER CHUẨN THEO USER
+      // const ownTickets = Array.isArray(data)
+      //   ? data.filter((ticket) =>
+      //       ticket.requestedBy && user?.id
+      //         ? Number(ticket.requestedBy) === Number(user.id)
+      //         : false
+      //     )
+      //   : []
       const ownTickets = Array.isArray(data)
-        ? data.filter((ticket) =>
-            ticket.requestedBy && user?.id
-              ? Number(ticket.requestedBy) === Number(user.id)
-              : false
-          )
-        : []
+  ? data.filter((ticket) =>
+      ticket.requestedByName &&
+      user?.username &&
+      ticket.requestedByName === user.username
+    )
+  : []
 
       setTickets(ownTickets)
 
