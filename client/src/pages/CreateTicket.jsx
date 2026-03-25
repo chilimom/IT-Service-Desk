@@ -65,31 +65,7 @@ function CreateTicket() {
         })
         .catch(err => console.error(err))
         }, [])
-  // const buildPayload = () => {
-  //     if (!user?.id) {
-  //   alert("Chưa có user")
-  //   return null
-  // }
-
-  // if (!form.factoryId) {
-  //   alert("Chưa chọn nhà máy")
-  //   return null
-  // }
-  //   return {
-  //     categoryId: Number(form.categoryId),
-  //   factoryId: form.factoryId ? Number(form.factoryId) : null,
-  //   statusId: null, // backend tự set cũng được
-  //   requestedBy: Number(user?.id),
-
-  //   // giữ nguyên
-  //   title: form.title || '',
-  //   description: form.description || '',
-  //   equipmentCode: form.equipmentCode || '',
-  //   area: form.area || '',
-  //   assignedTeam: form.assignedTeam || '',
-  //   dueDate: form.dueDate || null,
-  //   }
-  // }
+  
     const buildPayload = () => {
   // ✅ check user
   if (!user || !user.id) {
@@ -238,9 +214,9 @@ if (!form.title && form.type === 'Support') {
         
           <select
   value={form.factoryId || ""}
-  onChange={(e) =>
-    setForm({ ...form, factoryId: Number(e.target.value) })
-  }
+  // onChange={(e) =>
+  //   setForm({ ...form, factoryId: Number(e.target.value) })
+  // }
 >
   <option value="">Chọn nhà máy</option>
 
