@@ -62,7 +62,10 @@ function CreateTicket() {
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      [name]: ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,// sửa
+      // [name]: ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,          // sửa
+      [name]: ['categoryId', 'factoryId'].includes(name)
+  ? (value ? Number(value) : '')
+  : value,
     }))
   }
 
