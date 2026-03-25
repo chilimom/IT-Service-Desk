@@ -34,7 +34,7 @@ function MyRequests() {
     async function loadTickets() {
       try {
         const data = await getTickets()
-        const ownTickets = Array.isArray(data) ? data.filter((ticket) => ticket.requestedBy === user?.id) : []
+        const ownTickets = Array.isArray(data) ? data.filter((ticket) => Number(ticket.requestedBy) === Number(user?.id)) : []
         setTickets(ownTickets)
       } catch {
         setError('Khong the tai danh sach yeu cau da gui.')
@@ -48,13 +48,13 @@ function MyRequests() {
   const filteredTickets = useMemo(() => {
     return [...tickets]
       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
-      .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.LoaiTicket === typeFilter))
+      .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.loaiTicket === typeFilter))
       .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factoryName || '') === factoryFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
   }, [factoryFilter, statusFilter, tickets, typeFilter])
 
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
-  const types = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.LoaiTicket).filter(Boolean))], [tickets])
+  const types = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.loaiTicket).filter(Boolean))], [tickets])
   const factories = useMemo(() => {
     const knownFactoryValues = new Set(factoryOptions.map((option) => option.name))
     tickets.map((ticket) => ticket.factoryName).filter(Boolean).forEach((factory) => knownFactoryValues.add(factory))
