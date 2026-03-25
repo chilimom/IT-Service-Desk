@@ -39,6 +39,8 @@ export async function createTicket(payload) {
   })
 
   if (!response.ok) {
+     const error = await response.json() // 🔥 lấy lỗi backend
+    console.error("SERVER ERROR:", error)
     throw new Error(`Request failed: ${response.status}`)
   }
 
