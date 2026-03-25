@@ -51,15 +51,6 @@ namespace ITServiceDesk.Api.Controllers
             return Ok(logs);
         }
 
-        // [HttpPost]
-        // public IActionResult Create([FromBody] CreateTicketDto dto)
-        // {
-        //     if (!ModelState.IsValid)
-        //         return BadRequest(ModelState);
-
-        //     var ticket = _ticketService.Create(dto);
-        //     return Ok(ticket);
-        // }
         [HttpPost]
         public IActionResult Create([FromBody] CreateTicketDto dto)
         {
@@ -113,6 +104,20 @@ namespace ITServiceDesk.Api.Controllers
             var data = _ticketService.GetDashboard();
             return Ok(data);
         }
+        [HttpGet("my")]
+        public IActionResult GetMyTickets([FromQuery] int userId)
+        {
+            try
+            {
+                var tickets = _ticketService.GetByUser(userId);
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
 
     }
 }
