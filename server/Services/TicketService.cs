@@ -103,6 +103,10 @@ namespace ITServiceDesk.Api.Services
                     Title = ticket.Title,
                     Description = ticket.Description,
                     // Factory = ticket.Factory,
+                    FactoryName = _context.Factories
+    .Where(f => f.Id == ticket.FactoryId)
+    .Select(f => f.Name)
+    .FirstOrDefault(),
                     EquipmentCode = ticket.EquipmentCode,
                     Area = ticket.Area,
                     RequestedBy = ticket.RequestedBy,
@@ -117,6 +121,10 @@ namespace ITServiceDesk.Api.Services
                         .FirstOrDefault(),
                     AssignedTeam = ticket.AssignedTeam,
                     // Status = ticket.Status,
+                    Status = _context.Statuses
+    .Where(s => s.Id == ticket.StatusId)
+    .Select(s => s.Name)
+    .FirstOrDefault(),
                     OrderCode = ticket.OrderCode,
                     CreatedAt = ticket.CreatedAt,
                     UpdatedAt = ticket.UpdatedAt,
@@ -124,51 +132,6 @@ namespace ITServiceDesk.Api.Services
                 })
                 .FirstOrDefault();
         }
-        // public object Create(CreateTicketDto dto)
-        // {
-        //     if (dto.CategoryId <= 0)
-        //         throw new Exception("CategoryId khong hop le");
-
-        //     var category = _context.Categories.Find(dto.CategoryId);
-        //     if (category == null)
-        //         throw new Exception("Category khong ton tai");
-
-        //     var createdBy = dto.RequestedBy ?? 1;
-
-        //     var ticket = new Ticket
-        //     {
-        //         Code = GenerateCode(),
-        //         CategoryId = dto.CategoryId,
-        //         Title = string.IsNullOrWhiteSpace(dto.Title)
-        //             ? category.Name
-        //             : dto.Title,
-        //         Description = dto.Description ?? "",
-        //         Factory = dto.Factory,
-        //         EquipmentCode = dto.EquipmentCode ?? "",
-        //         Area = dto.Area ?? "",
-        //         RequestedBy = createdBy,
-        //         AssignedTeam = dto.AssignedTeam ?? "",
-        //         DueDate = dto.DueDate,
-        //         Status = "Submitted",
-        //         CreatedAt = DateTime.UtcNow
-        //     };
-
-        //     _context.Tickets.Add(ticket);
-        //     _context.SaveChanges();
-
-        //     // 🔥 FIX LỖI 500 Ở ĐÂY
-        //     return new
-        //     {
-        //         ticket.Id,
-        //         ticket.Code,
-        //         ticket.Title,
-        //         ticket.Description,
-        //         ticket.CategoryId,
-        //         CategoryName = category.Name,
-        //         ticket.Status,
-        //         ticket.CreatedAt
-        //     };
-        // }
         public object Create(CreateTicketDto dto)
         {
             if (dto.CategoryId <= 0)
@@ -362,8 +325,8 @@ namespace ITServiceDesk.Api.Services
             if (ticket == null)
                 return false;
 
-            var normalizedStatus = (ticket.Status ?? string.Empty).ToLower();
-            if (normalizedStatus == "inprogress" || normalizedStatus == "done")
+            var normalizedStatus = (ticket.StatusId ?? string.Empty).ToLower();
+            if (ticket.StatusId == 2 || ticket.StatusId == 1)
                 return false;
 
             if (dto.Title != null)
@@ -372,8 +335,10 @@ namespace ITServiceDesk.Api.Services
             if (dto.Description != null)
                 ticket.Description = dto.Description;
 
-            if (dto.Factory != null)
-                ticket.Factory = dto.Factory;
+            // if (dto.Factory != null)
+            //     ticket.Factory = dto.Factory;
+            if (dto.FactoryId != null)
+                ticket.FactoryId = dto.FactoryId.Value;
 
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
