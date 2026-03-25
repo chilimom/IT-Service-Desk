@@ -1,4 +1,279 @@
 
+// import { useEffect, useState } from 'react'
+// import { useAuth } from '../context/AuthContext'
+// import { createTicket } from '../services/ticketService'
+// import { maintenanceOptions } from '../ultils/ticketMeta'
+// import '../styles/form.css'
+
+// const initialForm = {
+//   type: 'Maintenance',
+//   factoryId: '',
+//   maintenanceCategory: 'PM01',
+//   title: '',
+//   description: '',
+//   equipmentCode: '',
+//   area: '',
+//   assignedTeam: '',
+//   dueDate: '',
+//   categoryId: '',
+// }
+
+// function CreateTicket() {
+//   const { user } = useAuth()
+//   const [form, setForm] = useState(initialForm)
+//   const [isSubmitting, setIsSubmitting] = useState(false)
+//   const [errorMessage, setErrorMessage] = useState('')
+//   const [categories, setCategories] = useState([])
+//   const [factories, setFactories] = useState([])
+//   const isMaintenance = form.type === 'Maintenance'
+
+//   // Fetch categories
+//   useEffect(() => {
+//     fetch('http://localhost:5017/api/categories?type=Maintenance')
+//       .then(res => res.json())
+//       .then(data => {
+//         if (Array.isArray(data)) {
+//           setCategories(data)
+//         } else {
+//           setCategories([])
+//         }
+//       })
+//       .catch(err => console.error('Error fetching categories:', err))
+//   }, [])
+
+//   // Fetch factories
+//   useEffect(() => {
+//     fetch("http://localhost:5017/api/Tickets/factories")
+//       .then(res => res.json())
+//       .then(data => {
+//         console.log("FACTORIES:", data)
+//         setFactories(data)
+//       })
+//       .catch(err => console.error('Error fetching factories:', err))
+//   }, [])
+
+//   const handleChange = (event) => {
+//     const { name, value } = event.target
+//     setErrorMessage('')
+//     setForm((prev) => ({
+//       ...prev,
+//       [name]: ['categoryId', 'factoryId'].includes(name)
+//         ? (value ? Number(value) : '')
+//         : value,
+//     }))
+//   }
+
+//   const buildPayload = () => {
+//     if (!user || !user.id) {
+//       setErrorMessage("Không tìm thấy thông tin người dùng")
+//       return null
+//     }
+
+//     if (!form.categoryId) {
+//       setErrorMessage("Vui lòng chọn lĩnh vực")
+//       return null
+//     }
+
+//     if (!form.factoryId) {
+//       setErrorMessage("Vui lòng chọn nhà máy")
+//       return null
+//     }
+
+//     if (!form.description || form.description.trim() === "") {
+//       setErrorMessage("Vui lòng nhập mô tả")
+//       return null
+//     }
+
+//     if (isMaintenance) {
+//       if (!form.area || !form.area.trim()) {
+//         setErrorMessage('Vui lòng nhập Equipment')
+//         return null
+//       }
+
+//       if (!form.equipmentCode || !form.equipmentCode.trim()) {
+//         setErrorMessage('Vui lòng nhập Tên thiết bị')
+//         return null
+//       }
+
+//       if (!form.assignedTeam || !form.assignedTeam.trim()) {
+//         setErrorMessage('Vui lòng nhập Tổ bảo trì')
+//         return null
+//       }
+//     } else {
+//       if (!form.title || !form.title.trim()) {
+//         setErrorMessage('Vui lòng nhập Tiêu đề hỗ trợ')
+//         return null
+//       }
+//     }
+
+//     let title = form.title
+//     if (isMaintenance && (!title || title.trim() === "")) {
+//       const parts = []
+//       if (form.equipmentCode && form.equipmentCode.trim()) {
+//         parts.push(form.equipmentCode.trim())
+//       }
+//       if (form.area && form.area.trim()) {
+//         parts.push(form.area.trim())
+//       }
+//       title = parts.length > 0 ? `Bảo trì: ${parts.join(' - ')}` : "Bảo trì thiết bị"
+//     }
+
+//     const payload = {
+//       categoryId: Number(form.categoryId),
+//       factoryId: Number(form.factoryId),
+//       requestedBy: Number(user.id),
+//       description: form.description.trim(),
+//       title: title?.trim() || null,
+//       equipmentCode: form.equipmentCode?.trim() || null,
+//       area: form.area?.trim() || null,
+//       assignedTeam: form.assignedTeam?.trim() || null,
+//       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
+//       statusId: 1,
+//     }
+
+//     return payload
+//   }
+
+//   const handleSubmit = async (event) => {
+//     event.preventDefault()
+    
+//     const payload = buildPayload()
+//     if (!payload) return
+
+//     try {
+//       setIsSubmitting(true)
+//       setErrorMessage('')
+//       await createTicket(payload)
+//       alert('Tạo ticket thành công!')
+//       setForm(initialForm)
+//     } catch (error) {
+//       console.error('Submit error:', error)
+//       setErrorMessage(error.message || 'Lỗi khi tạo ticket. Vui lòng thử lại.')
+//     } finally {
+//       setIsSubmitting(false)
+//     }
+//   }
+
+//   return (
+//     <section className="create-ticket-page">
+//       <div className="form-container">
+//         <h2>Tạo Ticket</h2>
+
+//         <form onSubmit={handleSubmit}>
+//           <label>Loại Ticket</label>
+//           <select name="type" value={form.type} onChange={handleChange}>
+//             <option value="Maintenance">Tạo Lệnh bảo trì</option>
+//             <option value="IT">Hỗ trợ CNTT</option>
+//           </select>
+
+//           <label>Lĩnh vực</label>
+//           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
+//             <option value="">Chọn danh mục</option>
+//             {categories?.map((c) => (
+//               <option key={c.id} value={c.id}>
+//                 {c.name}
+//               </option>
+//             ))}
+//           </select>
+
+//           <label>Nhà máy</label>
+//           <select name="factoryId" value={form.factoryId || ""} onChange={handleChange}>
+//             <option value="">Chọn nhà máy</option>
+//             {factories.map((f) => (
+//               <option key={f.id} value={f.id}>
+//                 {f.code} - {f.name}
+//               </option>
+//             ))}
+//           </select>
+
+//           {isMaintenance && (
+//             <>
+//               <label>Loại bảo trì</label>
+//               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
+//                 {maintenanceOptions.map((option) => (
+//                   <option key={option.code} value={option.code}>
+//                     {option.code} - {option.name}
+//                   </option>
+//                 ))}
+//               </select>
+//             </>
+//           )}
+
+//           <div className="form-note">
+//             {isMaintenance
+//               ? 'Loại bảo trì sẽ được map vào thông tin ticket. Số order sẽ do admin cập nhật sau khi xử lý.'
+//               : 'Ticket hỗ trợ CNTT không sử dụng số order và không bắt buộc nhập EQ.'}
+//           </div>
+
+//           {!isMaintenance && (
+//             <>
+//               <label>Tiêu đề hỗ trợ</label>
+//               <input
+//                 name="title"
+//                 value={form.title}
+//                 onChange={handleChange}
+//                 placeholder="Ví dụ: Lỗi máy in, không đăng nhập được..."
+//               />
+//             </>
+//           )}
+
+//           {isMaintenance && (
+//             <>
+//               <label>Equipment</label>
+//               <input 
+//                 name="area" 
+//                 value={form.area} 
+//                 onChange={handleChange}
+//                 placeholder="Ví dụ: 2-T43-TNK-02-1"
+//               />
+
+//               <label>Tên thiết bị</label>
+//               <input 
+//                 name="equipmentCode" 
+//                 value={form.equipmentCode} 
+//                 onChange={handleChange}
+//                 placeholder="Ví dụ: Nghiền phun than"
+//               />
+//             </>
+//           )}
+
+//           <label>Tổ bảo trì</label>
+//           <input 
+//             name="assignedTeam" 
+//             value={form.assignedTeam} 
+//             onChange={handleChange}
+//             placeholder="Ví dụ: T43002 - Tổ Cơ khí – Nồi hơi, lọc bụi"
+//           />
+
+//           <label>Mô tả</label>
+//           <textarea 
+//             name="description" 
+//             value={form.description} 
+//             onChange={handleChange}
+//             placeholder="Mô tả chi tiết vấn đề cần xử lý..."
+//             rows="4"
+//           />
+
+//           <label>Hạn xử lý</label>
+//           <input 
+//             type="datetime-local" 
+//             name="dueDate" 
+//             value={form.dueDate} 
+//             onChange={handleChange} 
+//           />
+
+//           {errorMessage && <div className="form-error">{errorMessage}</div>}
+
+//           <button type="submit" disabled={isSubmitting}>
+//             {isSubmitting ? 'Đang tạo...' : 'Tạo Ticket'}
+//           </button>
+//         </form>
+//       </div>
+//     </section>
+//   )
+// }
+
+// export default CreateTicket
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { createTicket } from '../services/ticketService'
@@ -23,23 +298,37 @@ function CreateTicket() {
   const [form, setForm] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [categories, setCategories] = useState([])
+  const [allCategories, setAllCategories] = useState([]) // Đổi tên và lưu tất cả
   const [factories, setFactories] = useState([])
   const isMaintenance = form.type === 'Maintenance'
 
-  // Fetch categories
+  // Fetch tất cả categories (không filter)
   useEffect(() => {
-    fetch('http://localhost:5017/api/categories?type=Maintenance')
+    fetch('http://localhost:5017/api/categories')
       .then(res => res.json())
       .then(data => {
+        console.log("All categories:", data) // Debug
         if (Array.isArray(data)) {
-          setCategories(data)
+          setAllCategories(data)
         } else {
-          setCategories([])
+          setAllCategories([])
         }
       })
       .catch(err => console.error('Error fetching categories:', err))
   }, [])
+
+  // Filter categories dựa trên loại ticket
+  const getFilteredCategories = () => {
+    if (isMaintenance) {
+      // Lọc categories có type là 'Maintenance'
+      return allCategories.filter(cat => cat.type === 'Maintenance')
+    } else {
+      // Lọc categories có type là 'Support'
+      return allCategories.filter(cat => cat.type === 'Support')
+    }
+  }
+
+  const filteredCategories = getFilteredCategories()
 
   // Fetch factories
   useEffect(() => {
@@ -55,12 +344,22 @@ function CreateTicket() {
   const handleChange = (event) => {
     const { name, value } = event.target
     setErrorMessage('')
-    setForm((prev) => ({
-      ...prev,
-      [name]: ['categoryId', 'factoryId'].includes(name)
-        ? (value ? Number(value) : '')
-        : value,
-    }))
+    
+    // Khi đổi loại ticket, reset categoryId
+    if (name === 'type') {
+      setForm((prev) => ({
+        ...prev,
+        type: value,
+        categoryId: '', // Reset category khi đổi loại ticket
+      }))
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: ['categoryId', 'factoryId'].includes(name)
+          ? (value ? Number(value) : '')
+          : value,
+      }))
+    }
   }
 
   const buildPayload = () => {
@@ -146,9 +445,6 @@ function CreateTicket() {
       await createTicket(payload)
       alert('Tạo ticket thành công!')
       setForm(initialForm)
-    } catch (error) {
-      console.error('Submit error:', error)
-      setErrorMessage(error.message || 'Lỗi khi tạo ticket. Vui lòng thử lại.')
     } finally {
       setIsSubmitting(false)
     }
@@ -169,7 +465,7 @@ function CreateTicket() {
           <label>Lĩnh vực</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">Chọn danh mục</option>
-            {categories?.map((c) => (
+            {filteredCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
@@ -274,302 +570,3 @@ function CreateTicket() {
 }
 
 export default CreateTicket
-// import { useEffect, useState } from 'react'
-// import { useAuth } from '../context/AuthContext'
-// import { createTicket } from '../services/ticketService'
-// import { maintenanceOptions } from '../ultils/ticketMeta'
-// import '../styles/form.css'
-
-// const initialForm = {
-//   type: 'Maintenance',
-//   factoryId: '',
-//   maintenanceCategory: 'PM01',
-//   title: '',
-//   description: '',
-//   equipmentCode: '',
-//   area: '',
-//   assignedTeam: '',
-//   dueDate: '',
-//   categoryId: '',
-// }
-
-// function CreateTicket() {
-//   const { user } = useAuth()
-//   const [form, setForm] = useState(initialForm)
-//   const [isSubmitting, setIsSubmitting] = useState(false)
-//   const [errorMessage, setErrorMessage] = useState('')
-//   const [allCategories, setAllCategories] = useState([])
-//   const [factories, setFactories] = useState([])
-//   const isMaintenance = form.type === 'Maintenance'
-
-//   // Fetch tất cả categories
-//   useEffect(() => {
-//     fetch('http://localhost:5017/api/categories')
-//       .then(res => res.json())
-//       .then(data => {
-//         if (Array.isArray(data)) {
-//           setAllCategories(data)
-//           console.log("📋 All categories:", data) // Debug
-//         } else {
-//           setAllCategories([])
-//         }
-//       })
-//       .catch(err => console.error('Error fetching categories:', err))
-//   }, [])
-
-//   // Filter categories dựa trên loại ticket
-//   const getFilteredCategories = () => {
-//     if (isMaintenance) {
-//       // Lọc categories có Type là 'Maintenance'
-//       return allCategories.filter(cat => cat.type === 'Maintenance')
-//     } else {
-//       // Lọc categories có Type là 'Support'
-//       return allCategories.filter(cat => cat.type === 'Support')
-//     }
-//   }
-
-//   const filteredCategories = getFilteredCategories()
-
-//   // Fetch factories
-//   useEffect(() => {
-//     fetch("http://localhost:5017/api/Tickets/factories")
-//       .then(res => res.json())
-//       .then(data => {
-//         console.log("🏭 Factories:", data)
-//         setFactories(data)
-//       })
-//       .catch(err => console.error('Error fetching factories:', err))
-//   }, [])
-
-//   const handleChange = (event) => {
-//     const { name, value } = event.target
-//     setErrorMessage('')
-    
-//     // Khi đổi loại ticket, reset categoryId
-//     if (name === 'type') {
-//       setForm((prev) => ({
-//         ...prev,
-//         type: value,
-//         categoryId: '', // Reset category khi đổi loại ticket
-//       }))
-//     } else {
-//       setForm((prev) => ({
-//         ...prev,
-//         [name]: ['categoryId', 'factoryId'].includes(name)
-//           ? (value ? Number(value) : '')
-//           : value,
-//       }))
-//     }
-//   }
-
-//   const buildPayload = () => {
-//     if (!user || !user.id) {
-//       setErrorMessage("Không tìm thấy thông tin người dùng")
-//       return null
-//     }
-
-//     if (!form.categoryId) {
-//       setErrorMessage("Vui lòng chọn lĩnh vực")
-//       return null
-//     }
-
-//     if (!form.factoryId) {
-//       setErrorMessage("Vui lòng chọn nhà máy")
-//       return null
-//     }
-
-//     if (!form.description || form.description.trim() === "") {
-//       setErrorMessage("Vui lòng nhập mô tả")
-//       return null
-//     }
-
-//     if (isMaintenance) {
-//       if (!form.area || !form.area.trim()) {
-//         setErrorMessage('Vui lòng nhập Equipment')
-//         return null
-//       }
-
-//       if (!form.equipmentCode || !form.equipmentCode.trim()) {
-//         setErrorMessage('Vui lòng nhập Tên thiết bị')
-//         return null
-//       }
-
-//       if (!form.assignedTeam || !form.assignedTeam.trim()) {
-//         setErrorMessage('Vui lòng nhập Tổ bảo trì')
-//         return null
-//       }
-//     } else {
-//       if (!form.title || !form.title.trim()) {
-//         setErrorMessage('Vui lòng nhập Tiêu đề hỗ trợ')
-//         return null
-//       }
-//     }
-
-//     let title = form.title
-//     if (isMaintenance && (!title || title.trim() === "")) {
-//       const parts = []
-//       if (form.equipmentCode && form.equipmentCode.trim()) {
-//         parts.push(form.equipmentCode.trim())
-//       }
-//       if (form.area && form.area.trim()) {
-//         parts.push(form.area.trim())
-//       }
-//       title = parts.length > 0 ? `Bảo trì: ${parts.join(' - ')}` : "Bảo trì thiết bị"
-//     }
-
-//     const payload = {
-//       categoryId: Number(form.categoryId),
-//       factoryId: Number(form.factoryId),
-//       requestedBy: Number(user.id),
-//       description: form.description.trim(),
-//       title: title?.trim() || null,
-//       equipmentCode: form.equipmentCode?.trim() || null,
-//       area: form.area?.trim() || null,
-//       assignedTeam: form.assignedTeam?.trim() || null,
-//       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
-//       statusId: 1,
-//     }
-
-//     console.log("📦 Payload:", payload)
-//     return payload
-//   }
-
-//   const handleSubmit = async (event) => {
-//     event.preventDefault()
-    
-//     const payload = buildPayload()
-//     if (!payload) return
-
-//     try {
-//       setIsSubmitting(true)
-//       setErrorMessage('')
-//       await createTicket(payload)
-//       alert('Tạo ticket thành công!')
-//       setForm(initialForm)
-//     } catch (error) {
-//       console.error('Submit error:', error)
-//       setErrorMessage(error.message || 'Lỗi khi tạo ticket. Vui lòng thử lại.')
-//     } finally {
-//       setIsSubmitting(false)
-//     }
-//   }
-
-//   return (
-//     <section className="create-ticket-page">
-//       <div className="form-container">
-//         <h2>Tạo Ticket</h2>
-
-//         <form onSubmit={handleSubmit}>
-//           <label>Loại Ticket</label>
-//           <select name="type" value={form.type} onChange={handleChange}>
-//             <option value="Maintenance">Tạo Lệnh bảo trì</option>
-//             <option value="IT">Hỗ trợ CNTT</option>
-//           </select>
-
-//           <label>Lĩnh vực</label>
-//           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
-//             <option value="">Chọn danh mục</option>
-//             {filteredCategories.map((c) => (
-//               <option key={c.id} value={c.id}>
-//                 {c.name}
-//               </option>
-//             ))}
-//           </select>
-
-//           <label>Nhà máy</label>
-//           <select name="factoryId" value={form.factoryId || ""} onChange={handleChange}>
-//             <option value="">Chọn nhà máy</option>
-//             {factories.map((f) => (
-//               <option key={f.id} value={f.id}>
-//                 {f.code} - {f.name}
-//               </option>
-//             ))}
-//           </select>
-
-//           {isMaintenance && (
-//             <>
-//               <label>Loại bảo trì</label>
-//               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
-//                 {maintenanceOptions.map((option) => (
-//                   <option key={option.code} value={option.code}>
-//                     {option.code} - {option.name}
-//                   </option>
-//                 ))}
-//               </select>
-//             </>
-//           )}
-
-//           <div className="form-note">
-//             {isMaintenance
-//               ? 'Loại bảo trì sẽ được map vào thông tin ticket. Số order sẽ do admin cập nhật sau khi xử lý.'
-//               : 'Ticket hỗ trợ CNTT không sử dụng số order và không bắt buộc nhập EQ.'}
-//           </div>
-
-//           {!isMaintenance && (
-//             <>
-//               <label>Tiêu đề hỗ trợ</label>
-//               <input
-//                 name="title"
-//                 value={form.title}
-//                 onChange={handleChange}
-//                 placeholder="Ví dụ: Lỗi máy in, không đăng nhập được..."
-//               />
-//             </>
-//           )}
-
-//           {isMaintenance && (
-//             <>
-//               <label>Equipment</label>
-//               <input 
-//                 name="area" 
-//                 value={form.area} 
-//                 onChange={handleChange}
-//                 placeholder="Ví dụ: 2-T43-TNK-02-1"
-//               />
-
-//               <label>Tên thiết bị</label>
-//               <input 
-//                 name="equipmentCode" 
-//                 value={form.equipmentCode} 
-//                 onChange={handleChange}
-//                 placeholder="Ví dụ: Nghiền phun than"
-//               />
-//             </>
-//           )}
-
-//           <label>Tổ bảo trì</label>
-//           <input 
-//             name="assignedTeam" 
-//             value={form.assignedTeam} 
-//             onChange={handleChange}
-//             placeholder="Ví dụ: T43002 - Tổ Cơ khí – Nồi hơi, lọc bụi"
-//           />
-
-//           <label>Mô tả</label>
-//           <textarea 
-//             name="description" 
-//             value={form.description} 
-//             onChange={handleChange}
-//             placeholder="Mô tả chi tiết vấn đề cần xử lý..."
-//             rows="4"
-//           />
-
-//           <label>Hạn xử lý</label>
-//           <input 
-//             type="datetime-local" 
-//             name="dueDate" 
-//             value={form.dueDate} 
-//             onChange={handleChange} 
-//           />
-
-//           {errorMessage && <div className="form-error">{errorMessage}</div>}
-
-//           <button type="submit" disabled={isSubmitting}>
-//             {isSubmitting ? 'Đang tạo...' : 'Tạo Ticket'}
-//           </button>
-//         </form>
-//       </div>
-//     </section>
-//   )
-// }
-// export default CreateTicket
