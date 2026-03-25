@@ -30,11 +30,28 @@ function MyRequests() {
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [error, setError] = useState('')
 
-  useEffect(() => {
-  async function loadTickets() {
+ 
+    useEffect(() => {
+  const fetchTickets = async () => {
     try {
-      const data = await getTickets()
+      const res = await fetch(
+        `http://localhost:5017/api/tickets/my?userId=${user.id}`
+      );
 
+      const data = await res.json();
+
+      console.log("DATA:", data);
+
+      setTickets(data);
+    } catch (err) {
+      console.error("ERROR:", err);
+    }
+  };
+
+  if (user?.id) {
+    fetchTickets();
+  }
+}, [user]);
       // 🔥 FILTER CHUẨN THEO USER
       // const ownTickets = Array.isArray(data)
       //   ? data.filter((ticket) =>
@@ -55,27 +72,7 @@ function MyRequests() {
       //       []
 
       // setTickets(ownTickets)
-    const res = await fetch(
-  `http://localhost:5000/api/tickets/my?userId=${user.id}`
-);
-
-const data = await res.json();
-setTickets(data);
-      // 🔍 debug (có thể xoá sau)
-      console.log('USER ID:', user?.id)
-      console.log('ALL TICKETS:', data)
-      console.log('OWN TICKETS:', ownTickets)
-
-    } catch (err) {
-      console.error(err)
-      setError('Khong the tai danh sach yeu cau da gui.')
-      setTickets([])
-    }
-  }
-
-  loadTickets()
-}, [user?.id])
-
+   
       // useEffect(() => {
       //   async function loadTickets() {
       //      try {

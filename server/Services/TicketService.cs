@@ -100,6 +100,24 @@ namespace ITServiceDesk.Api.Services
                 })
                 .FirstOrDefault();
         }
+        public List<TicketResponseDto> GetByUser(int userId)
+        {
+            return _context.Tickets
+                .Where(t => t.RequestedBy == userId)
+                .Select(t => new TicketResponseDto
+                {
+                    Id = t.Id,
+                    Code = t.Code,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CategoryId = t.CategoryId,
+                    FactoryId = t.FactoryId,
+                    StatusId = t.StatusId,
+                    RequestedBy = t.RequestedBy,
+                    CreatedAt = t.CreatedAt
+                })
+                .ToList();
+        }
         public object Create(CreateTicketDto dto)
         {
             if (dto.CategoryId <= 0)
