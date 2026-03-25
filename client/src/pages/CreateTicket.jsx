@@ -235,14 +235,7 @@ if (!form.title && form.type === 'Support') {
 </select>
 
           <label>Nhà máy</label>
-          {/* <select name="factoryId" value={form.factoryId} onChange={handleChange}>
-            <option value="">Chọn nhà máy</option>
-            {factories.map((f) => (
-              <option key={f.id} value={f.id}>  
-                {f.code} - {f.name}
-              </option>
-            ))}
-          </select> */}
+        
           <select
   value={form.factoryId || ""}
   onChange={(e) =>
