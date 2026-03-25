@@ -34,6 +34,9 @@ function MyRequests() {
     async function loadTickets() {
       try {
         const data = await getTickets()
+        const ownTickets = data  // ✅ FIX TẠM
+        setTickets(ownTickets)
+
         const ownTickets = Array.isArray(data) ? data.filter((ticket) => Number(ticket.requestedBy) === Number(user?.id)) : []
         setTickets(ownTickets)
       } catch {
