@@ -56,7 +56,7 @@ function MyRequests() {
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
   const types = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.LoaiTicket).filter(Boolean))], [tickets])
   const factories = useMemo(() => {
-    const knownFactoryValues = new Set(factoryOptions.map((option) => option.code))
+    const knownFactoryValues = new Set(factoryOptions.map((option) => option.name))
     tickets.map((ticket) => ticket.factoryName).filter(Boolean).forEach((factory) => knownFactoryValues.add(factory))
     return ['ALL', ...knownFactoryValues]
   }, [tickets])
@@ -133,7 +133,7 @@ function MyRequests() {
                 <p>ID: {ticket.id}</p>
               </div>
               <div>
-                <strong>{getTicketTypeLabel(ticket)}</strong>
+                <strong>{getTicketTypeLabel(ticket.LoaiTicket)}</strong>
                 <p>{ticket.description || ticket.title || 'Chua co mo ta'}</p>
               </div>
               <div>
