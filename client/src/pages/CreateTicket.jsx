@@ -26,27 +26,11 @@ function CreateTicket() {
   const [categories, setCategories] = useState([])// thêm state categories để lưu danh sách category từ server
   const isMaintenance = form.type === 'Maintenance'
 
-  // const selectedMaintenance = useMemo(() => {
-  //   return maintenanceOptions.find((item) => item.code === form.maintenanceCategory) ?? maintenanceOptions[0]
-  // }, [form.maintenanceCategory]) 
   const selectedMaintenance =
   maintenanceOptions.find(
     (item) => item.code === form.maintenanceCategory
   ) || maintenanceOptions[0]
-    // hàm lấy category từ server khi component mount
-//   useEffect(() => {
-//   const typeMap = {
-//     IT: 'Support',
-//     Maintenance: 'Maintenance',
-//   }
-
-//   const apiType = typeMap[form.type]
-
-//   fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
-//     .then(res => res.json())
-//     .then(data => setCategories(data))
-// }, [form.type])
-
+   
    useEffect(() => {
   fetch('http://localhost:5017/api/categories?type=Maintenance')
     .then(res => res.json())
@@ -56,36 +40,23 @@ function CreateTicket() {
       } else {
         setCategories([])
       }
-    })
-}, [])
-// useEffect(() => {
-//   fetch('http://localhost:5017/api/categories')   // 👈 KHÔNG cần type
-//     .then(res => res.json())
-//     .then(data => setCategories(data))
-// }, [])
+     })
+    }, [])
+
   const handleChange = (event) => {
     const { name, value } = event.target
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      // [name]: ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,          // sửa
+   // sửa
       [name]: ['categoryId', 'factoryId'].includes(name)
-  ? (value ? Number(value) : '')
-  : value,
-    }))
-  }
+    ? (value ? Number(value) : '')
+    : value,
+     }))
+    } 
 
   const buildPayload = () => {
     return {
-      // categoryId: form.categoryId,   // 👈 QUAN TRỌNG
-      // title: form.title || '',
-      // description: form.description,
-      // factoryId: form.factoryId || null,
-      // equipmentCode: form.equipmentCode || '',
-      // area: form.area || '',
-      // assignedTeam: form.assignedTeam,
-      // dueDate: form.dueDate || null,
-      // requestedBy: user?.id,
       categoryId: Number(form.categoryId),
     factoryId: form.factoryId ? Number(form.factoryId) : null,
     statusId: null, // backend tự set cũng được
