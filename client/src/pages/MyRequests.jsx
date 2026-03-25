@@ -48,8 +48,8 @@ function MyRequests() {
   const filteredTickets = useMemo(() => {
     return [...tickets]
       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
-      .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.type === typeFilter))
-      .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factory || '') === factoryFilter))
+      .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.LoaiTicket === typeFilter))
+      .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factoryName || '') === factoryFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
   }, [factoryFilter, statusFilter, tickets, typeFilter])
 
