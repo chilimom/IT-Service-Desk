@@ -309,7 +309,17 @@ namespace ITServiceDesk.Api.Services
 
             return true;
         }
-
+        public object GetFactories()
+        {
+            return _context.Factories
+                .Select(f => new
+                {
+                    id = f.Id,
+                    name = f.Name,
+                    code = f.Code
+                })
+                .ToList();
+        }
         public object GetDashboard()
         {
             var total = _context.Tickets.Count();
