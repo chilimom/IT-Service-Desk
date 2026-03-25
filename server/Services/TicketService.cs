@@ -95,10 +95,14 @@ namespace ITServiceDesk.Api.Services
                 {
                     Id = ticket.Id,
                     Code = ticket.Code,
-                    Type = ticket.Type,
+                    CategoryName = _context.Categories
+    .Where(c => c.Id == ticket.CategoryId)
+    .Select(c => c.Name)
+    .FirstOrDefault(),
+                    // Type = ticket.Type,
                     Title = ticket.Title,
                     Description = ticket.Description,
-                    Factory = ticket.Factory,
+                    // Factory = ticket.Factory,
                     EquipmentCode = ticket.EquipmentCode,
                     Area = ticket.Area,
                     RequestedBy = ticket.RequestedBy,
@@ -112,7 +116,7 @@ namespace ITServiceDesk.Api.Services
                         .Select(user => user.Username)
                         .FirstOrDefault(),
                     AssignedTeam = ticket.AssignedTeam,
-                    Status = ticket.Status,
+                    // Status = ticket.Status,
                     OrderCode = ticket.OrderCode,
                     CreatedAt = ticket.CreatedAt,
                     UpdatedAt = ticket.UpdatedAt,
