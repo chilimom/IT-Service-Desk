@@ -174,7 +174,7 @@ if (!form.title && form.type === 'Support') {
           <label>Lĩnh vực</label>
 <select name="categoryId" value={form.categoryId} onChange={handleChange}>
   <option value="">Chọn danh mục</option>
-  {categories.map((c) => (
+  {categories?.map((c) => (
     <option key={c.id} value={c.id}>
       {c.name}
     </option>
@@ -185,7 +185,7 @@ if (!form.title && form.type === 'Support') {
           <select name="factoryId" value={form.factoryId} onChange={handleChange}>
             <option value="">Chọn nhà máy</option>
             {factoryOptions.map((option) => (
-              <option key={option.id} value={option.id}>
+              <option key={option.code} value={option.code}>  // sửa id thành code
                 {option.code} - {option.name}
               </option>
             ))}
@@ -196,7 +196,7 @@ if (!form.title && form.type === 'Support') {
               <label>Loại bảo trì</label>
               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
                 {maintenanceOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
+                  <option key={option.code} value={option.code}>
                     {option.code} - {option.name}
                   </option>
                 ))}
@@ -242,6 +242,7 @@ if (!form.title && form.type === 'Support') {
           <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
 
           {errorMessage && <div className="form-error">{errorMessage}</div>}
+          
 
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Dang tao...' : 'Tạo Ticket'}
