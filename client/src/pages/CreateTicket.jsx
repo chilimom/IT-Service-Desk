@@ -6,7 +6,7 @@ import '../styles/form.css'
 
 const initialForm = {
   type: 'Maintenance',
-  factory: '',
+  factoryId: '',
   maintenanceCategory: 'PM01',
   title: '',
   description: '',
@@ -53,7 +53,7 @@ function CreateTicket() {
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'categoryId' ? Number(value) :value,
+      [name]: name === ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,
     }))
   }
 
@@ -156,10 +156,10 @@ if (!form.title && form.type === 'Support') {
 </select>
 
           <label>Nhà máy</label>
-          <select name="factory" value={form.factory} onChange={handleChange}>
+          <select name="factory" value={form.factoryId} onChange={handleChange}>
             <option value="">Chọn nhà máy</option>
             {factoryOptions.map((option) => (
-              <option key={option.code} value={option.code}>
+              <option key={option.id} value={option.id}>
                 {option.code} - {option.name}
               </option>
             ))}
@@ -170,7 +170,7 @@ if (!form.title && form.type === 'Support') {
               <label>Loại bảo trì</label>
               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
                 {maintenanceOptions.map((option) => (
-                  <option key={option.code} value={option.code}>
+                  <option key={option.id} value={option.id}>
                     {option.code} - {option.name}
                   </option>
                 ))}
