@@ -245,7 +245,7 @@ namespace ITServiceDesk.Api.Services
             // if (dto.Factory != null)
             //     ticket.Factory = dto.Factory;
             if (dto.FactoryId != null)
-                ticket.FactoryId = dto.FactoryId.Value;
+                ticket.FactoryId = dto.FactoryId;
 
             if (dto.EquipmentCode != null)
                 ticket.EquipmentCode = dto.EquipmentCode;
@@ -295,7 +295,7 @@ namespace ITServiceDesk.Api.Services
             var total = _context.Tickets.Count();
 
             var byStatus = _context.Tickets
-                .GroupBy(t => t.Status)
+                .GroupBy(t => t.StatusId)
                 .Select(group => new
                 {
                     Status = group.Key,
