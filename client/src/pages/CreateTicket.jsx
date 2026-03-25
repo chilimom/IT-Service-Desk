@@ -214,9 +214,9 @@ if (!form.title && form.type === 'Support') {
         
           <select
   value={form.factoryId || ""}
-  // onChange={(e) =>
-  //   setForm({ ...form, factoryId: Number(e.target.value) })
-  // }
+  onChange={(e) =>
+    setForm({ ...form, factoryId: Number(e.target.value) })
+  }
 >
   <option value="">Chọn nhà máy</option>
 
