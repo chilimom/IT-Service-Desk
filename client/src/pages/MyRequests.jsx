@@ -138,7 +138,7 @@ function MyRequests() {
               </div>
               <div>
                 <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
-                <p>{getFactoryLabel(ticket.factoryId)} / {ticket.area || 'Chua co khu vuc'}</p>
+                <p>{getFactoryLabel(ticket.factoryName)} / {ticket.area || 'Chua co khu vuc'}</p>
               </div>
               <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
               <span>{getOrderCodeDisplay(ticket)}</span>
