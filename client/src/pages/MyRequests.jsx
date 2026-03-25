@@ -30,27 +30,39 @@ function MyRequests() {
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    // async function loadTickets() {
-    //   try {
-    //     const data = await getTickets()
+  // useEffect(() => {
+  //   async function loadTickets() {
+  //     try {
+  //       const data = await getTickets()
         
-    //     const ownTickets = Array.isArray(data) ? data.filter((ticket) => Number(ticket.requestedBy) === Number(user?.id)) : []
-    //     setTickets(ownTickets)
-    //   } catch {
-    //     setError('Khong the tai danh sach yeu cau da gui.')
-    //     setTickets([])
-    //   }
-    // }
+  //       const ownTickets = Array.isArray(data) ? data.filter((ticket) => Number(ticket.requestedBy) === Number(user?.id)) : []
+  //       setTickets(ownTickets)
+  //     } catch {
+  //       setError('Khong the tai danh sach yeu cau da gui.')
+  //       setTickets([])
+  //     }
+  //   }
 
-    // loadTickets()
+  //   loadTickets()
+  // }, [user?.id])
+
+      useEffect(() => {
+  async function loadTickets() {
+    try {
       const data = await getTickets()
 
-const ownTickets = data  // ✅ FIX TẠM
+      // ✅ CHỈ SỬA DÒNG NÀY
+      const ownTickets = data
 
-setTickets(ownTickets)
-  }, [user?.id])
+      setTickets(ownTickets)
+    } catch {
+      setError('Khong the tai danh sach yeu cau da gui.')
+      setTickets([])
+    }
+  }
 
+  loadTickets()
+}, [user?.id])
   const filteredTickets = useMemo(() => {
     return [...tickets]
       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
