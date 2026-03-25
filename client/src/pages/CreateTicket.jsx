@@ -71,15 +71,27 @@ function CreateTicket() {
 
   const buildPayload = () => {
     return {
-      categoryId: form.categoryId,   // 👈 QUAN TRỌNG
-      title: form.title || '',
-      description: form.description,
-      factoryId: form.factoryId || null,
-      equipmentCode: form.equipmentCode || '',
-      area: form.area || '',
-      assignedTeam: form.assignedTeam,
-      dueDate: form.dueDate || null,
-      requestedBy: user?.id,
+      // categoryId: form.categoryId,   // 👈 QUAN TRỌNG
+      // title: form.title || '',
+      // description: form.description,
+      // factoryId: form.factoryId || null,
+      // equipmentCode: form.equipmentCode || '',
+      // area: form.area || '',
+      // assignedTeam: form.assignedTeam,
+      // dueDate: form.dueDate || null,
+      // requestedBy: user?.id,
+      categoryId: Number(form.categoryId),
+    factoryId: form.factoryId ? Number(form.factoryId) : null,
+    statusId: null, // backend tự set cũng được
+    requestedBy: Number(user?.id),
+
+    // giữ nguyên
+    title: form.title || '',
+    description: form.description || '',
+    equipmentCode: form.equipmentCode || '',
+    area: form.area || '',
+    assignedTeam: form.assignedTeam || '',
+    dueDate: form.dueDate || null,
     }
   }
 
