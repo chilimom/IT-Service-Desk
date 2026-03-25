@@ -53,7 +53,7 @@ function CreateTicket() {
     setErrorMessage('')
     setForm((prev) => ({
       ...prev,
-      [name]: name === ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,
+      [name]: name === ['categoryId', 'factoryId'].includes(name) ? Number(value) :value,// sửa
     }))
   }
 
@@ -62,12 +62,12 @@ function CreateTicket() {
       categoryId: form.categoryId,   // 👈 QUAN TRỌNG
       title: form.title || '',
       description: form.description,
-      factory: form.factory || null,
+      factoryId: form.factoryId || null,
       equipmentCode: form.equipmentCode || '',
       area: form.area || '',
       assignedTeam: form.assignedTeam,
       dueDate: form.dueDate || null,
-      equestedBy: user?.id,
+      requestedBy: user?.id,
     }
   }
 
@@ -83,7 +83,9 @@ if (!form.title && form.type === 'Support') {
   return
 }
 
-    if (!form.factory) {
+    if (!form.factoryId
+
+    ) {
       setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
       return
     }
