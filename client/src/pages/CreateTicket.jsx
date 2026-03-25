@@ -116,79 +116,150 @@ function CreateTicket() {
       : null,
   }
 }
-  const handleSubmit = async (event) => {
-    event.preventDefault()
+//   const handleSubmit = async (event) => {
+//     event.preventDefault()
+//   const payload = buildPayload()
+// if (!payload) return
+
+// console.log("PAYLOAD:", payload) // 👈 bắt buộc để debug
+//     if (!user?.id) {
+//   alert("Chưa có user")
+//   return
+// }
+//     if (!form.categoryId) {
+//     alert("Vui lòng chọn danh mục")
+//   return
+// }
+
+// if (!form.title && form.type === 'Support') {
+//   alert("Vui lòng nhập tiêu đề")
+//   return
+// }
+
+//     if (!form.factoryId
+
+//     ) {
+//       setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
+//       return
+//     }
+
+//     if (isMaintenance) {
+//       if (!form.area.trim()) {
+//         setErrorMessage('Vui long nhap Equipment truoc khi tao lenh bao tri.')
+//         return
+//       }
+
+//       if (!form.equipmentCode.trim()) {
+//         setErrorMessage('Vui long nhap Ten thiet bi truoc khi tao lenh bao tri.')
+//         return
+//       }
+
+//       if (!form.assignedTeam.trim()) {
+//         setErrorMessage('Vui long nhap Doi xu ly truoc khi tao lenh bao tri.')
+//         return
+//       }
+
+//       if (!form.description.trim()) {
+//         setErrorMessage('Vui long nhap Mo ta truoc khi tao lenh bao tri.')
+//         return
+//       }
+//     } else {
+//       if (!form.title.trim()) {
+//         setErrorMessage('Vui long nhap Tieu de truoc khi gui ticket ho tro CNTT.')
+//         return
+//       }
+
+//       if (!form.description.trim()) {
+//         setErrorMessage('Vui long nhap Mo ta truoc khi gui ticket ho tro CNTT.')
+//         return
+//       }
+//     }
+
+//     try {
+//       setIsSubmitting(true)
+//       setErrorMessage('')
+//       await createTicket(payload())
+//       alert('Tao ticket thanh cong!')
+//       setForm(initialForm)
+//     } catch (error) {
+//       console.error(error)
+//       alert('Loi tao ticket')
+//     } finally {
+//       setIsSubmitting(false)
+//     }
+//   }
+const handleSubmit = async (event) => {
+  event.preventDefault()
   const payload = buildPayload()
-if (!payload) return
+  if (!payload) return
 
-console.log("PAYLOAD:", payload) // 👈 bắt buộc để debug
-    if (!user?.id) {
-  alert("Chưa có user")
-  return
-}
-    if (!form.categoryId) {
+  console.log("PAYLOAD:", payload) // 👈 bắt buộc để debug
+  
+  if (!user?.id) {
+    alert("Chưa có user")
+    return
+  }
+  
+  if (!form.categoryId) {
     alert("Vui lòng chọn danh mục")
-  return
-}
+    return
+  }
 
-if (!form.title && form.type === 'Support') {
-  alert("Vui lòng nhập tiêu đề")
-  return
-}
+  if (!form.title && form.type === 'Support') {
+    alert("Vui lòng nhập tiêu đề")
+    return
+  }
 
-    if (!form.factoryId
+  if (!form.factoryId) {
+    setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
+    return
+  }
 
-    ) {
-      setErrorMessage('Vui long chon Nha may truoc khi tao ticket.')
+  if (isMaintenance) {
+    if (!form.area.trim()) {
+      setErrorMessage('Vui long nhap Equipment truoc khi tao lenh bao tri.')
       return
     }
 
-    if (isMaintenance) {
-      if (!form.area.trim()) {
-        setErrorMessage('Vui long nhap Equipment truoc khi tao lenh bao tri.')
-        return
-      }
-
-      if (!form.equipmentCode.trim()) {
-        setErrorMessage('Vui long nhap Ten thiet bi truoc khi tao lenh bao tri.')
-        return
-      }
-
-      if (!form.assignedTeam.trim()) {
-        setErrorMessage('Vui long nhap Doi xu ly truoc khi tao lenh bao tri.')
-        return
-      }
-
-      if (!form.description.trim()) {
-        setErrorMessage('Vui long nhap Mo ta truoc khi tao lenh bao tri.')
-        return
-      }
-    } else {
-      if (!form.title.trim()) {
-        setErrorMessage('Vui long nhap Tieu de truoc khi gui ticket ho tro CNTT.')
-        return
-      }
-
-      if (!form.description.trim()) {
-        setErrorMessage('Vui long nhap Mo ta truoc khi gui ticket ho tro CNTT.')
-        return
-      }
+    if (!form.equipmentCode.trim()) {
+      setErrorMessage('Vui long nhap Ten thiet bi truoc khi tao lenh bao tri.')
+      return
     }
 
-    try {
-      setIsSubmitting(true)
-      setErrorMessage('')
-      await createTicket(payload())
-      alert('Tao ticket thanh cong!')
-      setForm(initialForm)
-    } catch (error) {
-      console.error(error)
-      alert('Loi tao ticket')
-    } finally {
-      setIsSubmitting(false)
+    if (!form.assignedTeam.trim()) {
+      setErrorMessage('Vui long nhap Doi xu ly truoc khi tao lenh bao tri.')
+      return
+    }
+
+    if (!form.description.trim()) {
+      setErrorMessage('Vui long nhap Mo ta truoc khi tao lenh bao tri.')
+      return
+    }
+  } else {
+    if (!form.title.trim()) {
+      setErrorMessage('Vui long nhap Tieu de truoc khi gui ticket ho tro CNTT.')
+      return
+    }
+
+    if (!form.description.trim()) {
+      setErrorMessage('Vui long nhap Mo ta truoc khi gui ticket ho tro CNTT.')
+      return
     }
   }
 
+  try {
+    setIsSubmitting(true)
+    setErrorMessage('')
+    await createTicket(payload)  // ✅ Sửa ở đây - không có ()
+    alert('Tao ticket thanh cong!')
+    setForm(initialForm)
+  } catch (error) {
+    console.error(error)
+    alert('Loi tao ticket')
+  } finally {
+    setIsSubmitting(false)
+  }
+}
   return (
     <section className="create-ticket-page">
       <div className="form-container">
