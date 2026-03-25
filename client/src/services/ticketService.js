@@ -48,9 +48,9 @@ export async function getTicketDashboard() {
 // }
 // ticketService.js
 export const createTicket = async (ticketData) => {
+  console.log("📤 GỬI ĐẾN SERVER:", JSON.stringify(ticketData, null, 2))
+  
   try {
-    console.log('📤 Sending ticket data:', JSON.stringify(ticketData, null, 2));
-    
     const response = await fetch('http://localhost:5017/api/tickets', {
       method: 'POST',
       headers: {
@@ -59,28 +59,19 @@ export const createTicket = async (ticketData) => {
       body: JSON.stringify(ticketData),
     });
 
+    console.log("📥 RESPONSE STATUS:", response.status)
+    
     if (!response.ok) {
-      // Lấy chi tiết lỗi từ response
       const errorText = await response.text();
-      console.error('❌ Server response error:', errorText);
-      
-      let errorMessage = `HTTP ${response.status}`;
-      try {
-        const errorJson = JSON.parse(errorText);
-        errorMessage = errorJson.message || errorJson.title || errorText;
-        console.error('❌ Error details:', errorJson);
-      } catch (e) {
-        errorMessage = errorText;
-      }
-      
-      throw new Error(`Request failed: ${response.status} - ${errorMessage}`);
+      console.log("❌ LỖI SERVER:", errorText)
+      throw new Error(`Request failed: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('✅ Ticket created successfully:', result);
+    console.log("✅ THÀNH CÔNG:", result)
     return result;
   } catch (error) {
-    console.error('❌ SERVER ERROR:', error);
+    console.error('❌ LỖI:', error);
     throw error;
   }
 };
