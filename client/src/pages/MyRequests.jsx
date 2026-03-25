@@ -49,13 +49,18 @@ function MyRequests() {
   //     user?.username &&
   //     ticket.requestedByName === user.username
   //   )
-      const ownTickets = data.filter(
-            t => Number(t.requestedBy) === Number(user.id)
-              );  
-            []
+      // const ownTickets = data.filter(
+      //       t => Number(t.requestedBy) === Number(user.id)
+      //         );  
+      //       []
 
-      setTickets(ownTickets)
+      // setTickets(ownTickets)
+    const res = await fetch(
+  `http://localhost:5000/api/tickets/my?userId=${user.id}`
+);
 
+const data = await res.json();
+setTickets(data);
       // 🔍 debug (có thể xoá sau)
       console.log('USER ID:', user?.id)
       console.log('ALL TICKETS:', data)
