@@ -26,23 +26,32 @@ function CreateTicket() {
   const [categories, setCategories] = useState([])// thêm state categories để lưu danh sách category từ server
   const isMaintenance = form.type === 'Maintenance'
 
-  const selectedMaintenance = useMemo(() => {
-    return maintenanceOptions.find((item) => item.code === form.maintenanceCategory) ?? maintenanceOptions[0]
-  }, [form.maintenanceCategory]) 
-
+  // const selectedMaintenance = useMemo(() => {
+  //   return maintenanceOptions.find((item) => item.code === form.maintenanceCategory) ?? maintenanceOptions[0]
+  // }, [form.maintenanceCategory]) 
+  const selectedMaintenance =
+  maintenanceOptions.find(
+    (item) => item.code === form.maintenanceCategory
+  ) || maintenanceOptions[0]
     // hàm lấy category từ server khi component mount
-  useEffect(() => {
-  const typeMap = {
-    IT: 'Support',
-    Maintenance: 'Maintenance',
-  }
+//   useEffect(() => {
+//   const typeMap = {
+//     IT: 'Support',
+//     Maintenance: 'Maintenance',
+//   }
 
-  const apiType = typeMap[form.type]
+//   const apiType = typeMap[form.type]
 
-  fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
+//   fetch(`http://localhost:5017/api/categories?type=${apiType}`)  // 👈 SỬA DÒNG NÀY
+//     .then(res => res.json())
+//     .then(data => setCategories(data))
+// }, [form.type])
+
+      useEffect(() => {
+  fetch('http://localhost:5017/api/categories')
     .then(res => res.json())
     .then(data => setCategories(data))
-}, [form.type])
+}, [])
 // useEffect(() => {
 //   fetch('http://localhost:5017/api/categories')   // 👈 KHÔNG cần type
 //     .then(res => res.json())
