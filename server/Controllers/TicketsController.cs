@@ -31,7 +31,7 @@ namespace ITServiceDesk.Api.Controllers
         [HttpGet]
         public IActionResult GetFactories()
         {
-            var ticket = _ticketService.Factories
+            var data = _ticketService.Factories
                 .Select(f => new
                 {
                     id = f.Id,
@@ -40,7 +40,7 @@ namespace ITServiceDesk.Api.Controllers
                 })
                 .ToList();
 
-            return Ok(ticket);
+            return Ok(data);
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
