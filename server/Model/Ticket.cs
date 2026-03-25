@@ -16,7 +16,7 @@ namespace ITServiceDesk.Api.Models
         public string? EquipmentCode { get; set; }
         public string? Area { get; set; }
 
-        public int? RequestedBy { get; set; }
+        public int RequestedBy { get; set; }
         public int? AssignedTo { get; set; }
         public string? AssignedTeam { get; set; }
 

@@ -43,13 +43,16 @@ function MyRequests() {
       //         : false
       //     )
       //   : []
-      const ownTickets = Array.isArray(data)
-  ? data.filter((ticket) =>
-      ticket.requestedByName &&
-      user?.username &&
-      ticket.requestedByName === user.username
-    )
-  : []
+  //     const ownTickets = Array.isArray(data)
+  // ? data.filter((ticket) =>
+  //     ticket.requestedByName &&
+  //     user?.username &&
+  //     ticket.requestedByName === user.username
+  //   )
+      const ownTickets = data.filter(
+            t => Number(t.requestedBy) === Number(user.id)
+              );  
+            []
 
       setTickets(ownTickets)
 
