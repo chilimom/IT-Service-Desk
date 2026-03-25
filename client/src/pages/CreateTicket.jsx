@@ -361,7 +361,7 @@
 // }
 
 // export default CreateTicket
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { createTicket } from '../services/ticketService'
 import { maintenanceOptions } from '../ultils/ticketMeta'
@@ -388,10 +388,6 @@ function CreateTicket() {
   const [categories, setCategories] = useState([])
   const [factories, setFactories] = useState([])
   const isMaintenance = form.type === 'Maintenance'
-
-  const selectedMaintenance = maintenanceOptions.find(
-    (item) => item.code === form.maintenanceCategory
-  ) || maintenanceOptions[0]
 
   // Fetch categories
   useEffect(() => {
@@ -436,38 +432,15 @@ function CreateTicket() {
       return null
     }
 
-    // Check category
+    // Check category - bắt buộc vì database yêu cầu
     if (!form.categoryId) {
       setErrorMessage("Vui lòng chọn lĩnh vực")
       return null
     }
 
-    // Check factory
+    // Check factory - bắt buộc vì database yêu cầu
     if (!form.factoryId) {
       setErrorMessage("Vui lòng chọn nhà máy")
-      return null
-    }
-
-    // Create title for maintenance if empty
-    let title = form.title
-    if (isMaintenance && (!title || title.trim() === "")) {
-      const parts = []
-      if (form.equipmentCode && form.equipmentCode.trim()) {
-        parts.push(form.equipmentCode.trim())
-      }
-      if (form.area && form.area.trim()) {
-        parts.push(form.area.trim())
-      }
-      if (form.maintenanceCategory) {
-        const category = maintenanceOptions.find(opt => opt.code === form.maintenanceCategory)
-        if (category) parts.push(category.name)
-      }
-      title = parts.length > 0 ? `Bảo trì: ${parts.join(' - ')}` : "Bảo trì thiết bị"
-    }
-
-    // Validate title
-    if (!title || title.trim() === "") {
-      setErrorMessage("Vui lòng nhập tiêu đề")
       return null
     }
 
@@ -501,25 +474,40 @@ function CreateTicket() {
       }
     }
 
-    // Build payload
+    // Create title for maintenance if empty
+    let title = form.title
+    if (isMaintenance && (!title || title.trim() === "")) {
+      const parts = []
+      if (form.equipmentCode && form.equipmentCode.trim()) {
+        parts.push(form.equipmentCode.trim())
+      }
+      if (form.area && form.area.trim()) {
+        parts.push(form.area.trim())
+      }
+      title = parts.length > 0 ? `Bảo trì: ${parts.join(' - ')}` : "Bảo trì thiết bị"
+    }
+
+    // Build payload theo đúng CreateTicketDto
     const payload = {
+      // Bắt buộc
       categoryId: Number(form.categoryId),
       factoryId: Number(form.factoryId),
-      statusId: 1, // Set default status
-      requestedBy: Number(user.id),
-      title: title.trim(),
+      type: form.type, // QUAN TRỌNG: Thêm type vì database yêu cầu NOT NULL
+      
+      // Có thể null
+      statusId: 1, // Set status mặc định là "Submitted" hoặc tương ứng
+      title: title?.trim() || null,
       description: form.description.trim(),
-      equipmentCode: form.equipmentCode ? form.equipmentCode.trim() : "",
-      area: form.area ? form.area.trim() : "",
-      assignedTeam: form.assignedTeam ? form.assignedTeam.trim() : "",
+      equipmentCode: form.equipmentCode?.trim() || null,
+      area: form.area?.trim() || null,
+      requestedBy: Number(user.id),
+      assignedTeam: form.assignedTeam?.trim() || null,
       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
     }
 
-    // Add maintenance category if it's maintenance ticket
-    if (isMaintenance) {
-      payload.maintenanceCategory = form.maintenanceCategory
-    }
-
+    // Log để debug
+    console.log("📦 Payload gửi đi:", JSON.stringify(payload, null, 2))
+    
     return payload
   }
 
@@ -528,8 +516,6 @@ function CreateTicket() {
     
     const payload = buildPayload()
     if (!payload) return
-
-    console.log("PAYLOAD:", payload)
 
     try {
       setIsSubmitting(true)
