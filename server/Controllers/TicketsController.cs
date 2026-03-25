@@ -28,7 +28,20 @@ namespace ITServiceDesk.Api.Controllers
                 return StatusCode(500, new { message = "An error occurred", details = exception.Message });
             }
         }
+        [HttpGet]
+        public IActionResult GetFactories()
+        {
+            var ticket = _ticketService.Factories
+                .Select(f => new
+                {
+                    id = f.Id,
+                    code = f.Code,
+                    name = f.Name
+                })
+                .ToList();
 
+            return Ok(ticket);
+        }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

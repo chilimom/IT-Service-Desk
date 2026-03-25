@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { createTicket } from '../services/ticketService'
-import { factoryOptions, maintenanceOptions } from '../ultils/ticketMeta'
+import {  maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/form.css'
 
 const initialForm = {
@@ -54,7 +54,17 @@ function CreateTicket() {
     : value,
      }))
     } 
+    const [factories, setFactories] = useState([])
 
+useEffect(() => {
+  fetch("http://localhost:5017/api/factories")
+    .then(res => res.json())
+    .then(data => {
+      console.log("FACTORIES:", data)
+      setFactories(data)
+    })
+    .catch(err => console.error(err))
+}, [])
   const buildPayload = () => {
     return {
       categoryId: Number(form.categoryId),
@@ -163,14 +173,28 @@ if (!form.title && form.type === 'Support') {
 </select>
 
           <label>Nhà máy</label>
-          <select name="factoryId" value={form.factoryId} onChange={handleChange}>
+          {/* <select name="factoryId" value={form.factoryId} onChange={handleChange}>
             <option value="">Chọn nhà máy</option>
-            {factoryOptions.map((f) => (
+            {factories.map((f) => (
               <option key={f.id} value={f.id}>  
                 {f.code} - {f.name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <select
+  value={form.factoryId || ""}
+  onChange={(e) =>
+    setForm({ ...form, factoryId: Number(e.target.value) })
+  }
+>
+  <option value="">Chọn nhà máy</option>
+
+  {factories.map((f) => (
+    <option key={f.id} value={f.id}>
+      {f.code} - {f.name}
+    </option>
+  ))}
+</select>
 
           {isMaintenance && (
             <>
