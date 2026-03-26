@@ -29,24 +29,6 @@ export async function getTicketDashboard() {
   return request(`${API_URL}/dashboard`)
 }
 
-// export async function createTicket(payload) {
-//   const response = await fetch(API_URL, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(payload),
-//   })
-
-//   if (!response.ok) {
-//      const error = await response.json() // 🔥 lấy lỗi backend
-//     console.error("SERVER ERROR:", error)
-//     throw new Error(`Request failed: ${response.status}`)
-//   }
-
-//   return response.json()
-// }
-// ticketService.js
 export const createTicket = async (ticketData) => {
   console.log("📤 GỬI ĐẾN SERVER:", JSON.stringify(ticketData, null, 2))
   
