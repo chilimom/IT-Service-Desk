@@ -369,6 +369,7 @@ namespace ITServiceDesk.Api.Services
         public List<TicketResponseDto> GetAll()
         {
             return _context.Tickets
+                .Where(t => t.IsDeleted != true)
                 .OrderByDescending(t => t.CreatedAt)
                 .Select(t => MapToTicketResponseDto(t))
                 .ToList();
@@ -377,7 +378,7 @@ namespace ITServiceDesk.Api.Services
         public TicketResponseDto? GetById(int id)
         {
             return _context.Tickets
-                .Where(t => t.Id == id)
+                .Where(t => t.Id == id && t.IsDeleted != true)
                 .Select(t => MapToTicketResponseDto(t))
                 .FirstOrDefault();
         }
@@ -385,7 +386,7 @@ namespace ITServiceDesk.Api.Services
         public List<TicketResponseDto> GetByUser(int userId)
         {
             return _context.Tickets
-                .Where(t => t.RequestedBy == userId && (t.IsDeleted == null || t.IsDeleted == false))
+                .Where(t => t.RequestedBy == userId && t.IsDeleted != true)
                 .OrderByDescending(t => t.CreatedAt)
                 .Select(t => MapToTicketResponseDto(t))
                 .ToList();
@@ -394,7 +395,7 @@ namespace ITServiceDesk.Api.Services
         public object GetMyTickets(int userId)
         {
             return _context.Tickets
-                .Where(t => t.RequestedBy == userId && (t.IsDeleted == null || t.IsDeleted == false))
+                .Where(t => t.RequestedBy == userId && t.IsDeleted != true)
                 .OrderByDescending(t => t.CreatedAt)
                 .Select(t => new
                 {
@@ -407,12 +408,12 @@ namespace ITServiceDesk.Api.Services
                     t.RequestedBy,
                     RequestedByName = _context.Users
                         .Where(u => u.Id == t.RequestedBy)
-                        .Select(u => u.FullName != null ? u.FullName : u.Username)
+                        .Select(u => u.Username)
                         .FirstOrDefault(),
                     t.AssignedTo,
                     AssignedToName = _context.Users
                         .Where(u => u.Id == t.AssignedTo)
-                        .Select(u => u.FullName != null ? u.FullName : u.Username)
+                        .Select(u => u.Username)
                         .FirstOrDefault(),
                     t.AssignedTeam,
                     t.OrderCode,
@@ -468,11 +469,12 @@ namespace ITServiceDesk.Api.Services
 
         public object GetDashboard()
         {
-            var total = _context.Tickets.Count();
+            var total = _context.Tickets.Count(t => t.IsDeleted != true);
             var today = DateTime.UtcNow.Date;
-            var todayCount = _context.Tickets.Count(t => t.CreatedAt >= today);
+            var todayCount = _context.Tickets.Count(t => t.CreatedAt >= today && t.IsDeleted != true);
 
             var byStatus = _context.Tickets
+                .Where(t => t.IsDeleted != true)
                 .GroupBy(t => t.StatusId)
                 .Select(g => new
                 {
@@ -536,7 +538,8 @@ namespace ITServiceDesk.Api.Services
                 AssignedTeam = dto.AssignedTeam?.Trim() ?? "",
                 DueDate = dto.DueDate,
                 StatusId = 1, // Submitted
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
             };
 
             _context.Tickets.Add(ticket);
@@ -571,7 +574,7 @@ namespace ITServiceDesk.Api.Services
 
         public bool Update(int id, UpdateTicketDto dto)
         {
-            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id && t.IsDeleted != true);
             if (ticket == null)
                 return false;
 
@@ -589,13 +592,13 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
-            if (dto.FactoryId != null)
+            if (dto.FactoryId.HasValue)
             {
                 ticket.FactoryId = dto.FactoryId.Value;
                 hasChanges = true;
             }
 
-            if (dto.CategoryId != null)
+            if (dto.CategoryId.HasValue)
             {
                 ticket.CategoryId = dto.CategoryId.Value;
                 hasChanges = true;
@@ -625,15 +628,15 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
-            if (dto.StatusId != null)
+            if (dto.StatusId.HasValue)
             {
                 ticket.StatusId = dto.StatusId.Value;
                 hasChanges = true;
             }
 
-            if (dto.AssignedTo != null)
+            if (dto.AssignedTo.HasValue)
             {
-                ticket.AssignedTo = dto.AssignedTo;
+                ticket.AssignedTo = dto.AssignedTo.Value;
                 hasChanges = true;
             }
 
@@ -664,7 +667,7 @@ namespace ITServiceDesk.Api.Services
 
         public bool UserUpdate(int id, UserUpdateTicketDto dto)
         {
-            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id && t.IsDeleted != true);
             if (ticket == null)
                 return false;
 
@@ -686,7 +689,7 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
-            if (dto.FactoryId != null)
+            if (dto.FactoryId.HasValue)
             {
                 ticket.FactoryId = dto.FactoryId.Value;
                 hasChanges = true;
