@@ -431,17 +431,17 @@ namespace ITServiceDesk.Api.Services
                     AssignedToName = _context.Users
                         .Where(u => u.Id == t.AssignedTo)
                         .Select(u => u.Username)
-                        .FirstOrDefault()
-                    // Trong Select của GetById và GetMyTickets, thêm:
-MaintenanceTypeId = t.MaintenanceTypeId,
+                        .FirstOrDefault(),
+                    // THÊM DÒNG NÀY NẾU CÓ MAINTENANCE TYPE
+                    MaintenanceTypeId = t.MaintenanceTypeId,
                     MaintenanceTypeCode = _context.MaintenanceTypes
-    .Where(m => m.Id == t.MaintenanceTypeId)
-    .Select(m => m.Code)
-    .FirstOrDefault(),
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Code)
+                        .FirstOrDefault(),
                     MaintenanceTypeName = _context.MaintenanceTypes
-    .Where(m => m.Id == t.MaintenanceTypeId)
-    .Select(m => m.Name)
-    .FirstOrDefault(),
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Name)
+                        .FirstOrDefault()
                 })
                 .FirstOrDefault();
         }
@@ -504,16 +504,17 @@ MaintenanceTypeId = t.MaintenanceTypeId,
                     Status = _context.Statuses
                         .Where(s => s.Id == t.StatusId)
                         .Select(s => s.Name)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    // THÊM DÒNG NÀY NẾU CÓ MAINTENANCE TYPE
                     MaintenanceTypeId = t.MaintenanceTypeId,
                     MaintenanceTypeCode = _context.MaintenanceTypes
-    .Where(m => m.Id == t.MaintenanceTypeId)
-    .Select(m => m.Code)
-    .FirstOrDefault(),
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Code)
+                        .FirstOrDefault(),
                     MaintenanceTypeName = _context.MaintenanceTypes
-    .Where(m => m.Id == t.MaintenanceTypeId)
-    .Select(m => m.Name)
-    .FirstOrDefault(),
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Name)
+                        .FirstOrDefault()
                 })
                 .ToList();
         }
