@@ -432,6 +432,16 @@ namespace ITServiceDesk.Api.Services
                         .Where(u => u.Id == t.AssignedTo)
                         .Select(u => u.Username)
                         .FirstOrDefault()
+                    // Trong Select của GetById và GetMyTickets, thêm:
+MaintenanceTypeId = t.MaintenanceTypeId,
+                    MaintenanceTypeCode = _context.MaintenanceTypes
+    .Where(m => m.Id == t.MaintenanceTypeId)
+    .Select(m => m.Code)
+    .FirstOrDefault(),
+                    MaintenanceTypeName = _context.MaintenanceTypes
+    .Where(m => m.Id == t.MaintenanceTypeId)
+    .Select(m => m.Name)
+    .FirstOrDefault(),
                 })
                 .FirstOrDefault();
         }
@@ -495,6 +505,15 @@ namespace ITServiceDesk.Api.Services
                         .Where(s => s.Id == t.StatusId)
                         .Select(s => s.Name)
                         .FirstOrDefault()
+                    MaintenanceTypeId = t.MaintenanceTypeId,
+                    MaintenanceTypeCode = _context.MaintenanceTypes
+    .Where(m => m.Id == t.MaintenanceTypeId)
+    .Select(m => m.Code)
+    .FirstOrDefault(),
+                    MaintenanceTypeName = _context.MaintenanceTypes
+    .Where(m => m.Id == t.MaintenanceTypeId)
+    .Select(m => m.Name)
+    .FirstOrDefault(),
                 })
                 .ToList();
         }
@@ -582,6 +601,7 @@ namespace ITServiceDesk.Api.Services
                 Code = GenerateCode(),
                 CategoryId = dto.CategoryId,
                 FactoryId = dto.FactoryId,
+                MaintenanceTypeId = dto.MaintenanceTypeId, // Thêm dòng này
                 Title = string.IsNullOrWhiteSpace(dto.Title) ? category.Name : dto.Title.Trim(),
                 Description = dto.Description?.Trim() ?? "",
                 EquipmentCode = dto.EquipmentCode?.Trim() ?? "",
