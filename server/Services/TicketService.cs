@@ -569,7 +569,6 @@ namespace ITServiceDesk.Api.Services
                 ticket.CreatedAt
             };
         }
-
         // ==================== UPDATE METHODS ====================
 
         public bool Update(int id, UpdateTicketDto dto)
@@ -580,67 +579,71 @@ namespace ITServiceDesk.Api.Services
 
             bool hasChanges = false;
 
-            if (dto.Title != null)
+            if (!string.IsNullOrWhiteSpace(dto.Title))
             {
                 ticket.Title = dto.Title.Trim();
                 hasChanges = true;
             }
 
-            if (dto.Description != null)
+            if (!string.IsNullOrWhiteSpace(dto.Description))
             {
                 ticket.Description = dto.Description.Trim();
                 hasChanges = true;
             }
 
-            if (dto.FactoryId.HasValue)
+            // FactoryId là int, không phải nullable, chỉ update nếu có giá trị khác 0
+            if (dto.FactoryId > 0)
             {
-                ticket.FactoryId = dto.FactoryId.Value;
+                ticket.FactoryId = dto.FactoryId;
                 hasChanges = true;
             }
 
-            if (dto.CategoryId.HasValue)
+            // CategoryId là int, không phải nullable
+            if (dto.CategoryId > 0)
             {
-                ticket.CategoryId = dto.CategoryId.Value;
+                ticket.CategoryId = dto.CategoryId;
                 hasChanges = true;
             }
 
-            if (dto.EquipmentCode != null)
+            if (!string.IsNullOrWhiteSpace(dto.EquipmentCode))
             {
                 ticket.EquipmentCode = dto.EquipmentCode.Trim();
                 hasChanges = true;
             }
 
-            if (dto.Area != null)
+            if (!string.IsNullOrWhiteSpace(dto.Area))
             {
                 ticket.Area = dto.Area.Trim();
                 hasChanges = true;
             }
 
-            if (dto.AssignedTeam != null)
+            if (!string.IsNullOrWhiteSpace(dto.AssignedTeam))
             {
                 ticket.AssignedTeam = dto.AssignedTeam.Trim();
                 hasChanges = true;
             }
 
-            if (dto.DueDate != null)
+            if (dto.DueDate.HasValue)
             {
-                ticket.DueDate = dto.DueDate;
+                ticket.DueDate = dto.DueDate.Value;
                 hasChanges = true;
             }
 
+            // StatusId là int? (nullable)
             if (dto.StatusId.HasValue)
             {
                 ticket.StatusId = dto.StatusId.Value;
                 hasChanges = true;
             }
 
+            // AssignedTo là int? (nullable)
             if (dto.AssignedTo.HasValue)
             {
                 ticket.AssignedTo = dto.AssignedTo.Value;
                 hasChanges = true;
             }
 
-            if (dto.OrderCode != null)
+            if (!string.IsNullOrWhiteSpace(dto.OrderCode))
             {
                 ticket.OrderCode = dto.OrderCode.Trim();
                 hasChanges = true;
@@ -677,45 +680,46 @@ namespace ITServiceDesk.Api.Services
 
             bool hasChanges = false;
 
-            if (dto.Title != null)
+            if (!string.IsNullOrWhiteSpace(dto.Title))
             {
                 ticket.Title = dto.Title.Trim();
                 hasChanges = true;
             }
 
-            if (dto.Description != null)
+            if (!string.IsNullOrWhiteSpace(dto.Description))
             {
                 ticket.Description = dto.Description.Trim();
                 hasChanges = true;
             }
 
-            if (dto.FactoryId.HasValue)
+            // FactoryId là int, không phải nullable
+            if (dto.FactoryId > 0)
             {
-                ticket.FactoryId = dto.FactoryId.Value;
+                ticket.FactoryId = dto.FactoryId;
                 hasChanges = true;
             }
 
-            if (dto.EquipmentCode != null)
+            if (!string.IsNullOrWhiteSpace(dto.EquipmentCode))
             {
                 ticket.EquipmentCode = dto.EquipmentCode.Trim();
                 hasChanges = true;
             }
 
-            if (dto.Area != null)
+            if (!string.IsNullOrWhiteSpace(dto.Area))
             {
                 ticket.Area = dto.Area.Trim();
                 hasChanges = true;
             }
 
-            if (dto.AssignedTeam != null)
+            if (!string.IsNullOrWhiteSpace(dto.AssignedTeam))
             {
                 ticket.AssignedTeam = dto.AssignedTeam.Trim();
                 hasChanges = true;
             }
 
-            if (dto.DueDate != null)
+            if (dto.DueDate.HasValue)
             {
-                ticket.DueDate = dto.DueDate;
+                ticket.DueDate = dto.DueDate.Value;
                 hasChanges = true;
             }
 
