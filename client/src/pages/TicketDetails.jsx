@@ -1231,10 +1231,10 @@ function TicketDetails() {
       </>
     )}
 
-    {/* PHẦN ADMIN EDIT GIỮ NGUYÊN */}
-    {isAdmin && isEditing && (
+     {/* PHẦN ADMIN EDIT GIỮ NGUYÊN */}
+      {isAdmin && isEditing && (
       // ... phần admin edit giữ nguyên
-    )}
+        )}
 
     {(isAdmin || canUserEdit) && (
       <button
