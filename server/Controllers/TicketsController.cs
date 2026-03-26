@@ -109,12 +109,75 @@ namespace ITServiceDesk.Api.Controllers
             var data = _ticketService.GetDashboard();
             return Ok(data);
         }
+        // [HttpGet("my")]
+        // public IActionResult GetMyTickets([FromQuery] int userId)
+        // {
+        //     try
+        //     {
+        //         var tickets = _ticketService.GetByUser(userId);
+        //         return Ok(tickets);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, new { message = ex.Message });
+        //     }
+        // }
         [HttpGet("my")]
         public IActionResult GetMyTickets([FromQuery] int userId)
         {
             try
             {
-                var tickets = _ticketService.GetByUser(userId);
+                var tickets = _context.Tickets
+                    .Where(t => t.RequestedBy == userId && !t.IsDeleted)
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.Code,
+                        t.Title,
+                        t.Description,
+                        t.EquipmentCode,
+                        t.Area,
+                        t.RequestedBy,
+                        RequestedByName = _context.Users
+                            .Where(u => u.Id == t.RequestedBy)
+                            .Select(u => u.FullName)
+                            .FirstOrDefault(),
+                        t.AssignedTo,
+                        AssignedToName = _context.Users
+                            .Where(u => u.Id == t.AssignedTo)
+                            .Select(u => u.FullName)
+                            .FirstOrDefault(),
+                        t.AssignedTeam,
+                        t.OrderCode,
+                        t.CreatedAt,
+                        t.UpdatedAt,
+                        t.DueDate,
+                        t.CategoryId,
+                        CategoryName = _context.Categories
+                            .Where(c => c.Id == t.CategoryId)
+                            .Select(c => c.Name)
+                            .FirstOrDefault(),
+                        CategoryType = _context.Categories
+                            .Where(c => c.Id == t.CategoryId)
+                            .Select(c => c.Type)
+                            .FirstOrDefault(),
+                        t.FactoryId,
+                        FactoryName = _context.Factories
+                            .Where(f => f.Id == t.FactoryId)
+                            .Select(f => f.Name)
+                            .FirstOrDefault(),
+                        FactoryCode = _context.Factories
+                            .Where(f => f.Id == t.FactoryId)
+                            .Select(f => f.Code)
+                            .FirstOrDefault(),
+                        t.StatusId,
+                        Status = _context.Statuses
+                            .Where(s => s.Id == t.StatusId)
+                            .Select(s => s.Name)
+                            .FirstOrDefault()
+                    })
+                    .ToList();
+
                 return Ok(tickets);
             }
             catch (Exception ex)
@@ -122,7 +185,6 @@ namespace ITServiceDesk.Api.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
 
     }
 }
