@@ -220,7 +220,7 @@ import { FiEdit2, FiEye } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import path from '../ultils/path'
-import { factoryOptions, formatTicketCode, getFactoryLabel, getOrderCodeDisplay, getTicketTypeLabel, maintenanceOptions } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -245,11 +245,13 @@ function MyRequests() {
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
 
   // Fetch tickets của user hiện tại
   useEffect(() => {
     const fetchTickets = async () => {
       try {
+        setLoading(true)
         if (!user?.id) return
         
         const response = await fetch(`http://localhost:5017/api/tickets/my?userId=${user.id}`)
@@ -270,29 +272,13 @@ function MyRequests() {
         console.error("❌ Error fetching tickets:", err)
         setError('Khong the tai danh sach yeu cau da gui.')
         setTickets([])
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchTickets()
   }, [user?.id])
-
-  // Lấy tên nhà máy từ factoryId
-  const getFactoryName = (factoryId) => {
-    const factory = factoryOptions.find(f => f.code === factoryId || f.id === factoryId)
-    return factory ? `${factory.code} - ${factory.name}` : factoryId || 'Chua co nha may'
-  }
-
-  // Lấy loại bảo trì từ title hoặc description
-  const getMaintenanceInfo = (ticket) => {
-    if (ticket.categoryType !== 'Maintenance') return null
-    
-    // Tìm maintenance category từ title
-    const maintenanceCode = maintenanceOptions.find(opt => 
-      ticket.title?.includes(opt.code)
-    )
-    
-    return maintenanceCode || null
-  }
 
   // Filter tickets
   const filteredTickets = useMemo(() => {
@@ -308,8 +294,7 @@ function MyRequests() {
       })
       .filter((ticket) => {
         if (factoryFilter === 'ALL') return true
-        const factoryName = getFactoryName(ticket.factoryId)
-        return factoryName === factoryFilter
+        return ticket.factoryName === factoryFilter
       })
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
   }, [factoryFilter, statusFilter, tickets, typeFilter])
@@ -322,7 +307,7 @@ function MyRequests() {
   const types = useMemo(() => {
     const typeList = ['ALL']
     const hasMaintenance = tickets.some(t => t.categoryType === 'Maintenance')
-    const hasIT = tickets.some(t => t.categoryType === 'IT' || t.categoryType === 'Support')
+    const hasIT = tickets.some(t => t.categoryType === 'Support')
     
     if (hasMaintenance) typeList.push('Maintenance')
     if (hasIT) typeList.push('IT')
@@ -333,8 +318,7 @@ function MyRequests() {
   const factories = useMemo(() => {
     const factorySet = new Set(['ALL'])
     tickets.forEach(ticket => {
-      const factoryName = getFactoryName(ticket.factoryId)
-      if (factoryName) factorySet.add(factoryName)
+      if (ticket.factoryName) factorySet.add(ticket.factoryName)
     })
     return Array.from(factorySet)
   }, [tickets])
@@ -344,8 +328,8 @@ function MyRequests() {
     return normalizedStatus === 'submitted'
   }
 
-  const getTicketType = (ticket) => {
-    return ticket.categoryType === 'Maintenance' ? 'Maintenance' : 'IT'
+  if (loading) {
+    return <div className="requests-page__loading">Đang tải dữ liệu...</div>
   }
 
   return (
@@ -409,39 +393,30 @@ function MyRequests() {
 
         <div className="requests-table__body">
           {filteredTickets.map((ticket) => {
-            const maintenanceInfo = getMaintenanceInfo(ticket)
             const isMaintenance = ticket.categoryType === 'Maintenance'
-            const factoryName = getFactoryName(ticket.factoryId)
             
             return (
               <article key={ticket.id} className="requests-row">
                 <div>
-                  <strong>{formatTicketCode(ticket)}</strong>
+                  <strong>{ticket.code || `TKT-${ticket.id}`}</strong>
                   <p>ID: {ticket.id}</p>
                 </div>
                 <div>
                   <strong>{isMaintenance ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}</strong>
-                  <p>{ticket.title || ticket.description || 'Chua co mo ta'}</p>
-                  {maintenanceInfo && (
-                    <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                      Loại bảo trì: {maintenanceInfo.code} - {maintenanceInfo.name}
-                    </small>
-                  )}
-                  {ticket.categoryName && !isMaintenance && (
-                    <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                      Lĩnh vực: {ticket.categoryName}
-                    </small>
-                  )}
+                  <p>{ticket.title || 'Chua co tieu de'}</p>
+                  <small style={{ fontSize: '0.75rem', color: '#666' }}>
+                    Lĩnh vực: {ticket.categoryName || 'Chua co'}
+                  </small>
                 </div>
                 <div>
                   <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
                   <p>Khu vực: {ticket.area || 'Chua co khu vuc'}</p>
                   <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                    Nhà máy: {factoryName}
+                    Nhà máy: {ticket.factoryName || 'Chua co nha may'} ({ticket.factoryCode || ''})
                   </small>
                 </div>
                 <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
-                <span>{getOrderCodeDisplay(ticket)}</span>
+                <span>{ticket.orderCode || 'Chua co'}</span>
                 <div>
                   <strong>Tạo: {formatDate(ticket.createdAt)}</strong>
                   <p>Hạn: {formatDate(ticket.dueDate)}</p>
@@ -463,7 +438,7 @@ function MyRequests() {
             )
           })}
 
-          {filteredTickets.length === 0 && (
+          {filteredTickets.length === 0 && !loading && (
             <div className="requests-empty">
               {error ? error : 'Chưa có ticket nào của bạn.'}
             </div>
