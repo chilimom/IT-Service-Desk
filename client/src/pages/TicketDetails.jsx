@@ -1347,7 +1347,7 @@ function TicketDetails() {
     if (!ticket) return false
      console.log("Ticket categoryType:", ticket.categoryType)
     console.log("Ticket categoryName:", ticket.categoryName)
-    
+
     return ticket.categoryType === 'Maintenance' || ticket.categoryName?.toLowerCase().includes('bảo trì')
   }, [ticket])
 
@@ -1587,13 +1587,20 @@ function TicketDetails() {
                 </div>
 
                 {/* Chỉ hiển thị khi là Maintenance */}
-                {isMaintenance && (
+                {/* {isMaintenance && (
                   <>
                     <label>Loai bao tri</label>
                     <div className="ticket-details__field-view">{maintenanceHeadline || 'chưa có loại bảo trì'}</div>
                   </>
-                )}
-
+                )} */}
+                {isMaintenance && (
+    <>
+        <label>Loai bao tri</label>
+        <div className="ticket-details__field-view">
+            {ticket.categoryName || 'Chua co loai bao tri'}
+        </div>
+    </>
+)}
                 {/* Chỉ hiển thị khi là IT/Support */}
                 {!isMaintenance && (
                   <>
