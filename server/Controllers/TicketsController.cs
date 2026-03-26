@@ -109,19 +109,7 @@ namespace ITServiceDesk.Api.Controllers
             var data = _ticketService.GetDashboard();
             return Ok(data);
         }
-        // [HttpGet("my")]
-        // public IActionResult GetMyTickets([FromQuery] int userId)
-        // {
-        //     try
-        //     {
-        //         var tickets = _ticketService.GetByUser(userId);
-        //         return Ok(tickets);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, new { message = ex.Message });
-        //     }
-        // }
+
         [HttpGet("my")]
         public IActionResult GetMyTickets([FromQuery] int userId)
         {

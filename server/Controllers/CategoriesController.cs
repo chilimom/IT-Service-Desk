@@ -15,16 +15,6 @@ public class CategoriesController : ControllerBase
         _context = context;
     }
 
-    // [HttpGet]
-    // public IActionResult Get(string type)
-    // {
-    //     var data = _context.Categories
-    //     .Where(x => x.Type == type)
-    //     .ToList();
-    //     return Ok(data);
-
-
-    // }
     [HttpGet]
     public IActionResult GetCategories([FromQuery] string? type = null)
     {
