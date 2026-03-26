@@ -1688,15 +1688,16 @@ function TicketDetails() {
                     {isEditingMaintenance && (
                       <>
                         <label className="ticket-details__form-field ticket-details__form-field--full">
-                          <span>Loai bao tri</span>
-                          <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange} disabled={!isEditing}>
-                            {maintenanceOptions.map((option) => (
-                              <option key={option.code} value={option.code}>
-                                {option.code} - {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
+      <span>Loai bao tri</span>
+      <select name="maintenanceTypeId" value={form.maintenanceTypeId} onChange={handleChange}>
+        <option value="">Chon loai bao tri</option>
+        {maintenanceTypes.map(type => (
+          <option key={type.id} value={type.id}>
+            {type.code} - {type.name}
+          </option>
+        ))}
+      </select>
+    </label>
                       </>
                     )}
 
