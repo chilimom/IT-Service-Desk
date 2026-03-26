@@ -375,14 +375,66 @@ namespace ITServiceDesk.Api.Services
                 .ToList();
         }
 
+        // public TicketResponseDto? GetById(int id)
+        // {
+        //     return _context.Tickets
+        //         .Where(t => t.Id == id && t.IsDeleted != true)
+        //         .Select(t => MapToTicketResponseDto(t))
+        //         .FirstOrDefault();
+        // }
         public TicketResponseDto? GetById(int id)
         {
             return _context.Tickets
                 .Where(t => t.Id == id && t.IsDeleted != true)
-                .Select(t => MapToTicketResponseDto(t))
+                .Select(t => new TicketResponseDto
+                {
+                    Id = t.Id,
+                    Code = t.Code,
+                    Title = t.Title,
+                    Description = t.Description,
+                    EquipmentCode = t.EquipmentCode,
+                    Area = t.Area,
+                    AssignedTeam = t.AssignedTeam,
+                    OrderCode = t.OrderCode,
+                    CreatedAt = t.CreatedAt,
+                    UpdatedAt = t.UpdatedAt,
+                    DueDate = t.DueDate,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _context.Categories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault(),
+                    CategoryType = _context.Categories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Type)
+                        .FirstOrDefault(),
+                    FactoryId = t.FactoryId,
+                    FactoryName = _context.Factories
+                        .Where(f => f.Id == t.FactoryId)
+                        .Select(f => f.Name)
+                        .FirstOrDefault(),
+                    FactoryCode = _context.Factories
+                        .Where(f => f.Id == t.FactoryId)
+                        .Select(f => f.Code)
+                        .FirstOrDefault(),
+                    StatusId = t.StatusId,
+                    Status = _context.Statuses
+                        .Where(s => s.Id == t.StatusId)
+                        .Select(s => s.Name)
+                        .FirstOrDefault(),
+                    RequestedBy = t.RequestedBy,
+                    RequestedByName = _context.Users
+                        .Where(u => u.Id == t.RequestedBy)
+                        .Select(u => u.Username)
+                        .FirstOrDefault(),
+                    AssignedTo = t.AssignedTo,
+                    AssignedToName = _context.Users
+                        .Where(u => u.Id == t.AssignedTo)
+                        .Select(u => u.Username)
+                        .FirstOrDefault()
+                })
                 .FirstOrDefault();
         }
-
         public List<TicketResponseDto> GetByUser(int userId)
         {
             return _context.Tickets
