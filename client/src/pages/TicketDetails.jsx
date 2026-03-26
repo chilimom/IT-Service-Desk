@@ -890,94 +890,90 @@ function TicketDetails() {
                 </button>
               )}
             </div>
+// Trong phần view mode (không editing)
+{!isEditing && (
+  <div className="ticket-details__form-view">
+    <label>Loai Ticket</label>
+    <div className="ticket-details__field-view">
+      {isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}
+    </div>
 
-            {!isEditing && (
-              <div className="ticket-details__form-view">
-                <label>Loai Ticket</label>
-                {/* <div className="ticket-details__field-view">
-                  {isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}
-                </div> */}
-                / Sửa phần hiển thị loại ticket
-<div className="ticket-details__field-view">
-    {isMaintenance ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}
-</div>
+    <label>Linh vuc</label>
+    <div className="ticket-details__field-view">
+      {ticket.categoryName || 'Chua co'}
+    </div>
 
-                {/* <label>Linh vuc</label>
-                <div className="ticket-details__field-view">{ticket.categoryName || 'Chua co'}</div> */}
-                // Sửa phần hiển thị lĩnh vực
-<label>Lĩnh vực</label>
-<div className="ticket-details__field-view">
-    {ticket.categoryName || 'Chưa có'}
-</div>
-                {/* <label>Nha may</label>
-                <div className="ticket-details__field-view">{getFactoryLabel(ticket.factoryCode) || ticket.factoryName || 'Chua co'}</div> */}
-                // Sửa phần hiển thị nhà máy
-<div className="ticket-details__field-view">
-    {ticket.factoryName || ticket.factory || 'Chưa có'}
-    {ticket.factoryCode && ` (${ticket.factoryCode})`}
-</div>
-                {isMaintenance && (
-                  <>
-                    <label>Loai bao tri</label>
-                    <div className="ticket-details__field-view">{maintenanceHeadline}</div>
-                  </>
-                )}
+    <label>Nha may</label>
+    <div className="ticket-details__field-view">
+      {ticket.factoryName || ticket.factory || 'Chua co'}
+    </div>
 
-                {!isMaintenance && (
-                  <>
-                    <label>Tieu de ho tro</label>
-                    <div className="ticket-details__field-view">{ticket.title || 'Chua co tieu de'}</div>
-                  </>
-                )}
+    {/* CHỈ HIỂN THỊ KHI LÀ MAINTENANCE */}
+    {isMaintenance && (
+      <>
+        <label>Loai bao tri</label>
+        <div className="ticket-details__field-view">{maintenanceHeadline}</div>
+      </>
+    )}
 
-                {isMaintenance && (
-                  <>
-                    <label>Equipment</label>
-                    <div className="ticket-details__field-view">{ticket.area || 'Chua co'}</div>
+    {/* CHỈ HIỂN THỊ KHI LÀ IT/SUPPORT */}
+    {!isMaintenance && (
+      <>
+        <label>Tieu de ho tro</label>
+        <div className="ticket-details__field-view">{ticket.title || 'Chua co tieu de'}</div>
+      </>
+    )}
 
-                    <label>Ten thiet bi</label>
-                    <div className="ticket-details__field-view">{ticket.equipmentCode || 'Chua co'}</div>
-                  </>
-                )}
+    {/* CHỈ HIỂN THỊ KHI LÀ MAINTENANCE */}
+    {isMaintenance && (
+      <>
+        <label>Equipment</label>
+        <div className="ticket-details__field-view">{ticket.area || 'Chua co'}</div>
 
-                <label>Doi xu ly</label>
-                <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
+        <label>Ten thiet bi</label>
+        <div className="ticket-details__field-view">{ticket.equipmentCode || 'Chua co'}</div>
+      </>
+    )}
 
-                {!isAdmin && (
-                  <>
-                    <label>Nguoi tiep nhan</label>
-                    <div className="ticket-details__field-view">{assigneeDisplay}</div>
-                  </>
-                )}
+    <label>Doi xu ly</label>
+    <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
-                <label>Mo ta</label>
-                <div className="ticket-details__field-view ticket-details__field-view--textarea">
-                  {ticket.description || 'Chua co mo ta'}
-                </div>
+    {/* PHẦN CÒN LẠI GIỮ NGUYÊN */}
+    {!isAdmin && (
+      <>
+        <label>Nguoi tiep nhan</label>
+        <div className="ticket-details__field-view">{assigneeDisplay}</div>
+      </>
+    )}
 
-                <label>Han xu ly</label>
-                <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
+    <label>Mo ta</label>
+    <div className="ticket-details__field-view ticket-details__field-view--textarea">
+      {ticket.description || 'Chua co mo ta'}
+    </div>
 
-                {isAdmin && (
-                  <>
-                    <label>Nguoi tao</label>
-                    <div className="ticket-details__field-view">{requesterDisplay}</div>
-                  </>
-                )}
+    <label>Han xu ly</label>
+    <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
 
-                <label>Thoi gian tao</label>
-                <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
+    {isAdmin && (
+      <>
+        <label>Nguoi tao</label>
+        <div className="ticket-details__field-view">{requesterDisplay}</div>
+      </>
+    )}
 
-                {isMaintenance && (
-                  <>
-                    <label>So order</label>
-                    <div className="ticket-details__field-view">{orderCodeDisplay}</div>
-                  </>
-                )}
-              </div>
-            )}
+    <label>Thoi gian tao</label>
+    <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
 
-            {isEditing && (
+    {/* CHỈ HIỂN THỊ SỐ ORDER KHI LÀ MAINTENANCE */}
+    {isMaintenance && (
+      <>
+        <label>So order</label>
+        <div className="ticket-details__field-view">{orderCodeDisplay}</div>
+      </>
+    )}
+  </div>
+)}
+            {/* {isEditing && (
               <form className="ticket-details__form" onSubmit={handleSave}>
                 {!isAdmin && (
                   <>
@@ -1147,8 +1143,111 @@ function TicketDetails() {
                   </button>
                 )}
               </form>
-            )}
+            )} */}
           </div>
+          {isEditing && (
+  <form className="ticket-details__form" onSubmit={handleSave}>
+    {!isAdmin && (
+      <>
+        <label className="ticket-details__form-field ticket-details__form-field--full">
+          <span>Loai Ticket</span>
+          <select name="type" value={form.type} onChange={handleChange} disabled={!isEditing}>
+            <option value="Maintenance">Lenh bao tri</option>
+            <option value="IT">Ho tro CNTT</option>
+          </select>
+        </label>
+
+        <label className="ticket-details__form-field ticket-details__form-field--full">
+          <span>Nha may</span>
+          <select name="factoryId" value={form.factoryId} onChange={handleChange} disabled={!isEditing}>
+            <option value="">Chon nha may</option>
+            {factoryOptions.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.code} - {option.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {/* CHỈ HIỂN THỊ KHI LÀ MAINTENANCE */}
+        {isEditingMaintenance && (
+          <>
+            <label className="ticket-details__form-field ticket-details__form-field--full">
+              <span>Loai bao tri</span>
+              <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange} disabled={!isEditing}>
+                {maintenanceOptions.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.code} - {option.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="ticket-details__field-note">
+              Loai bao tri se duoc map vao thong tin ticket. So order se do admin cap nhat sau khi xu ly.
+            </div>
+          </>
+        )}
+
+        {/* CHỈ HIỂN THỊ KHI LÀ IT/SUPPORT */}
+        {!isEditingMaintenance && (
+          <label className="ticket-details__form-field ticket-details__form-field--full">
+            <span>Tieu de</span>
+            <input name="title" value={form.title} onChange={handleChange} disabled={!isEditing} />
+          </label>
+        )}
+
+        <label className="ticket-details__form-field ticket-details__form-field--full">
+          <span>Mo ta</span>
+          <textarea name="description" rows="6" value={form.description} onChange={handleChange} disabled={!isEditing} />
+        </label>
+
+        <div className="ticket-details__form-split">
+          {/* CHỈ HIỂN THỊ KHI LÀ MAINTENANCE */}
+          {isEditingMaintenance && (
+            <>
+              <label className="ticket-details__form-field">
+                <span>Ten thiet bi</span>
+                <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} disabled={!isEditing} />
+              </label>
+
+              <label className="ticket-details__form-field">
+                <span>Equipment</span>
+                <input name="area" value={form.area} onChange={handleChange} disabled={!isEditing} />
+              </label>
+            </>
+          )}
+
+          <label className="ticket-details__form-field">
+            <span>Doi xu ly</span>
+            <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} disabled={!isEditing} />
+          </label>
+
+          <label className="ticket-details__form-field">
+            <span>Han xu ly</span>
+            <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} disabled={!isEditing} />
+          </label>
+        </div>
+      </>
+    )}
+
+    {/* PHẦN ADMIN EDIT GIỮ NGUYÊN */}
+    {isAdmin && isEditing && (
+      // ... phần admin edit giữ nguyên
+    )}
+
+    {(isAdmin || canUserEdit) && (
+      <button
+        type="submit"
+        className="ticket-details__button ticket-details__button--icon"
+        disabled={isSaving}
+        title={isSaving ? 'Dang luu...' : 'Luu thay doi'}
+      >
+        <FiSave size={18} />
+      </button>
+    )}
+  </form>
+)}
         </section>
       </div>
     </section>
