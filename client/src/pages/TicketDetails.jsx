@@ -1569,30 +1569,38 @@ function TicketDetails() {
             </div>
 
             {/* VIEW MODE */}
-            {!isEditing && (
-              <div className="ticket-details__form-view">
-                <label>Loai Ticket</label>
-                <div className="ticket-details__field-view">
-                  {isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}
-                </div>
+            // Trong phần hiển thị view mode
+{!isEditing && (
+  <div className="ticket-details__form-view">
+    <label>Loai Ticket</label>
+    <div className="ticket-details__field-view">
+      {isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}
+    </div>
 
-                <label>Linh vuc</label>
-                <div className="ticket-details__field-view">
-                  {ticket.categoryName || 'Chua co'}
-                </div>
+    {/* LĨNH VỰC - Category */}
+    <label>Linh vuc</label>
+    <div className="ticket-details__field-view">
+      {ticket.categoryName || 'Chua co'}
+    </div>
 
-                <label>Nha may</label>
-                <div className="ticket-details__field-view">
-                  {ticket.factoryName || ticket.factory || 'Chua co'}
-                </div>
+    <label>Nha may</label>
+    <div className="ticket-details__field-view">
+      {ticket.factoryName || ticket.factory || 'Chua co'}
+    </div>
 
-                {/* Chỉ hiển thị khi là Maintenance */}
-                {/* {isMaintenance && (
-                  <>
-                    <label>Loai bao tri</label>
-                    <div className="ticket-details__field-view">{maintenanceHeadline || 'chưa có loại bảo trì'}</div>
-                  </>
-                )} */}
+    {/* LOẠI BẢO TRÌ - Chỉ hiển thị khi là Maintenance */}
+    {isMaintenance && ticket.maintenanceTypeName && (
+      <>
+        <label>Loai bao tri</label>
+        <div className="ticket-details__field-view">
+          {ticket.maintenanceTypeCode} - {ticket.maintenanceTypeName}
+        </div>
+      </>
+    )}
+
+    {/* Các field khác... */}
+  </div>
+)}
                 {isMaintenance && (
     <>
         <label>Loai bao tri</label>
