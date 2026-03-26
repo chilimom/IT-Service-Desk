@@ -283,7 +283,7 @@ import '../styles/form.css'
 const initialForm = {
   type: 'Maintenance',
   factoryId: '',
-  maintenanceCategory: 'PM01',
+  maintenanceTypeId: '', // Thay maintenanceCategory
   title: '',
   description: '',
   equipmentCode: '',
@@ -300,6 +300,7 @@ function CreateTicket() {
   const [errorMessage, setErrorMessage] = useState('')
   const [allCategories, setAllCategories] = useState([])
   const [factories, setFactories] = useState([])
+  const [maintenanceTypes, setMaintenanceTypes] = useState([])
   const isMaintenance = form.type === 'Maintenance'
 
   // Fetch tất cả categories
@@ -316,6 +317,13 @@ function CreateTicket() {
       .catch(err => console.error('Error fetching categories:', err))
   }, [])
 
+  // Fetch maintenance types
+useEffect(() => {
+    fetch('http://localhost:5017/api/MaintenanceTypes')
+        .then(res => res.json())
+        .then(data => setMaintenanceTypes(data))
+        .catch(err => console.error(err))
+}, [])
   // Filter categories theo loại ticket
   const filteredCategories = allCategories.filter(cat => 
     isMaintenance ? cat.type === 'Maintenance' : cat.type === 'Support'
@@ -462,14 +470,23 @@ function CreateTicket() {
 
           {isMaintenance && (
             <>
-              <label>Loại bảo trì</label>
+              {/* <label>Loại bảo trì</label>
               <select name="maintenanceCategory" value={form.maintenanceCategory} onChange={handleChange}>
                 {maintenanceOptions.map(option => (
                   <option key={option.code} value={option.code}>
                     {option.code} - {option.name}
                   </option>
                 ))}
-              </select>
+              </select> */}
+              <label>Loại bảo trì</label>
+        <select name="maintenanceTypeId" value={form.maintenanceTypeId} onChange={handleChange}>
+            <option value="">Chọn loại bảo trì</option>
+            {maintenanceTypes.map(type => (
+                <option key={type.id} value={type.id}>
+                    {type.code} - {type.name}
+                </option>
+            ))}
+        </select>
             </>
           )}
 
