@@ -14,6 +14,7 @@ namespace ITServiceDesk.Api.Data
         public DbSet<Factory> Factories { get; set; }   // ✅ THÊM
         public DbSet<Status> Statuses { get; set; }     // ✅ THÊM
         public DbSet<LoaiTicket> LoaiTicket { get; set; } // ✅ THÊM
+        public DbSet<MaintenanceType> MaintenanceTypes { get; set; }
     }
 
 

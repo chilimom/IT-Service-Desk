@@ -15,5 +15,6 @@ namespace ITServiceDesk.Api.DTOs
         public string? AssignedTeam { get; set; }
         // public int CategoryId { get; set; }// Thêm trường CategoryId
         public DateTime? DueDate { get; set; }
+        public int? MaintenanceTypeId { get; set; } // Thêm dòng này
     }
 }

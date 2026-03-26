@@ -850,5 +850,18 @@ namespace ITServiceDesk.Api.Services
                 AssignedTo = ticket.AssignedTo
             };
         }
+        public List<MaintenanceTypeDto> GetMaintenanceTypes()
+        {
+            return _context.MaintenanceTypes
+                .Where(m => m.IsActive)
+                .Select(m => new MaintenanceTypeDto
+                {
+                    Id = m.Id,
+                    Code = m.Code,
+                    Name = m.Name,
+                    Description = m.Description
+                })
+                .ToList();
+        }
     }
 }

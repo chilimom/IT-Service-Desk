@@ -61,5 +61,7 @@ namespace ITServiceDesk.Api.Models
         public bool? IsDeleted { get; set; } = false;
 
         public Category Category { get; set; }
+        public int? MaintenanceTypeId { get; set; }
+        public MaintenanceType? MaintenanceType { get; set; }
     }
 }

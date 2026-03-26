@@ -67,5 +67,8 @@ namespace ITServiceDesk.Api.DTOs
 
         // Type (tạm thời giữ cho tương thích)
         public string? LoaiTicket { get; set; }
+        public int? MaintenanceTypeId { get; set; }
+        public string? MaintenanceTypeCode { get; set; }
+        public string? MaintenanceTypeName { get; set; }
     }
 }
