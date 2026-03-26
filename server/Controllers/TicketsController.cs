@@ -127,57 +127,7 @@ namespace ITServiceDesk.Api.Controllers
         {
             try
             {
-                var tickets = _context.Tickets
-                    .Where(t => t.RequestedBy == userId && !t.IsDeleted)
-                    .Select(t => new
-                    {
-                        t.Id,
-                        t.Code,
-                        t.Title,
-                        t.Description,
-                        t.EquipmentCode,
-                        t.Area,
-                        t.RequestedBy,
-                        RequestedByName = _context.Users
-                            .Where(u => u.Id == t.RequestedBy)
-                            .Select(u => u.FullName)
-                            .FirstOrDefault(),
-                        t.AssignedTo,
-                        AssignedToName = _context.Users
-                            .Where(u => u.Id == t.AssignedTo)
-                            .Select(u => u.FullName)
-                            .FirstOrDefault(),
-                        t.AssignedTeam,
-                        t.OrderCode,
-                        t.CreatedAt,
-                        t.UpdatedAt,
-                        t.DueDate,
-                        t.CategoryId,
-                        CategoryName = _context.Categories
-                            .Where(c => c.Id == t.CategoryId)
-                            .Select(c => c.Name)
-                            .FirstOrDefault(),
-                        CategoryType = _context.Categories
-                            .Where(c => c.Id == t.CategoryId)
-                            .Select(c => c.Type)
-                            .FirstOrDefault(),
-                        t.FactoryId,
-                        FactoryName = _context.Factories
-                            .Where(f => f.Id == t.FactoryId)
-                            .Select(f => f.Name)
-                            .FirstOrDefault(),
-                        FactoryCode = _context.Factories
-                            .Where(f => f.Id == t.FactoryId)
-                            .Select(f => f.Code)
-                            .FirstOrDefault(),
-                        t.StatusId,
-                        Status = _context.Statuses
-                            .Where(s => s.Id == t.StatusId)
-                            .Select(s => s.Name)
-                            .FirstOrDefault()
-                    })
-                    .ToList();
-
+                var tickets = _ticketService.GetMyTickets(userId);
                 return Ok(tickets);
             }
             catch (Exception ex)
