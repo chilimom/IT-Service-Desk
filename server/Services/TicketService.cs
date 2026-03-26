@@ -602,7 +602,7 @@ namespace ITServiceDesk.Api.Services
                 RequestedBy = requestedBy,
                 AssignedTeam = dto.AssignedTeam?.Trim() ?? "",
                 DueDate = dto.DueDate,
-                StatusId = 1, // Submitted
+                StatusId = 3, // Submitted
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
