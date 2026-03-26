@@ -47,7 +47,7 @@
 
 .requests-filters {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 280px));
+  grid-template-columns: repeat(3, minmax(0, 280px));
   gap: 16px;
 }
 
@@ -130,7 +130,7 @@
 .requests-table__head,
 .requests-row {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr 0.9fr 0.9fr 1.1fr 0.8fr 0.8fr;
+  grid-template-columns: 1.2fr 1fr 1.2fr 1.1fr 0.9fr 0.8fr 0.7fr;
   gap: 14px;
   align-items: start;
 }
@@ -190,6 +190,10 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+}
+
+.requests-row__actions--end {
+  justify-content: flex-end;
 }
 
 .requests-row__action-icon {

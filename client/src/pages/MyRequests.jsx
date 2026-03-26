@@ -1,226 +1,9 @@
-// import { useEffect, useMemo, useState } from 'react'
-// import { FiEdit2, FiEye } from 'react-icons/fi'
-// import { Link } from 'react-router-dom'
-// import { useAuth } from '../context/AuthContext'
-// import { getTickets } from '../services/ticketService'
-// import path from '../ultils/path'
-// import { factoryOptions, formatTicketCode, getFactoryLabel, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
-// import '../styles/requests.css'
-
-// function formatDate(value) {
-//   if (!value) return 'Chua co'
-//   const date = new Date(value)
-//   if (Number.isNaN(date.getTime())) return 'Khong hop le'
-//   return date.toLocaleString('vi-VN')
-// }
-
-// function getStatusClass(status) {
-//   const normalized = (status || '').toLowerCase()
-//   if (normalized === 'submitted') return 'status-pill status-pill--submitted'
-//   if (normalized === 'inprogress') return 'status-pill status-pill--progress'
-//   if (normalized === 'done') return 'status-pill status-pill--done'
-//   return 'status-pill'
-// }
-
-// function MyRequests() {
-//   const { user } = useAuth()
-//   const [tickets, setTickets] = useState([])
-//   const [statusFilter, setStatusFilter] = useState('ALL')
-//   const [typeFilter, setTypeFilter] = useState('ALL')
-//   const [factoryFilter, setFactoryFilter] = useState('ALL')
-//   const [error, setError] = useState('')
-
- 
-//     useEffect(() => {
-//   const fetchTickets = async () => {
-//     try {
-//       const res = await fetch(
-//         `http://localhost:5017/api/tickets/my?userId=${user.id}`
-//       );
-
-//       const data = await res.json();
-
-//       console.log("DATA:", data);
-
-//       setTickets(data);
-//     } catch (err) {
-//       console.error("ERROR:", err);
-//     }
-//   };
-
-//   if (user?.id) {
-//     fetchTickets();
-//   }
-// }, [user]);
-//       // 🔥 FILTER CHUẨN THEO USER
-//       // const ownTickets = Array.isArray(data)
-//       //   ? data.filter((ticket) =>
-//       //       ticket.requestedBy && user?.id
-//       //         ? Number(ticket.requestedBy) === Number(user.id)
-//       //         : false
-//       //     )
-//       //   : []
-//   //     const ownTickets = Array.isArray(data)
-//   // ? data.filter((ticket) =>
-//   //     ticket.requestedByName &&
-//   //     user?.username &&
-//   //     ticket.requestedByName === user.username
-//   //   )
-//       // const ownTickets = data.filter(
-//       //       t => Number(t.requestedBy) === Number(user.id)
-//       //         );  
-//       //       []
-
-//       // setTickets(ownTickets)
-   
-//       // useEffect(() => {
-//       //   async function loadTickets() {
-//       //      try {
-//       //       const data = await getTickets()
-
-//       // // ✅ CHỈ SỬA DÒNG NÀY
-//       //       const ownTickets = data
-
-//       //       setTickets(ownTickets)
-//       //     } catch {
-//       //       setError('Khong the tai danh sach yeu cau da gui.')
-//       //       setTickets([])
-//       //     }
-//       //   }
-
-//       // loadTickets()
-//       // }, [user?.id])
-//   const filteredTickets = useMemo(() => {
-//     return [...tickets]
-//       .filter((ticket) => (statusFilter === 'ALL' ? true : ticket.status === statusFilter))
-//       .filter((ticket) => (typeFilter === 'ALL' ? true : ticket.loaiTicket === typeFilter))
-//       .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factoryName || '') === factoryFilter))
-//       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-//   }, [factoryFilter, statusFilter, tickets, typeFilter])
-
-//   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
-//   const types = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.loaiTicket).filter(Boolean))], [tickets])
-//   const factories = useMemo(() => {
-//     const knownFactoryValues = new Set(factoryOptions.map((option) => option.name))
-//     tickets.map((ticket) => ticket.factoryName).filter(Boolean).forEach((factory) => knownFactoryValues.add(factory))
-//     return ['ALL', ...knownFactoryValues]
-//   }, [tickets])
-
-//   const canEditTicket = (ticket) => {
-//     const normalizedStatus = (ticket?.status || '').toLowerCase()
-//     return normalizedStatus !== 'inprogress' && normalizedStatus !== 'done'
-//   }
-
-//   return (
-//     <section className="requests-page">
-//       <div className="requests-page__hero">
-//         <p className="requests-page__eyebrow">Tổng hợp danh sách</p>
-//         <h1 className="requests-page__title">Yêu cầu của tôi</h1>
-//         <p className="requests-page__subtitle">
-//           Trang này chỉ hiển thị các ticket có `RequestedBy` trùng với user đang đăng nhập.
-//         </p>
-//       </div>
-
-//       {error && <div className="requests-page__alert">{error}</div>}
-
-//       <section className="requests-filters">
-//         <label className="requests-filters__field">
-//           <span>Lọc theo trạng thái</span>
-//           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-//             {statuses.map((status) => (
-//               <option key={status} value={status}>
-//                 {status === 'ALL' ? 'Tất cả trạng thái' : status}
-//               </option>
-//             ))}
-//           </select>
-//         </label>
-
-//         <label className="requests-filters__field">
-//           <span>Lọc theo loại ticket</span>
-//           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
-//             {types.map((type) => (
-//               <option key={type} value={type}>
-//                 {type === 'ALL' ? 'Tất cả loại ticket' : getTicketTypeLabel({ type })}
-//               </option>
-//             ))}
-//           </select>
-//         </label>
-
-//         <label className="requests-filters__field">
-//           <span>Lọc theo nhà máy</span>
-//           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
-//             {factories.map((factory) => (
-//               <option key={factory} value={factory}>
-//                 {factory === 'ALL' ? 'Tất cả nhà máy' : getFactoryLabel(factory)}
-//               </option>
-//             ))}
-//           </select>
-//         </label>
-//       </section>
-
-//       <section className="requests-table">
-//         <div className="requests-table__head">
-//           <span>Mã Ticket</span>
-//           <span>Loại / Mô tả</span>
-//           <span>Thiết bị / Khu vực</span>
-//           <span>Đội xử lý</span>
-//           <span>Số order</span>
-//           <span>Thời gian</span>
-//           <span>Trạng thái</span>
-//           <span>Thao tác</span>
-//         </div>
-
-//         <div className="requests-table__body">
-//           {filteredTickets.map((ticket) => (
-//             <article key={ticket.id} className="requests-row">
-//               <div>
-//                 <strong>{formatTicketCode(ticket)}</strong>
-//                 <p>ID: {ticket.id}</p>
-//               </div>
-//               <div>
-//                 <strong>{getTicketTypeLabel(ticket.LoaiTicket)}</strong>
-//                 <p>{ticket.description || ticket.title || 'Chua co mo ta'}</p>
-//               </div>
-//               <div>
-//                 <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
-//                 <p>{getFactoryLabel(ticket.factoryName)} / {ticket.area || 'Chua co khu vuc'}</p>
-//               </div>
-//               <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
-//               <span>{getOrderCodeDisplay(ticket)}</span>
-//               <div>
-//                 <strong>Tao: {formatDate(ticket.createdAt)}</strong>
-//                 <p>Han: {formatDate(ticket.dueDate)}</p>
-//               </div>
-//               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-//               <Link
-//                 className="requests-row__action"
-//                 to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
-//                 title={canEditTicket(ticket) ? 'Sua' : 'Xem'}
-//                 aria-label={canEditTicket(ticket) ? 'Sua' : 'Xem'}
-//                 data-tooltip={canEditTicket(ticket) ? 'Sua' : 'Xem'}
-//               >
-//                 <span className="sr-only">{canEditTicket(ticket) ? 'Sua' : 'Xem'}</span>
-//                 <span className="requests-row__action-icon">
-//                   {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
-//                 </span>
-//               </Link>
-//             </article>
-//           ))}
-
-//           {filteredTickets.length === 0 && <div className="requests-empty">Chua co ticket nao cua ban.</div>}
-//         </div>
-//       </section>
-//     </section>
-//   )
-// }
-
-// export default MyRequests
 import { useEffect, useMemo, useState } from 'react'
-import { FiEdit2, FiEye } from 'react-icons/fi'
+import { FiEdit2, FiEye, FiSearch } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { formatTicketCode } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -238,38 +21,51 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
+function getTicketTypeLabelForTable(ticket) {
+  if (ticket?.categoryType === 'Maintenance') return 'Lenh bao tri'
+  if (ticket?.categoryType === 'Support') return 'Ho tro CNTT'
+  return 'Chua xac dinh'
+}
+
+function getMaintenanceTypeLabel(ticket) {
+  if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
+  if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
+    return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
+  }
+  return ticket?.maintenanceTypeName || 'Chua co loai bao tri'
+}
+
+function getFactoryLabel(ticket) {
+  if (ticket?.factoryCode && ticket?.factoryName) {
+    return `${ticket.factoryCode} - ${ticket.factoryName}`
+  }
+  return ticket?.factoryName || 'Chua co nha may'
+}
+
 function MyRequests() {
   const { user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [factoryFilter, setFactoryFilter] = useState('ALL')
+  const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
-  // Fetch tickets của user hiện tại
   useEffect(() => {
-    const fetchTickets = async () => {
+    async function fetchTickets() {
       try {
         setLoading(true)
         if (!user?.id) return
-        
+
         const response = await fetch(`http://localhost:5017/api/tickets/my?userId=${user.id}`)
-        
         if (!response.ok) {
           throw new Error('Failed to fetch tickets')
         }
-        
+
         const data = await response.json()
-        console.log("📋 My tickets:", data)
-        
-        if (Array.isArray(data)) {
-          setTickets(data)
-        } else {
-          setTickets([])
-        }
-      } catch (err) {
-        console.error("❌ Error fetching tickets:", err)
+        setTickets(Array.isArray(data) ? data : [])
+      } catch {
         setError('Khong the tai danh sach yeu cau da gui.')
         setTickets([])
       } finally {
@@ -280,9 +76,28 @@ function MyRequests() {
     fetchTickets()
   }, [user?.id])
 
-  // Filter tickets
   const filteredTickets = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+
     return [...tickets]
+      .filter((ticket) => {
+        if (!keyword) return true
+
+        const searchableValues = [
+          ticket.code,
+          ticket.id,
+          ticket.title,
+          ticket.categoryName,
+          ticket.categoryType,
+          ticket.maintenanceTypeCode,
+          ticket.maintenanceTypeName,
+          ticket.factoryName,
+          ticket.factoryCode,
+          ticket.status,
+        ]
+
+        return searchableValues.some((value) => String(value || '').toLowerCase().includes(keyword))
+      })
       .filter((ticket) => {
         if (statusFilter === 'ALL') return true
         return (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()
@@ -297,82 +112,93 @@ function MyRequests() {
         return ticket.factoryName === factoryFilter
       })
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-  }, [factoryFilter, statusFilter, tickets, typeFilter])
+  }, [factoryFilter, searchTerm, statusFilter, tickets, typeFilter])
 
-  // Lấy danh sách các giá trị filter
-  const statuses = useMemo(() => {
-    return ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))]
-  }, [tickets])
+  const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
 
   const types = useMemo(() => {
     const typeList = ['ALL']
-    const hasMaintenance = tickets.some(t => t.categoryType === 'Maintenance')
-    const hasIT = tickets.some(t => t.categoryType === 'Support')
-    
+    const hasMaintenance = tickets.some((ticket) => ticket.categoryType === 'Maintenance')
+    const hasIT = tickets.some((ticket) => ticket.categoryType === 'Support')
+
     if (hasMaintenance) typeList.push('Maintenance')
     if (hasIT) typeList.push('IT')
-    
+
     return typeList
   }, [tickets])
 
   const factories = useMemo(() => {
     const factorySet = new Set(['ALL'])
-    tickets.forEach(ticket => {
+    tickets.forEach((ticket) => {
       if (ticket.factoryName) factorySet.add(ticket.factoryName)
     })
     return Array.from(factorySet)
   }, [tickets])
 
-  const canEditTicket = (ticket) => {
-    const normalizedStatus = (ticket?.status || '').toLowerCase()
-    return normalizedStatus === 'submitted'
+  function canEditTicket(ticket) {
+    return (ticket?.status || '').toLowerCase() === 'submitted'
   }
 
   if (loading) {
-    return <div className="requests-page__loading">Đang tải dữ liệu...</div>
+    return <div className="requests-page__loading">Dang tai du lieu...</div>
   }
 
   return (
     <section className="requests-page">
       <div className="requests-page__hero">
-        <p className="requests-page__eyebrow">Tổng hợp danh sách</p>
-        <h1 className="requests-page__title">Yêu cầu của tôi</h1>
-        <p className="requests-page__subtitle">
-          Trang này hiển thị các ticket bạn đã tạo.
-        </p>
+        <p className="requests-page__eyebrow">Tong hop danh sach</p>
+        <h1 className="requests-page__title">Yeu cau cua toi</h1>
+        <p className="requests-page__subtitle">Trang nay hien thi cac ticket ban da tao.</p>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
 
+      <section className="requests-search">
+        <label className="requests-search__field">
+          <span>Tim kiem ticket</span>
+          <div className="requests-search__input-wrap">
+            <span className="requests-search__icon">
+              <FiSearch size={16} />
+            </span>
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Ma ticket, loai bao tri, nha may, trang thai..."
+            />
+          </div>
+        </label>
+      </section>
+
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Lọc theo trạng thái</span>
+          <span>Loc theo trang thai</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tất cả trạng thái' : status}
+                {status === 'ALL' ? 'Tat ca trang thai' : status}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo loại ticket</span>
+          <span>Loc theo loai ticket</span>
           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
             {types.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tất cả loại ticket' : type === 'Maintenance' ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}
+                {type === 'ALL' ? 'Tat ca loai ticket' : type === 'Maintenance' ? 'Lenh bao tri' : 'Ho tro CNTT'}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo nhà máy</span>
+          <span>Loc theo nha may</span>
           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
             {factories.map((factory) => (
               <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
+                {factory === 'ALL' ? 'Tat ca nha may' : factory}
               </option>
             ))}
           </select>
@@ -381,66 +207,45 @@ function MyRequests() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Mã Ticket</span>
-          <span>Loại / Mô tả</span>
-          <span>Thiết bị / Khu vực / Nhà máy</span>
-          <span>Đội xử lý</span>
-          <span>Số order</span>
-          <span>Thời gian</span>
-          <span>Trạng thái</span>
-          <span>Thao tác</span>
+          <span>Ma ticket</span>
+          <span>Loai ticket</span>
+          <span>Loai bao tri</span>
+          <span>Nha may</span>
+          <span>Ngay xu ly</span>
+          <span>Trang thai</span>
+          <span>Thao tac</span>
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket) => {
-            const isMaintenance = ticket.categoryType === 'Maintenance'
-            
-            return (
-              <article key={ticket.id} className="requests-row">
-                <div>
-                  <strong>{ticket.code || `TKT-${ticket.id}`}</strong>
-                  <p>ID: {ticket.id}</p>
-                </div>
-                <div>
-                  <strong>{isMaintenance ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}</strong>
-                  <p>{ticket.title || 'Chua co tieu de'}</p>
-                  <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                    Lĩnh vực: {ticket.categoryName || 'Chua co'}
-                  </small>
-                </div>
-                <div>
-                  <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
-                  <p>Khu vực: {ticket.area || 'Chua co khu vuc'}</p>
-                  <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                    Nhà máy: {ticket.factoryName || 'Chua co nha may'} ({ticket.factoryCode || ''})
-                  </small>
-                </div>
-                <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
-                <span>{ticket.orderCode || 'Chua co'}</span>
-                <div>
-                  <strong>Tạo: {formatDate(ticket.createdAt)}</strong>
-                  <p>Hạn: {formatDate(ticket.dueDate)}</p>
-                </div>
-                <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-                <Link
-                  className="requests-row__action"
-                  to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
-                  title={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-                  aria-label={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-                  data-tooltip={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-                >
-                  <span className="sr-only">{canEditTicket(ticket) ? 'Sửa' : 'Xem'}</span>
-                  <span className="requests-row__action-icon">
-                    {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
-                  </span>
-                </Link>
-              </article>
-            )
-          })}
+          {filteredTickets.map((ticket) => (
+            <article key={ticket.id} className="requests-row">
+              <div>
+                <strong>{formatTicketCode(ticket)}</strong>
+                <p>{ticket.title || 'Chua co tieu de'}</p>
+              </div>
+              <span>{getTicketTypeLabelForTable(ticket)}</span>
+              <span>{getMaintenanceTypeLabel(ticket)}</span>
+              <span>{getFactoryLabel(ticket)}</span>
+              <span>{formatDate(ticket.dueDate)}</span>
+              <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+              <Link
+                className="requests-row__action"
+                to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
+                title={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+                aria-label={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+                data-tooltip={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+              >
+                <span className="sr-only">{canEditTicket(ticket) ? 'Sua' : 'Xem'}</span>
+                <span className="requests-row__action-icon">
+                  {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
+                </span>
+              </Link>
+            </article>
+          ))}
 
           {filteredTickets.length === 0 && !loading && (
             <div className="requests-empty">
-              {error ? error : 'Chưa có ticket nào của bạn.'}
+              {error ? error : 'Khong tim thay ticket phu hop voi bo loc hoac tu khoa tim kiem.'}
             </div>
           )}
         </div>

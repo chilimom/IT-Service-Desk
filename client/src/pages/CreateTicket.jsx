@@ -381,6 +381,10 @@ useEffect(() => {
     }
 
     if (isMaintenance) {
+      if (!form.maintenanceTypeId) {
+        setErrorMessage('Vui long chon loai bao tri')
+        return null
+      }
       if (!form.area?.trim()) {
         setErrorMessage('Vui lòng nhập Equipment')
         return null
@@ -414,11 +418,12 @@ useEffect(() => {
       requestedBy: Number(user.id),
       description: form.description.trim(),
       title: title?.trim() || null,
+      maintenanceTypeId: isMaintenance && form.maintenanceTypeId ? Number(form.maintenanceTypeId) : null,
       equipmentCode: form.equipmentCode?.trim() || null,
       area: form.area?.trim() || null,
       assignedTeam: form.assignedTeam?.trim() || null,
       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
-      statusId: 1,
+      statusId: 3,
     }
   }
 

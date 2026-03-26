@@ -558,7 +558,62 @@ namespace ITServiceDesk.Api.Services
             return _context.Tickets
                 .Where(t => t.IsDeleted != true)
                 .OrderByDescending(t => t.CreatedAt)
-                .Select(t => MapToTicketResponseDto(t))
+                .Select(t => new TicketResponseDto
+                {
+                    Id = t.Id,
+                    Code = t.Code,
+                    Title = t.Title,
+                    Description = t.Description,
+                    EquipmentCode = t.EquipmentCode,
+                    Area = t.Area,
+                    AssignedTeam = t.AssignedTeam,
+                    OrderCode = t.OrderCode,
+                    CreatedAt = t.CreatedAt,
+                    UpdatedAt = t.UpdatedAt,
+                    DueDate = t.DueDate,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _context.Categories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault(),
+                    CategoryType = _context.Categories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Type)
+                        .FirstOrDefault(),
+                    FactoryId = t.FactoryId,
+                    FactoryName = _context.Factories
+                        .Where(f => f.Id == t.FactoryId)
+                        .Select(f => f.Name)
+                        .FirstOrDefault(),
+                    FactoryCode = _context.Factories
+                        .Where(f => f.Id == t.FactoryId)
+                        .Select(f => f.Code)
+                        .FirstOrDefault(),
+                    StatusId = t.StatusId,
+                    Status = _context.Statuses
+                        .Where(s => s.Id == t.StatusId)
+                        .Select(s => s.Name)
+                        .FirstOrDefault(),
+                    RequestedBy = t.RequestedBy,
+                    RequestedByName = _context.Users
+                        .Where(u => u.Id == t.RequestedBy)
+                        .Select(u => u.Username)
+                        .FirstOrDefault(),
+                    AssignedTo = t.AssignedTo,
+                    AssignedToName = _context.Users
+                        .Where(u => u.Id == t.AssignedTo)
+                        .Select(u => u.Username)
+                        .FirstOrDefault(),
+                    MaintenanceTypeId = t.MaintenanceTypeId,
+                    MaintenanceTypeCode = _context.MaintenanceTypes
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Code)
+                        .FirstOrDefault(),
+                    MaintenanceTypeName = _context.MaintenanceTypes
+                        .Where(m => m.Id == t.MaintenanceTypeId)
+                        .Select(m => m.Name)
+                        .FirstOrDefault()
+                })
                 .ToList();
         }
 
@@ -870,6 +925,12 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
+            if (dto.MaintenanceTypeId.HasValue)
+            {
+                ticket.MaintenanceTypeId = dto.MaintenanceTypeId.Value;
+                hasChanges = true;
+            }
+
             if (!string.IsNullOrWhiteSpace(dto.EquipmentCode))
             {
                 ticket.EquipmentCode = dto.EquipmentCode.Trim();
@@ -963,6 +1024,12 @@ namespace ITServiceDesk.Api.Services
             if (dto.FactoryId > 0)
             {
                 ticket.FactoryId = dto.FactoryId;
+                hasChanges = true;
+            }
+
+            if (dto.MaintenanceTypeId.HasValue)
+            {
+                ticket.MaintenanceTypeId = dto.MaintenanceTypeId.Value;
                 hasChanges = true;
             }
 
