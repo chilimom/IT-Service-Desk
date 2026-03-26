@@ -374,14 +374,6 @@ namespace ITServiceDesk.Api.Services
                 .Select(t => MapToTicketResponseDto(t))
                 .ToList();
         }
-
-        // public TicketResponseDto? GetById(int id)
-        // {
-        //     return _context.Tickets
-        //         .Where(t => t.Id == id && t.IsDeleted != true)
-        //         .Select(t => MapToTicketResponseDto(t))
-        //         .FirstOrDefault();
-        // }
         public TicketResponseDto? GetById(int id)
         {
             return _context.Tickets
