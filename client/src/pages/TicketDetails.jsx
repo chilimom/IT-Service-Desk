@@ -1345,6 +1345,9 @@ function TicketDetails() {
   // Xác định loại ticket dựa trên category
   const isMaintenance = useMemo(() => {
     if (!ticket) return false
+     console.log("Ticket categoryType:", ticket.categoryType)
+    console.log("Ticket categoryName:", ticket.categoryName)
+    
     return ticket.categoryType === 'Maintenance' || ticket.categoryName?.toLowerCase().includes('bảo trì')
   }, [ticket])
 
@@ -1587,7 +1590,7 @@ function TicketDetails() {
                 {isMaintenance && (
                   <>
                     <label>Loai bao tri</label>
-                    <div className="ticket-details__field-view">{maintenanceHeadline}</div>
+                    <div className="ticket-details__field-view">{maintenanceHeadline || 'chưa có loại bảo trì'}</div>
                   </>
                 )}
 
