@@ -71,17 +71,26 @@ export function getTicketTypeLabel(ticket) {
   return ticket?.type || 'Chua xac dinh'
 }
 
-export function getFactoryLabel(factoryValue) {
-  const normalizedFactory = String(factoryValue || '').trim()
-  if (!normalizedFactory) return 'Chua chon nha may'
+// export function getFactoryLabel(factoryValue) {
+//   const normalizedFactory = String(factoryValue || '').trim()
+//   if (!normalizedFactory) return 'Chua chon nha may'
 
-  const matchedFactory = factoryOptions.find(
-    (item) => item.code.toLowerCase() === normalizedFactory.toLowerCase() || item.name.toLowerCase() === normalizedFactory.toLowerCase(),
-  )
+//   const matchedFactory = factoryOptions.find(
+//     (item) => item.code.toLowerCase() === normalizedFactory.toLowerCase() || item.name.toLowerCase() === normalizedFactory.toLowerCase(),
+//   )
 
-  return matchedFactory ? `${matchedFactory.code} - ${matchedFactory.name}` : normalizedFactory
+//   return matchedFactory ? `${matchedFactory.code} - ${matchedFactory.name}` : normalizedFactory
+// }
+// Trong ticketMeta.js, thêm hoặc sửa hàm getFactoryLabel
+export const getFactoryLabel = (factoryId) => {
+  if (!factoryId) return 'Chua co nha may'
+  
+  const factory = factoryOptions.find(f => f.code === factoryId || f.id === factoryId)
+  if (factory) {
+    return `${factory.code} - ${factory.name}`
+  }
+  return factoryId
 }
-
 export function getOrderCodeDisplay(ticket) {
   if (!isMaintenanceTicket(ticket)) {
     return 'Khong ap dung'

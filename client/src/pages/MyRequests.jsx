@@ -219,9 +219,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { FiEdit2, FiEye } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getTickets } from '../services/ticketService'
 import path from '../ultils/path'
-import { factoryOptions, formatTicketCode, getFactoryLabel, getOrderCodeDisplay, getTicketTypeLabel } from '../ultils/ticketMeta'
+import { factoryOptions, formatTicketCode, getFactoryLabel, getOrderCodeDisplay, getTicketTypeLabel, maintenanceOptions } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -262,7 +261,6 @@ function MyRequests() {
         const data = await response.json()
         console.log("📋 My tickets:", data)
         
-        // Đảm bảo data là array
         if (Array.isArray(data)) {
           setTickets(data)
         } else {
@@ -278,6 +276,24 @@ function MyRequests() {
     fetchTickets()
   }, [user?.id])
 
+  // Lấy tên nhà máy từ factoryId
+  const getFactoryName = (factoryId) => {
+    const factory = factoryOptions.find(f => f.code === factoryId || f.id === factoryId)
+    return factory ? `${factory.code} - ${factory.name}` : factoryId || 'Chua co nha may'
+  }
+
+  // Lấy loại bảo trì từ title hoặc description
+  const getMaintenanceInfo = (ticket) => {
+    if (ticket.categoryType !== 'Maintenance') return null
+    
+    // Tìm maintenance category từ title
+    const maintenanceCode = maintenanceOptions.find(opt => 
+      ticket.title?.includes(opt.code)
+    )
+    
+    return maintenanceCode || null
+  }
+
   // Filter tickets
   const filteredTickets = useMemo(() => {
     return [...tickets]
@@ -287,13 +303,12 @@ function MyRequests() {
       })
       .filter((ticket) => {
         if (typeFilter === 'ALL') return true
-        // Xác định loại ticket từ categoryType
         const ticketType = ticket.categoryType === 'Maintenance' ? 'Maintenance' : 'IT'
         return ticketType === typeFilter
       })
       .filter((ticket) => {
         if (factoryFilter === 'ALL') return true
-        const factoryName = ticket.factoryName || ticket.factory || ''
+        const factoryName = getFactoryName(ticket.factoryId)
         return factoryName === factoryFilter
       })
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
@@ -301,8 +316,7 @@ function MyRequests() {
 
   // Lấy danh sách các giá trị filter
   const statuses = useMemo(() => {
-    const statusList = ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))]
-    return statusList
+    return ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))]
   }, [tickets])
 
   const types = useMemo(() => {
@@ -319,7 +333,7 @@ function MyRequests() {
   const factories = useMemo(() => {
     const factorySet = new Set(['ALL'])
     tickets.forEach(ticket => {
-      const factoryName = ticket.factoryName || ticket.factory
+      const factoryName = getFactoryName(ticket.factoryId)
       if (factoryName) factorySet.add(factoryName)
     })
     return Array.from(factorySet)
@@ -331,9 +345,7 @@ function MyRequests() {
   }
 
   const getTicketType = (ticket) => {
-    // Xác định loại ticket từ categoryType
-    if (ticket.categoryType === 'Maintenance') return 'Maintenance'
-    return 'IT'
+    return ticket.categoryType === 'Maintenance' ? 'Maintenance' : 'IT'
   }
 
   return (
@@ -387,7 +399,7 @@ function MyRequests() {
         <div className="requests-table__head">
           <span>Mã Ticket</span>
           <span>Loại / Mô tả</span>
-          <span>Thiết bị / Khu vực</span>
+          <span>Thiết bị / Khu vực / Nhà máy</span>
           <span>Đội xử lý</span>
           <span>Số order</span>
           <span>Thời gian</span>
@@ -396,49 +408,60 @@ function MyRequests() {
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket) => (
-            <article key={ticket.id} className="requests-row">
-              <div>
-                <strong>{formatTicketCode(ticket)}</strong>
-                <p>ID: {ticket.id}</p>
-              </div>
-              <div>
-                <strong>{getTicketType(ticket) === 'Maintenance' ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}</strong>
-                <p>{ticket.title || ticket.description || 'Chua co mo ta'}</p>
-                {ticket.categoryName && (
+          {filteredTickets.map((ticket) => {
+            const maintenanceInfo = getMaintenanceInfo(ticket)
+            const isMaintenance = ticket.categoryType === 'Maintenance'
+            const factoryName = getFactoryName(ticket.factoryId)
+            
+            return (
+              <article key={ticket.id} className="requests-row">
+                <div>
+                  <strong>{formatTicketCode(ticket)}</strong>
+                  <p>ID: {ticket.id}</p>
+                </div>
+                <div>
+                  <strong>{isMaintenance ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}</strong>
+                  <p>{ticket.title || ticket.description || 'Chua co mo ta'}</p>
+                  {maintenanceInfo && (
+                    <small style={{ fontSize: '0.75rem', color: '#666' }}>
+                      Loại bảo trì: {maintenanceInfo.code} - {maintenanceInfo.name}
+                    </small>
+                  )}
+                  {ticket.categoryName && !isMaintenance && (
+                    <small style={{ fontSize: '0.75rem', color: '#666' }}>
+                      Lĩnh vực: {ticket.categoryName}
+                    </small>
+                  )}
+                </div>
+                <div>
+                  <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
+                  <p>Khu vực: {ticket.area || 'Chua co khu vuc'}</p>
                   <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                    Lĩnh vực: {ticket.categoryName}
+                    Nhà máy: {factoryName}
                   </small>
-                )}
-              </div>
-              <div>
-                <strong>{ticket.equipmentCode || 'Chua co thiet bi'}</strong>
-                <p>{ticket.area || 'Chua co khu vuc'}</p>
-                <small style={{ fontSize: '0.75rem', color: '#666' }}>
-                  {ticket.factoryName || ticket.factory || 'Chua co nha may'}
-                </small>
-              </div>
-              <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
-              <span>{getOrderCodeDisplay(ticket)}</span>
-              <div>
-                <strong>Tạo: {formatDate(ticket.createdAt)}</strong>
-                <p>Hạn: {formatDate(ticket.dueDate)}</p>
-              </div>
-              <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-              <Link
-                className="requests-row__action"
-                to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
-                title={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-                aria-label={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-                data-tooltip={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
-              >
-                <span className="sr-only">{canEditTicket(ticket) ? 'Sửa' : 'Xem'}</span>
-                <span className="requests-row__action-icon">
-                  {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
-                </span>
-              </Link>
-            </article>
-          ))}
+                </div>
+                <span>{ticket.assignedTeam || 'Chua phan cong'}</span>
+                <span>{getOrderCodeDisplay(ticket)}</span>
+                <div>
+                  <strong>Tạo: {formatDate(ticket.createdAt)}</strong>
+                  <p>Hạn: {formatDate(ticket.dueDate)}</p>
+                </div>
+                <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+                <Link
+                  className="requests-row__action"
+                  to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
+                  title={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
+                  aria-label={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
+                  data-tooltip={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
+                >
+                  <span className="sr-only">{canEditTicket(ticket) ? 'Sửa' : 'Xem'}</span>
+                  <span className="requests-row__action-icon">
+                    {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
+                  </span>
+                </Link>
+              </article>
+            )
+          })}
 
           {filteredTickets.length === 0 && (
             <div className="requests-empty">
