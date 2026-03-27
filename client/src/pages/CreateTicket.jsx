@@ -220,11 +220,11 @@ useEffect(() => {
             </>
           )}
 
-          <div className="form-note">
+          {/* <div className="form-note">
             {isMaintenance
               ? 'Loại bảo trì sẽ được map vào thông tin ticket. Số order sẽ do admin cập nhật sau khi xử lý.'
               : 'Ticket hỗ trợ CNTT không sử dụng số order và không bắt buộc nhập EQ.'}
-          </div>
+          </div> */}
 
           {!isMaintenance && (
             <input
