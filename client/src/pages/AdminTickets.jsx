@@ -124,14 +124,14 @@ function AdminTickets() {
     <section className="requests-page">
       <div className="requests-page__hero">
         <p className="requests-page__eyebrow">Admin</p>
-        <h1 className="requests-page__title">Quan Tri Ticket</h1>
+        <h1 className="requests-page__title">Quản trị  Ticket</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tim Kiem Ticket</span>
+          <span>Tìm kiếm Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FaSearch size={14} />
@@ -140,7 +140,7 @@ function AdminTickets() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Nhap ma ticket, loai bao tri, nha may, trang thai..."
+              placeholder="Nhập mã Ticket, Loại bảo trì, Nhà máy, Trạng thái..."
             />
           </div>
         </label>
@@ -148,33 +148,33 @@ function AdminTickets() {
 
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Loc theo nha may</span>
+          <span>Lọc theo nhà máy</span>
           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
             {factories.map((factory) => (
               <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tat ca nha may' : factory}
+                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo trang thai</span>
+          <span>Lọc theo trạng thái</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tat ca trang thai' : status}
+                {status === 'ALL' ? 'Tất cả trạng thái' : status}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo loai ticket</span>
+          <span>Lọc theo loại Ticket</span>
           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
             {types.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tat ca loai ticket' : type === 'Maintenance' ? 'Lenh bao tri' : 'Ho tro CNTT'}
+                {type === 'ALL' ? 'Tất cả loại ticket' : type === 'Maintenance' ? 'Lenh bao tri' : 'Ho tro CNTT'}
               </option>
             ))}
           </select>
