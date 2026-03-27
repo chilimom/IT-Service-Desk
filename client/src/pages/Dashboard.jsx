@@ -81,8 +81,8 @@ function Dashboard() {
     const submitted = statusLookup.get(3) ?? statusLookup.get('submitted') ?? 0
 
     return [
-      { label: 'Tong Ticket', value: Number(dashboard.total) || tickets.length, tone: 'total' },
-      { label: 'Done', value: done, tone: 'done' },
+      { label: 'Tổng yêu cầu', value: Number(dashboard.total) || tickets.length, tone: 'total' },
+      { label: 'Hoàn ', value: done, tone: 'done' },
       { label: 'InProgress', value: inProgress, tone: 'progress' },
       { label: 'Submitted', value: submitted, tone: 'submitted' },
     ]
@@ -182,7 +182,7 @@ function Dashboard() {
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Loai bao tri</h2>
+              <h2 className="dashboard-panel__title">Thống kê loại bảo trì</h2>
             </div>
           </div>
           <div className="chart-container">
@@ -238,8 +238,8 @@ function Dashboard() {
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Loai ticket</h2>
-              <p className="dashboard-panel__caption">Thong ke theo nhom yeu cau</p>
+              <h2 className="dashboard-panel__title">Loại Ticket</h2>
+              <p className="dashboard-panel__caption">Thống kê loại Ticket</p>
             </div>
           </div>
           <div className="chart-container chart-container--bar">
@@ -276,8 +276,8 @@ function Dashboard() {
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Theo nha may</h2>
-              <p className="dashboard-panel__caption">Thong ke so luong ticket theo nha may</p>
+              <h2 className="dashboard-panel__title">Thống kê theo nhà máy</h2>
+              <p className="dashboard-panel__caption">Thống kê số lượng theo nhà máy</p>
             </div>
           </div>
           <div className="chart-container chart-container--bar chart-container--bar-factory">
@@ -308,7 +308,7 @@ function Dashboard() {
       <section className="dashboard-panel">
         <div className="dashboard-panel__header">
           <div>
-            <h2 className="dashboard-panel__title">Ticket gan day</h2>
+            <h2 className="dashboard-panel__title">Ticket gần đây</h2>
           </div>
         </div>
 
