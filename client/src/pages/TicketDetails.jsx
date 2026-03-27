@@ -317,18 +317,18 @@ function TicketDetails() {
 
             {!isEditing && (
               <div className="ticket-details__form-view">
-                <label>Loai Ticket</label>
+                <label>Loại Ticket</label>
                 <div className="ticket-details__field-view">{isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}</div>
 
-                <label>Linh vuc</label>
+                <label>Lĩnh vực</label>
                 <div className="ticket-details__field-view">{ticket.categoryName || 'Chua co'}</div>
 
-                <label>Nha may</label>
+                <label>Nhà máy</label>
                 <div className="ticket-details__field-view">{ticket.factoryCode ? `${ticket.factoryCode} - ${ticket.factoryName}` : ticket.factoryName || 'Chua co'}</div>
 
                 {isMaintenance && (
                   <>
-                    <label>Loai bao tri</label>
+                    <label>Loại bảo trì</label>
                     <div className="ticket-details__field-view">{maintenanceHeadline}</div>
                   </>
                 )}
@@ -345,25 +345,25 @@ function TicketDetails() {
                     <label>Equipment</label>
                     <div className="ticket-details__field-view">{ticket.area || 'Chua co'}</div>
 
-                    <label>Ten thiet bi</label>
+                    <label>Tên thiết bị</label>
                     <div className="ticket-details__field-view">{ticket.equipmentCode || 'Chua co'}</div>
                   </>
                 )}
 
-                <label>Doi xu ly</label>
+                <label>Tổ xử lý</label>
                 <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
                 {!isAdmin && (
                   <>
-                    <label>Nguoi tiep nhan</label>
+                    <label>Người tiếp nhận</label>
                     <div className="ticket-details__field-view">{assigneeDisplay}</div>
                   </>
                 )}
 
-                <label>Mo ta</label>
+                <label>Mô tả</label>
                 <div className="ticket-details__field-view ticket-details__field-view--textarea">{ticket.description || 'Chua co mo ta'}</div>
 
-                <label>Han xu ly</label>
+                <label>Ngày hoàn thành</label>
                 <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
 
                 {isAdmin && (
@@ -373,12 +373,12 @@ function TicketDetails() {
                   </>
                 )}
 
-                <label>Thoi gian tao</label>
+                <label>Ngày tạo</label>
                 <div className="ticket-details__field-view">{formatDate(ticket.createdAt)}</div>
 
                 {isMaintenance && (
                   <>
-                    <label>So order</label>
+                    <label>Số order</label>
                     <div className="ticket-details__field-view">{getOrderCodeDisplay(ticket)}</div>
                   </>
                 )}
@@ -390,9 +390,9 @@ function TicketDetails() {
                 {!isAdmin && (
                   <>
                     <label className="ticket-details__form-field ticket-details__form-field--full">
-                      <span>Nha may</span>
+                      <span>Nhà máy</span>
                       <select name="factoryId" value={form.factoryId} onChange={handleChange}>
-                        <option value="">Chon nha may</option>
+                        <option value="">Chọn nhà máy</option>
                         {factories.map((option) => (
                           <option key={option.id} value={option.id}>
                             {option.code} - {option.name}
@@ -403,9 +403,9 @@ function TicketDetails() {
 
                     {isEditingMaintenance ? (
                       <label className="ticket-details__form-field ticket-details__form-field--full">
-                        <span>Loai bao tri</span>
+                        <span>Loại bảo trì</span>
                         <select name="maintenanceTypeId" value={form.maintenanceTypeId} onChange={handleChange}>
-                          <option value="">Chon loai bao tri</option>
+                          <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
                               {type.code} - {type.name}
@@ -415,13 +415,13 @@ function TicketDetails() {
                       </label>
                     ) : (
                       <label className="ticket-details__form-field ticket-details__form-field--full">
-                        <span>Tieu de</span>
+                        <span>Tiêu đề</span>
                         <input name="title" value={form.title} onChange={handleChange} />
                       </label>
                     )}
 
                     <label className="ticket-details__form-field ticket-details__form-field--full">
-                      <span>Mo ta</span>
+                      <span>Mô tả</span>
                       <textarea name="description" rows="6" value={form.description} onChange={handleChange} />
                     </label>
 
@@ -429,7 +429,7 @@ function TicketDetails() {
                       {isEditingMaintenance && (
                         <>
                           <label className="ticket-details__form-field">
-                            <span>Ten thiet bi</span>
+                            <span>Tên thiết bị</span>
                             <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} />
                           </label>
 
@@ -441,12 +441,12 @@ function TicketDetails() {
                       )}
 
                       <label className="ticket-details__form-field">
-                        <span>Doi xu ly</span>
+                        <span>Tổ xử lý</span>
                         <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} />
                       </label>
 
                       <label className="ticket-details__form-field">
-                        <span>Han xu ly</span>
+                        <span>Hạn xử lý</span>
                         <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
                       </label>
                     </div>
