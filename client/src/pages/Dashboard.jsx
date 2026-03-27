@@ -207,7 +207,7 @@ function Dashboard() {
                 </Pie>
 
                 <text x="50%" y="40%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: 14, fill: '#64748b' }}>
-                  {activeItem ? activeItem.name : 'Tong so'}
+                  {activeItem ? activeItem.name : 'Tổng số'}
                 </text>
 
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: 14, fill: '#94a3b8' }}>
