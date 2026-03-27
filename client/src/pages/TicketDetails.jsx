@@ -456,9 +456,9 @@ function TicketDetails() {
                 {isAdmin && (
                   <>
                     <label className="ticket-details__form-field ticket-details__form-field--full">
-                      <span>Nha may</span>
+                      <span>Nhà máy</span>
                       <select name="factoryId" value={form.factoryId} onChange={handleChange}>
-                        <option value="">Chon nha may</option>
+                        <option value="">Chọn nhà máy</option>
                         {factories.map((option) => (
                           <option key={option.id} value={option.id}>
                             {option.code} - {option.name}
@@ -469,9 +469,9 @@ function TicketDetails() {
 
                     {isMaintenance ? (
                       <label className="ticket-details__form-field ticket-details__form-field--full">
-                        <span>Loai bao tri</span>
+                        <span>Loại bảo trì</span>
                         <select name="maintenanceTypeId" value={form.maintenanceTypeId} onChange={handleChange}>
-                          <option value="">Chon loai bao tri</option>
+                          <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
                               {type.code} - {type.name}
@@ -481,19 +481,19 @@ function TicketDetails() {
                       </label>
                     ) : (
                       <label className="ticket-details__form-field ticket-details__form-field--full">
-                        <span>Tieu de</span>
+                        <span>Tiều đề</span>
                         <input name="title" value={form.title} onChange={handleChange} />
                       </label>
                     )}
 
                     <label className="ticket-details__form-field ticket-details__form-field--full">
-                      <span>Mo ta</span>
+                      <span>Mô tả</span>
                       <textarea name="description" rows="6" value={form.description} onChange={handleChange} />
                     </label>
 
                     <div className="ticket-details__form-split">
                       <label className="ticket-details__form-field">
-                        <span>Ten thiet bi</span>
+                        <span>Tên thiết bị</span>
                         <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} />
                       </label>
 
@@ -503,14 +503,14 @@ function TicketDetails() {
                       </label>
 
                       <label className="ticket-details__form-field">
-                        <span>Doi xu ly</span>
+                        <span>Tổ bảo trì</span>
                         <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} />
                       </label>
 
                       <label className="ticket-details__form-field">
-                        <span>Nguoi tiep nhan</span>
+                        <span>Người tiếp nhận</span>
                         <select name="assignedTo" value={form.assignedTo} onChange={handleChange}>
-                          <option value="">Chon nguoi tiep nhan</option>
+                          <option value="">Chọn người tiếp nhận</option>
                           {users.map((option) => (
                             <option key={option.id} value={option.id}>
                               {option.id} - {option.username}
@@ -520,17 +520,17 @@ function TicketDetails() {
                       </label>
 
                       <label className="ticket-details__form-field">
-                        <span>Han xu ly</span>
+                        <span>Hạn xử lý</span>
                         <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
                       </label>
 
                       <div className="ticket-details__static-field">
-                        <strong>Nguoi tao</strong>
+                        <strong>Người tạo</strong>
                         <p>{requesterDisplay}</p>
                       </div>
 
                       <label className="ticket-details__form-field">
-                        <span>Trang thai</span>
+                        <span>Trạng thái</span>
                         <select name="statusId" value={form.statusId} onChange={handleChange}>
                           <option value={SUBMITTED_STATUS_ID}>Submitted</option>
                           <option value={IN_PROGRESS_STATUS_ID}>InProgress</option>
@@ -542,12 +542,12 @@ function TicketDetails() {
 
                       {isMaintenance ? (
                         <label className="ticket-details__form-field">
-                          <span>So order</span>
+                          <span>Số order</span>
                           <input name="orderCode" value={form.orderCode} onChange={handleChange} />
                         </label>
                       ) : (
                         <div className="ticket-details__static-field">
-                          <strong>So order</strong>
+                          <strong>Số order</strong>
                           <p>Khong ap dung cho ticket ho tro CNTT.</p>
                         </div>
                       )}
