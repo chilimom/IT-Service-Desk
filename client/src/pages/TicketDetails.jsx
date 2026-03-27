@@ -50,8 +50,8 @@ function getStatusMeta(status) {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--progress',
       icon: FiAlertCircle,
-      title: 'Ticket dang duoc tiep nhan va xu ly',
-      description: 'Ticket da vao quy trinh xu ly, noi dung yeu cau tam thoi khong con cho phep sua.',
+      title: 'Ticket đang được tiếp nhận và xử lý',
+      // description: 'Ticket da vao quy trinh xu ly, noi dung yeu cau tam thoi khong con cho phep sua.',
     }
   }
 
@@ -59,8 +59,8 @@ function getStatusMeta(status) {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--done',
       icon: FiCheckCircle,
-      title: 'Ticket da hoan tat',
-      description: 'Thong tin ticket duoc luu lai de theo doi, hien tai khong the sua noi dung.',
+      title: 'Ticket đã hoàn thành',
+      // description: 'Thong tin ticket duoc luu lai de theo doi, hien tai khong the sua noi dung.',
     }
   }
 
@@ -300,7 +300,7 @@ function TicketDetails() {
           <div className="ticket-details__form-card">
             <div className="ticket-details__card-header">
               <div className="ticket-details__card-heading">
-                <h2>Thong tin Ticket</h2>
+                <h2>Thông tin Ticket</h2>
                 <span className={getStatusClass(statusText)}>{statusText}</span>
               </div>
               {showEditButton && (
