@@ -109,6 +109,7 @@ function TicketDetails() {
   const actionLabel = isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'
   const ActionIcon = isEditing ? FiX : isAdmin ? FiSettings : FiEdit2
   const isEditingMaintenance = form.type === 'Maintenance'
+  const canMarkDone = !isMaintenance || Boolean(form.orderCode?.trim())
 
   const maintenanceHeadline = useMemo(() => {
     if (ticket?.maintenanceTypeId) {
@@ -216,6 +217,11 @@ function TicketDetails() {
 
     try {
       if (isAdmin) {
+        if (isMaintenance && Number(form.statusId) === DONE_STATUS_ID && !form.orderCode?.trim()) {
+          setError('Lenh bao tri phai co so order truoc khi chuyen sang Done.')
+          return
+        }
+
         await updateAdminTicket(ticketId, {
           title: isMaintenance ? ticket?.title || form.title : form.title,
           description: form.description,
@@ -528,7 +534,9 @@ function TicketDetails() {
                         <select name="statusId" value={form.statusId} onChange={handleChange}>
                           <option value={SUBMITTED_STATUS_ID}>Submitted</option>
                           <option value={IN_PROGRESS_STATUS_ID}>InProgress</option>
-                          <option value={DONE_STATUS_ID}>Done</option>
+                          <option value={DONE_STATUS_ID} disabled={!canMarkDone}>
+                            Done
+                          </option>
                         </select>
                       </label>
 

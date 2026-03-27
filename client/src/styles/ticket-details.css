@@ -32,9 +32,9 @@
 }
 
 .ticket-details__form-card {
-  width: min(100%, 860px);
-  max-width: 860px;
-  padding: 28px 32px;
+  width: min(100%, 1180px);
+  max-width: 1180px;
+  padding: 24px 28px;
   border: 1px solid #d8e1ec;
   border-radius: 28px;
   background: linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
@@ -124,28 +124,31 @@
 
 .ticket-details__form-view {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 10px 14px;
+  align-items: start;
 }
 
 .ticket-details__form-view label {
   color: #35506c;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
+  padding-top: 10px;
 }
 
 .ticket-details__field-view {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 42px;
+  padding: 9px 12px;
   border: 1px solid #d6e1ec;
   border-radius: 14px;
   background: #f9fbfe;
   color: #183a59;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .ticket-details__field-view--textarea {
-  min-height: 120px;
+  min-height: 88px;
   white-space: pre-wrap;
 }
 
@@ -162,7 +165,7 @@
 .ticket-details__form {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
 .ticket-details__form label,
@@ -184,7 +187,7 @@
 
 .ticket-details__form span {
   color: #35506c;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -192,7 +195,8 @@
 .ticket-details__form select,
 .ticket-details__form textarea {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 42px;
+  padding: 9px 12px;
   border: 1px solid #d6e1ec;
   border-radius: 14px;
   background: #f9fbfe;
@@ -202,6 +206,7 @@
 
 .ticket-details__form textarea {
   resize: vertical;
+  min-height: 96px;
 }
 
 .ticket-details__button {
@@ -372,6 +377,14 @@
   .ticket-details__form-card {
     padding: 22px 20px;
     border-radius: 22px;
+  }
+
+  .ticket-details__form-view {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-details__form-view label {
+    padding-top: 0;
   }
 
   .ticket-preview-modal {

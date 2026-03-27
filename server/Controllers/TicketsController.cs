@@ -73,12 +73,19 @@ namespace ITServiceDesk.Api.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateTicketDto dto)
         {
-            var result = _ticketService.Update(id, dto);
+            try
+            {
+                var result = _ticketService.Update(id, dto);
 
-            if (!result)
-                return NotFound($"Khong tim thay ticket id = {id}");
+                if (!result)
+                    return NotFound($"Khong tim thay ticket id = {id}");
 
-            return Ok("Cap nhat thanh cong");
+                return Ok("Cap nhat thanh cong");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}/user")]

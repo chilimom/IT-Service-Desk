@@ -445,6 +445,14 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
+            var isMaintenanceTicket = _context.Categories
+                .Where(c => c.Id == ticket.CategoryId)
+                .Select(c => c.Type)
+                .FirstOrDefault() == "Maintenance";
+
+            if (ticket.StatusId == 1 && isMaintenanceTicket && string.IsNullOrWhiteSpace(ticket.OrderCode))
+                throw new InvalidOperationException("Lenh bao tri phai co so order truoc khi chuyen sang Done.");
+
             if (!hasChanges)
                 return true;
 

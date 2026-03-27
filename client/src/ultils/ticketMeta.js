@@ -10,19 +10,35 @@ export const maintenanceOptions = [
 ]
 
 export const factoryOptions = [
-  { code: 'NM01', name: 'Nhà máy Luyện Gang 1' },
-  { code: 'NM02', name: 'Nhà máy Luyện Gang 2' },
-  { code: 'NM03', name: 'Nhà máy Nhiệt Điện 1' },
-  { code: 'NM04', name: 'Nhà máy Nhiệt Điện 2' },
-  { code: 'NM05', name: 'Xưởng Năng Lượng' },
+  { code: 'NM01', name: 'Nha may Luyen Gang 1' },
+  { code: 'NM02', name: 'Nha may Luyen Gang 2' },
+  { code: 'NM03', name: 'Nha may Nhiet Dien 1' },
+  { code: 'NM04', name: 'Nha may Nhiet Dien 2' },
+  { code: 'NM05', name: 'Xuong Nang Luong' },
 ]
 
 function normalize(value) {
   return (value || '').toLowerCase()
 }
 
+function getTicketTypeSource(ticketOrType) {
+  if (typeof ticketOrType === 'string') {
+    return ticketOrType
+  }
+
+  return ticketOrType?.categoryType || ticketOrType?.categoryName || ticketOrType?.type || ''
+}
+
 function extractMaintenanceCode(ticket) {
-  const candidates = [ticket?.type, ticket?.title, ticket?.description]
+  const candidates = [
+    ticket?.maintenanceTypeCode,
+    ticket?.maintenanceTypeName,
+    ticket?.categoryType,
+    ticket?.categoryName,
+    ticket?.type,
+    ticket?.title,
+    ticket?.description,
+  ]
 
   for (const value of candidates) {
     const raw = String(value || '').trim()
@@ -42,13 +58,13 @@ function extractMaintenanceCode(ticket) {
 }
 
 export function isMaintenanceTicket(ticketOrType) {
-  const rawType = typeof ticketOrType === 'string' ? ticketOrType : ticketOrType?.type
+  const rawType = getTicketTypeSource(ticketOrType)
   const type = normalize(rawType)
   return type.includes('maintenance') || type.includes('bao tri')
 }
 
 export function isSupportTicket(ticketOrType) {
-  const rawType = typeof ticketOrType === 'string' ? ticketOrType : ticketOrType?.type
+  const rawType = getTicketTypeSource(ticketOrType)
   const type = normalize(rawType)
   return type.includes('it') || type.includes('support') || type.includes('ho tro')
 }
@@ -68,35 +84,43 @@ export function getTicketTypeLabel(ticket) {
     return 'Ho tro CNTT'
   }
 
-  return ticket?.type || 'Chua xac dinh'
+  return ticket?.categoryName || ticket?.categoryType || ticket?.type || 'Chua xac dinh'
 }
 
-// export function getFactoryLabel(factoryValue) {
-//   const normalizedFactory = String(factoryValue || '').trim()
-//   if (!normalizedFactory) return 'Chua chon nha may'
-
-//   const matchedFactory = factoryOptions.find(
-//     (item) => item.code.toLowerCase() === normalizedFactory.toLowerCase() || item.name.toLowerCase() === normalizedFactory.toLowerCase(),
-//   )
-
-//   return matchedFactory ? `${matchedFactory.code} - ${matchedFactory.name}` : normalizedFactory
-// }
-// Trong ticketMeta.js, thêm hoặc sửa hàm getFactoryLabel
 export const getFactoryLabel = (factoryId) => {
   if (!factoryId) return 'Chua co nha may'
-  
-  const factory = factoryOptions.find(f => f.code === factoryId || f.id === factoryId)
+
+  const normalizedFactoryId = String(factoryId).trim()
+  const factory = factoryOptions.find(
+    (item) => item.code === normalizedFactoryId || String(item.id || '') === normalizedFactoryId,
+  )
+
   if (factory) {
     return `${factory.code} - ${factory.name}`
   }
-  return factoryId
+
+  return normalizedFactoryId
 }
+
 export function getOrderCodeDisplay(ticket) {
   if (!isMaintenanceTicket(ticket)) {
     return 'Khong ap dung'
   }
 
-  return ticket?.orderCode || 'Chờ cấp Order Code'
+  const orderCode = String(ticket?.orderCode || '').trim()
+  if (orderCode) {
+    return orderCode
+  }
+
+  const normalizedStatus = normalize(ticket?.status)
+  const isAccepted =
+    Boolean(ticket?.assignedTo) ||
+    Number(ticket?.statusId) === 2 ||
+    Number(ticket?.statusId) === 1 ||
+    normalizedStatus === 'inprogress' ||
+    normalizedStatus === 'done'
+
+  return isAccepted ? 'Dang cho cap order' : 'Cho tiep nhan'
 }
 
 export function formatTicketCode(ticket) {
