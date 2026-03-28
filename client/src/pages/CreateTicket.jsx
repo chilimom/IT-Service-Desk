@@ -238,12 +238,12 @@ useEffect(() => {
           {isMaintenance && (
             <>
               <input name="area" value={form.area} onChange={handleChange} placeholder="Equipment" />
-              <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} placeholder="Tên thiết bị" />
+              <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} placeholder="Khu vực" />
             </>
           )}
 
           <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" />
-          <textarea name="description" value={form.description} onChange={handleChange} placeholder="Mô tả..." rows="4" />
+          <textarea name="description" value={form.description} onChange={handleChange} placeholder="Mô tả...Kiểm tra  bơm chất chuẩn định kỳ OK 53" rows="4" />
           <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
 
           {errorMessage && <div className="form-error">{errorMessage}</div>}
