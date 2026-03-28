@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { getTicketDashboard, getTickets } from '../services/ticketService'
 import { formatTicketCode, getTicketTypeLabel } from '../ultils/ticketMeta'
 import '../styles/dashboard.css'
+
+const MAINTENANCE_CARD_TINTS = [
+  { background: 'linear-gradient(180deg, rgba(239,246,255,0.96), rgba(219,234,254,0.88))', borderColor: '#bfdbfe' },
+  { background: 'linear-gradient(180deg, rgba(236,253,245,0.96), rgba(209,250,229,0.9))', borderColor: '#a7f3d0' },
+  { background: 'linear-gradient(180deg, rgba(255,251,235,0.96), rgba(254,240,138,0.68))', borderColor: '#fde68a' },
+  { background: 'linear-gradient(180deg, rgba(254,242,242,0.96), rgba(254,202,202,0.78))', borderColor: '#fecaca' },
+  { background: 'linear-gradient(180deg, rgba(245,243,255,0.96), rgba(221,214,254,0.82))', borderColor: '#ddd6fe' },
+  { background: 'linear-gradient(180deg, rgba(240,253,250,0.96), rgba(153,246,228,0.72))', borderColor: '#99f6e4' },
+  { background: 'linear-gradient(180deg, rgba(255,247,237,0.96), rgba(254,215,170,0.82))', borderColor: '#fed7aa' },
+  { background: 'linear-gradient(180deg, rgba(238,242,255,0.96), rgba(199,210,254,0.82))', borderColor: '#c7d2fe' },
+]
 
 function formatDate(dateValue) {
   if (!dateValue) return 'Chua co'
@@ -11,6 +22,10 @@ function formatDate(dateValue) {
   if (Number.isNaN(date.getTime())) return 'Khong hop le'
 
   return date.toLocaleDateString('vi-VN')
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat('vi-VN').format(Number(value) || 0)
 }
 
 function getStatusClass(status) {
@@ -81,10 +96,10 @@ function Dashboard() {
     const submitted = statusLookup.get(3) ?? statusLookup.get('submitted') ?? 0
 
     return [
-      { label: 'Tổng yêu cầu', value: Number(dashboard.total) || tickets.length, tone: 'total' },
-      { label: 'Hoàn ', value: done, tone: 'done' },
-      { label: 'InProgress', value: inProgress, tone: 'progress' },
-      { label: 'Submitted', value: submitted, tone: 'submitted' },
+      { label: 'Tong yeu cau', value: Number(dashboard.total) || tickets.length, tone: 'total' },
+      { label: 'Hoan thanh', value: done, tone: 'done' },
+      { label: 'Dang xu ly', value: inProgress, tone: 'progress' },
+      { label: 'Moi tao', value: submitted, tone: 'submitted' },
     ]
   }, [dashboard.total, statusLookup, tickets.length])
 
@@ -119,7 +134,10 @@ function Dashboard() {
 
   const factoryChartData = useMemo(() => {
     const grouped = tickets.reduce((accumulator, ticket) => {
-      const key = ticket.factoryCode && ticket.factoryName ? `${ticket.factoryCode} - ${ticket.factoryName}` : ticket.factoryName || 'Chua co nha may'
+      const key =
+        ticket.factoryCode && ticket.factoryName
+          ? `${ticket.factoryCode} - ${ticket.factoryName}`
+          : ticket.factoryName || 'Chua co nha may'
       accumulator[key] = (accumulator[key] || 0) + 1
       return accumulator
     }, {})
@@ -143,26 +161,55 @@ function Dashboard() {
       return accumulator
     }, {})
 
-    return Object.entries(grouped).map(([key, value], index) => {
-      const [code, name] = key.split('|')
-      return {
-        name: code && code !== 'N/A' ? `${code} - ${name}` : name,
-        value,
-        color: colors[index % colors.length],
-      }
-    })
+    return Object.entries(grouped)
+      .map(([key, value], index) => {
+        const [code, name] = key.split('|')
+        return {
+          name: code && code !== 'N/A' ? `${code} - ${name}` : name,
+          value,
+          color: colors[index % colors.length],
+        }
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 6)
   }, [tickets])
 
   const totalMaintenance = maintenanceChartData.reduce((sum, item) => sum + item.value, 0)
   const activeItem = activeIndex !== null ? maintenanceChartData[activeIndex] : null
   const percent = activeItem && totalMaintenance > 0 ? Math.round((activeItem.value / totalMaintenance) * 100) : 100
+  const highestMaintenanceTotal = maintenanceChartData[0]?.value || 1
+
+  const maintenanceChartSegments = useMemo(() => {
+    if (!maintenanceChartData.length || totalMaintenance <= 0) return []
+
+    const circumference = 2 * Math.PI * 84
+    let accumulatedOffset = 0
+
+    return maintenanceChartData.map((item, index) => {
+      const ratio = item.value / totalMaintenance
+      const rawLength = ratio * circumference
+      const visibleLength = maintenanceChartData.length > 1 ? Math.max(rawLength - 10, 0) : rawLength
+      const segment = {
+        ...item,
+        label: item.name,
+        percent: Math.round(ratio * 100),
+        index,
+        radius: 84,
+        strokeDasharray: `${visibleLength} ${Math.max(circumference - visibleLength, 0)}`,
+        strokeDashoffset: -accumulatedOffset,
+      }
+
+      accumulatedOffset += rawLength
+      return segment
+    })
+  }, [maintenanceChartData, totalMaintenance])
 
   return (
     <section className="dashboard-page">
       <div className="dashboard-page__hero">
         <div>
           <p className="dashboard-page__eyebrow">IT Service Desk</p>
-          <h1 className="dashboard-page__title">Tổng quan Ticket</h1>
+          <h1 className="dashboard-page__title">Tong quan Ticket</h1>
         </div>
       </div>
 
@@ -173,7 +220,7 @@ function Dashboard() {
           <article key={item.label} className={`dashboard-card dashboard-card--${item.tone}`}>
             <span className="dashboard-card__glow" aria-hidden="true" />
             <span className="dashboard-card__label">{item.label}</span>
-            <strong className="dashboard-card__value">{item.value}</strong>
+            <strong className="dashboard-card__value">{formatNumber(item.value)}</strong>
           </article>
         ))}
       </div>
@@ -182,55 +229,103 @@ function Dashboard() {
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Thống kê loại bảo trì</h2>
+              <h2 className="dashboard-panel__title">Thong ke loai bao tri</h2>
             </div>
           </div>
-          <div className="chart-container">
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie
-                  data={maintenanceChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="60%"
-                  outerRadius="90%"
-                  paddingAngle={3}
-                  cornerRadius={10}
-                  onMouseEnter={(_, index) => setActiveIndex(index)}
-                  onMouseLeave={() => setActiveIndex(null)}
-                >
-                  {maintenanceChartData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
+
+          <div className="maintenance-overview">
+            <div className="maintenance-donut-card">
+              <div className="maintenance-donut-wrap">
+                <svg viewBox="0 0 220 220" className="maintenance-donut-chart" aria-hidden="true">
+                  <circle cx="110" cy="110" r="84" fill="none" stroke="#e2e8f0" strokeWidth="26" />
+                  {maintenanceChartSegments.map((item) => (
+                    <circle
+                      key={item.label}
+                      cx="110"
+                      cy="110"
+                      r={item.radius}
+                      fill="none"
+                      stroke={item.color}
+                      strokeWidth={activeIndex === item.index ? 34 : 28}
+                      strokeDasharray={item.strokeDasharray}
+                      strokeDashoffset={item.strokeDashoffset}
+                      strokeLinecap="round"
+                      className="maintenance-donut-segment"
+                      style={{
+                        filter: activeIndex === item.index ? `drop-shadow(0 10px 18px ${item.color}55)` : 'none',
+                        transform: activeIndex === item.index ? 'scale(1.04)' : 'scale(1)',
+                        transformOrigin: '110px 110px',
+                      }}
+                      onMouseEnter={() => setActiveIndex(item.index)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                    />
                   ))}
-                </Pie>
+                </svg>
 
-                <text x="50%" y="40%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: 14, fill: '#64748b' }}>
-                  {activeItem ? activeItem.name : 'Tổng số'}
-                </text>
+                <div className="maintenance-donut-center">
+                  <div className="maintenance-donut-center__label">{activeItem ? activeItem.name : 'Lenh bao tri'}</div>
+                  <div className="maintenance-donut-center__meta">
+                    {activeItem && totalMaintenance > 0 ? `${percent}% tong` : 'Tong so'}
+                  </div>
+                  <div
+                    className="maintenance-donut-center__value"
+                    style={{ color: activeItem?.color || '#2563eb' }}
+                  >
+                    {formatNumber(activeItem?.value ?? totalMaintenance)}
+                  </div>
+                </div>
+              </div>
 
-                <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: 14, fill: '#94a3b8' }}>
-                  {activeItem && totalMaintenance > 0 ? `${percent}%` : ''}
-                </text>
+              <div className="maintenance-donut-copy">
+                <div className="maintenance-donut-copy__title">Co cau theo nhom thong ke</div>
+                <div className="maintenance-donut-copy__text">Bieu do tron tong hop cac nhom lenh bao tri nhieu nhat</div>
+              </div>
+            </div>
 
-                <text
-                  x="50%"
-                  y="62%"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  style={{
-                    fontSize: 32,
-                    fontWeight: 'bold',
-                    fill: activeItem ? activeItem.color : '#2563eb',
-                  }}
-                >
-                  {activeItem ? activeItem.value : totalMaintenance}
-                </text>
+            <div className="maintenance-legend-grid">
+              {maintenanceChartData.map((item, index) => {
+                const cardTint = MAINTENANCE_CARD_TINTS[index % MAINTENANCE_CARD_TINTS.length]
+                const itemPercent = totalMaintenance > 0 ? Math.round((item.value / totalMaintenance) * 100) : 0
 
-                <Tooltip formatter={(value) => `${value} ticket`} />
-              </PieChart>
-            </ResponsiveContainer>
+                return (
+                  <div
+                    key={item.name}
+                    className="maintenance-legend-card"
+                    style={{
+                      border: `1px solid ${cardTint.borderColor}`,
+                      background: cardTint.background,
+                      boxShadow: activeIndex === index ? `0 14px 28px ${item.color}1F` : 'none',
+                    }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onMouseLeave={() => setActiveIndex(null)}
+                  >
+                    <div className="maintenance-legend-card__header">
+                      <div className="maintenance-legend-card__identity">
+                        <span className="maintenance-legend-card__dot" style={{ backgroundColor: item.color }} />
+                        <div>
+                          <div className="maintenance-legend-card__name">{item.name}</div>
+                          <div className="maintenance-legend-card__meta">{itemPercent}% tong lenh</div>
+                        </div>
+                      </div>
+                      <div className="maintenance-legend-card__value" style={{ color: item.color }}>
+                        {formatNumber(item.value)}
+                      </div>
+                    </div>
+
+                    <div className="maintenance-legend-card__track">
+                      <div
+                        className="maintenance-legend-card__bar"
+                        style={{
+                          width: `${Math.max((item.value / highestMaintenanceTotal) * 100, 10)}%`,
+                          background: `linear-gradient(90deg, ${item.color}, ${item.color}CC)`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
             {maintenanceChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu loai bao tri.</p>}
           </div>
         </section>
@@ -238,8 +333,8 @@ function Dashboard() {
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Loại Ticket</h2>
-              <p className="dashboard-panel__caption">Thống kê loại Ticket</p>
+              <h2 className="dashboard-panel__title">Loai Ticket</h2>
+              <p className="dashboard-panel__caption">Thong ke loai Ticket</p>
             </div>
           </div>
           <div className="chart-container chart-container--bar">
@@ -273,42 +368,52 @@ function Dashboard() {
             {ticketTypeChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu loai ticket.</p>}
           </div>
         </section>
+
         <section className="dashboard-panel">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Thống kê theo nhà máy</h2>
-              <p className="dashboard-panel__caption">Thống kê số lượng theo nhà máy</p>
+              <h2 className="dashboard-panel__title">Thong ke theo nha may</h2>
+              <p className="dashboard-panel__caption">Thong ke so luong theo nha may</p>
             </div>
           </div>
           <div className="chart-container chart-container--bar chart-container--bar-factory">
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={factoryChartData} margin={{ top: 8, right: 8, left: -8, bottom: 28 }}>
-              <defs>
-                <linearGradient id="factoryBarGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#7c3aed" />
-                  <stop offset="100%" stopColor="#a78bfa" />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} stroke="#e6eef8" strokeDasharray="4 4" />
-              <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: '#54708d', fontSize: 10 }} interval={0} angle={-8} textAnchor="end" height={42} />
-              <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fill: '#7a93ab', fontSize: 11 }} />
-              <Tooltip formatter={(value) => `${value} ticket`} cursor={{ fill: 'rgba(124, 58, 237, 0.08)' }} />
-              <Bar dataKey="value" radius={[14, 14, 4, 4]} maxBarSize={44}>
-                {factoryChartData.map((entry) => (
-                  <Cell key={entry.name} fill={entry.fill} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          {factoryChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu nha may.</p>}
-        </div>
+                <defs>
+                  <linearGradient id="factoryBarGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7c3aed" />
+                    <stop offset="100%" stopColor="#a78bfa" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="#e6eef8" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: '#54708d', fontSize: 10 }}
+                  interval={0}
+                  angle={-8}
+                  textAnchor="end"
+                  height={42}
+                />
+                <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fill: '#7a93ab', fontSize: 11 }} />
+                <Tooltip formatter={(value) => `${value} ticket`} cursor={{ fill: 'rgba(124, 58, 237, 0.08)' }} />
+                <Bar dataKey="value" radius={[14, 14, 4, 4]} maxBarSize={44}>
+                  {factoryChartData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            {factoryChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu nha may.</p>}
+          </div>
         </section>
       </div>
 
       <section className="dashboard-panel">
         <div className="dashboard-panel__header">
           <div>
-            <h2 className="dashboard-panel__title">Ticket gần đây</h2>
+            <h2 className="dashboard-panel__title">Ticket gan day</h2>
           </div>
         </div>
 
