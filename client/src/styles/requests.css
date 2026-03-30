@@ -53,6 +53,9 @@
 
 .requests-search {
   display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .requests-search__field {
@@ -60,6 +63,22 @@
   flex-direction: column;
   gap: 8px;
   width: min(100%, 520px);
+}
+
+.requests-search__export {
+  height: 46px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: #0f4c97;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(15, 76, 151, 0.16);
+  cursor: pointer;
+}
+
+.requests-search__export:hover {
+  background: #123f78;
 }
 
 .requests-search__field span {
@@ -261,6 +280,15 @@
 }
 
 @media (max-width: 700px) {
+  .requests-search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .requests-search__export {
+    width: 100%;
+  }
+
   .requests-page__hero {
     padding: 22px 20px;
     border-radius: 22px;

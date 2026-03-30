@@ -33,8 +33,12 @@ function Login() {
       }
 
       navigate(`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`, { replace: true })
-    } catch {
-      setError('Sai tên đăng nhập hoặc mật khẩu.')
+    } catch (submitError) {
+      if (submitError instanceof TypeError) {
+        setError('Khong ket noi duoc toi may chu. Vui long kiem tra backend.')
+      } else {
+        setError(submitError.message || 'Dang nhap that bai.')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -44,26 +48,23 @@ function Login() {
     <section className="login-page">
       <div className="login-card">
         <p className="login-card__eyebrow">IT Service Desk</p>
-        <h1 className="login-card__title">Đăng nhập hệ thống</h1>
-        {/* <p className="login-card__subtitle">
-          User tao va theo doi ticket. Admin quan tri va xu ly toan bo ticket.
-        </p> */}
+        <h1 className="login-card__title">Dang nhap he thong</h1>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <label>
-            <span>Tên đăng nhập</span>
+            <span>Ten dang nhap</span>
             <input name="username" value={form.username} onChange={handleChange} />
           </label>
 
           <label>
-            <span>Mật khẩu</span>
+            <span>Mat khau</span>
             <input type="password" name="password" value={form.password} onChange={handleChange} />
           </label>
 
           {error && <div className="login-form__error">{error}</div>}
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang dang nhap...' : 'Đăng nhập'}
+            {isSubmitting ? 'Dang dang nhap...' : 'Dang nhap'}
           </button>
         </form>
       </div>

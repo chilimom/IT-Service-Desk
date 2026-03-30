@@ -12,7 +12,18 @@ export async function loginRequest(payload) {
   })
 
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`)
+    let message = `Request failed: ${response.status}`
+
+    try {
+      const errorPayload = await response.json()
+      if (errorPayload?.message) {
+        message = errorPayload.message
+      }
+    } catch {
+      // Fall back to the HTTP status when the response body is not JSON.
+    }
+
+    throw new Error(message)
   }
 
   return response.json()

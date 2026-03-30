@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
-import { FiSettings, FiTrash2 } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { deleteTicket, getTickets } from '../services/ticketService'
-import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
-import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
+import { getTickets } from '../services/ticketService'
+import { getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { filterTicketsByAccess } from '../ultils/auth'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -47,8 +44,20 @@ function getAreaLabel(ticket) {
   return ticket?.equipmentCode || 'Chua co'
 }
 
+function getRequesterLabel(ticket) {
+  return ticket?.requestedByName || 'Chua co'
+}
+
 function getMaintenanceFilterValue(ticket) {
   return getMaintenanceTypeLabel(ticket)
+}
+
+function escapeExcelValue(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 function AdminTickets() {
@@ -59,30 +68,10 @@ function AdminTickets() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
   const [error, setError] = useState('')
-  const [deletingTicketId, setDeletingTicketId] = useState(null)
-  const canDeleteTicket = isAdminRole(user?.role)
 
   useEffect(() => {
     getTickets().then(setTickets).catch(() => setError('Khong the tai danh sach ticket.'))
   }, [])
-
-  async function handleDelete(ticket) {
-    const ticketCode = formatTicketCode(ticket)
-    const confirmed = window.confirm(`Ban co chac muon xoa ticket ${ticketCode} khong?`)
-    if (!confirmed) return
-
-    setDeletingTicketId(ticket.id)
-    setError('')
-
-    try {
-      await deleteTicket(ticket.id)
-      setTickets((currentTickets) => currentTickets.filter((item) => item.id !== ticket.id))
-    } catch {
-      setError('Khong the xoa ticket. Vui long thu lai.')
-    } finally {
-      setDeletingTicketId(null)
-    }
-  }
 
   const filteredTickets = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -92,7 +81,6 @@ function AdminTickets() {
         if (!keyword) return true
 
         const searchableValues = [
-          formatTicketCode(ticket),
           ticket.code,
           ticket.id,
           ticket.title,
@@ -104,6 +92,7 @@ function AdminTickets() {
           ticket.factoryName,
           ticket.factoryCode,
           ticket.status,
+          ticket.requestedByName,
         ]
 
         return searchableValues.some((value) => String(value || '').toLowerCase().includes(keyword))
@@ -122,11 +111,119 @@ function AdminTickets() {
     return ['ALL', ...new Set(visibleTickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
   }, [visibleTickets])
 
+  function handleExportExcel() {
+    const columns = [
+      { header: 'STT', align: 'center', width: 48 },
+      { header: 'Equipment', align: 'left', width: 150 },
+      { header: 'Khu vuc', align: 'left', width: 170 },
+      { header: 'Loai bao tri', align: 'left', width: 240 },
+      { header: 'So order', align: 'center', width: 120 },
+      { header: 'Nha may', align: 'left', width: 220 },
+      { header: 'Nguoi yeu cau', align: 'center', width: 120 },
+      { header: 'Ngay xu ly', align: 'right', width: 140 },
+      { header: 'Trang thai', align: 'center', width: 110 },
+    ]
+
+    const rows = filteredTickets.map((ticket, index) => ({
+      values: [
+        index + 1,
+        getEquipmentLabel(ticket),
+        getAreaLabel(ticket),
+        getMaintenanceTypeLabel(ticket),
+        getOrderCodeDisplay(ticket),
+        getFactoryLabel(ticket),
+        getRequesterLabel(ticket),
+        formatDate(ticket.dueDate),
+        ticket.status || 'Unknown',
+      ],
+    }))
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office"
+            xmlns:x="urn:schemas-microsoft-com:office:excel"
+            xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="UTF-8" />
+          <style>
+            table {
+              border-collapse: collapse;
+              font-family: Arial, sans-serif;
+              font-size: 12px;
+            }
+
+            th, td {
+              border: 1px solid #9fb6ce;
+              padding: 8px 10px;
+              vertical-align: middle;
+              line-height: 1.4;
+            }
+
+            th {
+              background: #dbe9f8;
+              color: #12385f;
+              font-weight: 700;
+              text-align: center;
+            }
+
+            .text-left {
+              text-align: left;
+            }
+
+            .text-center {
+              text-align: center;
+            }
+
+            .text-right {
+              text-align: right;
+            }
+          </style>
+        </head>
+        <body>
+          <table>
+            <colgroup>
+              ${columns.map((column) => `<col style="width:${column.width}px" />`).join('')}
+            </colgroup>
+            <thead>
+              <tr>${columns.map((column) => `<th>${escapeExcelValue(column.header)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${rows
+                .map(
+                  (row) =>
+                    `<tr>${row.values
+                      .map(
+                        (cell, index) =>
+                          `<td class="text-${columns[index].align}">${escapeExcelValue(cell)}</td>`
+                      )
+                      .join('')}</tr>`
+                )
+                .join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `
+
+    const blob = new Blob([`\uFEFF${html}`], {
+      type: 'application/vnd.ms-excel;charset=utf-8;',
+    })
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const exportDate = new Date().toISOString().slice(0, 10)
+    link.href = url
+    link.download = `admin-tickets-${exportDate}.xls`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <section className="requests-page">
       <div className="requests-page__hero">
         <p className="requests-page__eyebrow">Admin</p>
-        <h1 className="requests-page__title">Quản trị  Ticket</h1>
+        <h1 className="requests-page__title">Quản lý Ticket</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
@@ -142,10 +239,14 @@ function AdminTickets() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Nhập mã Ticket, Loại bảo trì, Nhà máy, Trạng thái..."
+              placeholder="Nhập ticket, loại bảo trì, nhà máy, người yêu cầu..."
             />
           </div>
         </label>
+
+        <button type="button" className="requests-search__export" onClick={handleExportExcel}>
+          Xuất Excel
+        </button>
       </section>
 
       <section className="requests-filters">
@@ -176,7 +277,7 @@ function AdminTickets() {
           <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
             {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
+                {type === 'ALL' ? 'Tất cả loại bảo trì' : type}
               </option>
             ))}
           </select>
@@ -185,66 +286,37 @@ function AdminTickets() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Ma ticket</span>
+          <span>STT</span>
           <span>Equipment</span>
-          <span>Khu vuc</span>
-          <span>Loai bao tri</span>
-          <span>So order</span>
-          <span>Nha may</span>
-          <span>Ngay xu ly</span>
-          <span>Trang thai</span>
-          <span>Thao tac</span>
+          <span>Khu vực</span>
+          <span>Loại bảo trì</span>
+          <span>Số order</span>
+          <span>Nhà máy</span>
+          <span>Người yêu cầu</span>
+          <span>Ngày xử lý</span>
+          <span>Trạng thái</span>
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket) => (
+          {filteredTickets.map((ticket, index) => (
             <article key={ticket.id} className="requests-row">
               <div>
-                <strong>{formatTicketCode(ticket)}</strong>
-                <p>{ticket.title || 'Chua co tieu de'}</p>
+                <strong>{index + 1}</strong>
+                <p>{ticket.title || 'Chưa có tiêu đề'}</p>
               </div>
               <span>{getEquipmentLabel(ticket)}</span>
               <span>{getAreaLabel(ticket)}</span>
               <span>{getMaintenanceTypeLabel(ticket)}</span>
               <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
+              <span>{getRequesterLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
-              <div className="requests-row__actions requests-row__actions--end">
-                <Link
-                  className="requests-row__action"
-                  to={`/${path.ADMIN}/${path.ADMIN_TICKETS}/${ticket.id}`}
-                  title="Config"
-                  aria-label="Config"
-                  data-tooltip="Config"
-                >
-                  <span className="sr-only">Config</span>
-                  <span className="requests-row__action-icon">
-                    <FiSettings size={16} />
-                  </span>
-                </Link>
-                {canDeleteTicket && (
-                  <button
-                    type="button"
-                    className="requests-row__action requests-row__action--danger"
-                    title="Xoa"
-                    aria-label="Xoa"
-                    data-tooltip="Xoa"
-                    onClick={() => handleDelete(ticket)}
-                    disabled={deletingTicketId === ticket.id}
-                  >
-                    <span className="sr-only">Xoa</span>
-                    <span className="requests-row__action-icon">
-                      <FiTrash2 size={16} />
-                    </span>
-                  </button>
-                )}
-              </div>
             </article>
           ))}
 
           {filteredTickets.length === 0 && (
-            <div className="requests-empty">Khong tim thay ticket phu hop voi bo loc hoac tu khoa tim kiem.</div>
+            <div className="requests-empty">Không tìm thấy ticket phù hợp với bộ lọc hoặc từ khóa tìm kiếm.</div>
           )}
         </div>
       </section>
