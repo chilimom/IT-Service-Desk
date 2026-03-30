@@ -20,7 +20,10 @@ function getDefaultApiOrigin() {
   return `${protocol}//${hostname}:${IIS_API_PORT}`
 }
 
-export const API_ORIGIN = import.meta.env.VITE_API_BASE_URL || getDefaultApiOrigin()
+export const API_ORIGIN =
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URI ||
+  getDefaultApiOrigin()
 
 export function buildApiUrl(path) {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`

@@ -135,3 +135,4 @@ D:\ITService\server\obj\Release\net8.0\refint\server.dll
 D:\ITService\server\obj\Release\net8.0\server.pdb
 D:\ITService\server\obj\Release\net8.0\server.genruntimeconfig.cache
 D:\ITService\server\obj\Release\net8.0\ref\server.dll
+D:\ITService\server\obj\Release\net8.0\server.sourcelink.json
