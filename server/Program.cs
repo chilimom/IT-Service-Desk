@@ -3,14 +3,18 @@ using ITServiceDesk.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ===== CONFIG PORT BACKEND =====
 builder.WebHost.UseUrls(
     "http://localhost:5016", "http://10.192.72.45:5016");
 
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 
+// ===== DATABASE =====
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDB")));
 
+// ===== CORS FOR FRONTEND =====
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(FrontendCorsPolicy, policy =>
@@ -24,10 +28,12 @@ builder.Services.AddCors(options =>
                 "http://10.192.72.45:8081")
 
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
+// ===== SERVICES =====
 builder.Services.AddControllers();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TicketService>();
@@ -37,6 +43,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// ===== AUTO UPDATE DATABASE COLUMN =====
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -55,13 +62,16 @@ using (var scope = app.Services.CreateScope())
     ");
 }
 
+// ===== SWAGGER =====
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// ===== MIDDLEWARE =====
 app.UseCors(FrontendCorsPolicy);
+app.UseAuthentication();
 app.MapControllers();
-
+app.UseStaticFiles();
 app.Run();
