@@ -110,7 +110,7 @@ function TicketDetails() {
   const StatusIcon = statusMeta.icon
   const canUserEdit = useMemo(() => !canProcessTickets && ticket?.statusId === SUBMITTED_STATUS_ID, [canProcessTickets, ticket])
   const showEditButton = canProcessTickets || canUserEdit
-  const actionLabel = isEditing ? 'Dong' : canProcessTickets ? 'Xu ly Ticket' : 'Sua ticket'
+  const actionLabel = isEditing ? 'Đóng' : canProcessTickets ? 'Xử lý Ticket' : 'Sửa Ticket'
   const ActionIcon = isEditing ? FiX : canProcessTickets ? FiSettings : FiEdit2
   const isEditingMaintenance = form.type === 'Maintenance'
   const canMarkDone = !isMaintenance || Boolean(form.orderCode?.trim())
@@ -158,7 +158,7 @@ function TicketDetails() {
     if (assigneeId && assigneeName) return `${assigneeId} - ${assigneeName}`
     if (assigneeId) return String(assigneeId)
     if (assigneeName) return assigneeName
-    return 'Chua co nguoi tiep nhan'
+    return 'Chưa có người tiếp nhận'
   }, [ticket])
 
   useEffect(() => {
@@ -337,10 +337,10 @@ function TicketDetails() {
             {!isEditing && (
               <div className="ticket-details__form-view">
                 <label>Loại Ticket</label>
-                <div className="ticket-details__field-view">{isMaintenance ? 'Lenh bao tri' : 'Ho tro CNTT'}</div>
+                <div className="ticket-details__field-view">{isMaintenance ? 'Lệnh bảo trì' : 'Hỗ trợ CNTT'}</div>
 
                 <label>Lĩnh vực</label>
-                <div className="ticket-details__field-view">{ticket.categoryName || 'Chua co'}</div>
+                <div className="ticket-details__field-view">{ticket.categoryName || 'Chưa có'}</div>
 
                 <label>Nhà máy</label>
                 <div className="ticket-details__field-view">{ticket.factoryCode ? `${ticket.factoryCode} - ${ticket.factoryName}` : ticket.factoryName || 'Chua co'}</div>

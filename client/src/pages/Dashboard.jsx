@@ -393,8 +393,8 @@ function Dashboard() {
         <section className="dashboard-panel dashboard-panel--factory">
           <div className="dashboard-panel__header">
             <div>
-              <h2 className="dashboard-panel__title">Thong ke theo nha may</h2>
-              <p className="dashboard-panel__caption">Thong ke so luong theo nha may</p>
+              <h2 className="dashboard-panel__title">Thống kê theo nhà máy</h2>
+              <p className="dashboard-panel__caption">Thống kê số lượng theo nhà máy</p>
             </div>
           </div>
           <div className="chart-container chart-container--bar chart-container--bar-factory">
@@ -434,20 +434,20 @@ function Dashboard() {
       <section className="dashboard-panel">
         <div className="dashboard-panel__header">
           <div>
-            <h2 className="dashboard-panel__title">Ticket gan day</h2>
+            <h2 className="dashboard-panel__title">Ticket gần đây</h2>
           </div>
         </div>
 
         <div className="ticket-table">
           <div className="ticket-table__head">
-            <span>Ma Ticket</span>
+            <span>Mã Ticket</span>
             <span>Equipment</span>
-            <span>Khu vuc</span>
-            <span>Loai bao tri</span>
-            <span>So order</span>
-            <span>Nha may</span>
-            <span>Ngay xu ly</span>
-            <span>Trang thai</span>
+            <span>Khu vực</span>
+            <span>Loại bảo trì</span>
+            <span>Số order</span>
+            <span>Nhà máy</span>
+            <span>Ngày xử lý</span>
+            <span>Trạng thái</span>
           </div>
 
           <div className="ticket-table__body">

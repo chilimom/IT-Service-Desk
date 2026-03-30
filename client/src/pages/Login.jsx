@@ -48,23 +48,23 @@ function Login() {
     <section className="login-page">
       <div className="login-card">
         <p className="login-card__eyebrow">IT Service Desk</p>
-        <h1 className="login-card__title">Dang nhap he thong</h1>
+        <h1 className="login-card__title">Đăng nhập hệ thống</h1>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <label>
-            <span>Ten dang nhap</span>
+            <span>Tên đăng nhập</span>
             <input name="username" value={form.username} onChange={handleChange} />
           </label>
 
           <label>
-            <span>Mat khau</span>
+            <span>Mật khẩu</span>
             <input type="password" name="password" value={form.password} onChange={handleChange} />
           </label>
 
           {error && <div className="login-form__error">{error}</div>}
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang dang nhap...' : 'Dang nhap'}
+            {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
         </form>
       </div>

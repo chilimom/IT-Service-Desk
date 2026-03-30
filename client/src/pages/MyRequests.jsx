@@ -203,15 +203,15 @@ function MyRequests() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Ma ticket</span>
+          <span>Mã ticket</span>
           <span>Equipment</span>
-          <span>Khu vuc</span>
-          <span>Loai bao tri</span>
-          <span>So order</span>
-          <span>Nha may</span>
-          <span>Ngay xu ly</span>
-          <span>Trang thai</span>
-          <span>Thao tac</span>
+          <span>Khu vực</span>
+          <span>Loại bảo trì</span>
+          <span>Số order</span>
+          <span>Nhà máy</span>
+          <span>Ngày xử lý</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
 
         <div className="requests-table__body">
