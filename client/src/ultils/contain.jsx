@@ -21,13 +21,13 @@ export const getSidebarItems = (role) => {
       },
       {
         id: 1,
-        text: 'Quan tri Ticket',
+        text: 'Quản trị Ticket',
         icon: <FaUser size={20} />,
         path: `/${path.ADMIN}/${path.ADMIN_TICKETS}`,
       },
       {
         id: 2,
-        text: 'Quan ly User',
+        text: 'Quản lý User',
         icon: <MdGroups size={22} />,
         path: `/${path.ADMIN}/${path.ADMIN_USERS}`,
       },
@@ -44,7 +44,7 @@ export const getSidebarItems = (role) => {
       },
       {
         id: 1,
-        text: 'Xu ly Ticket',
+        text: 'Xử lý Ticket',
         icon: <FaUser size={20} />,
         path: `/${path.ADMIN}/${path.ADMIN_TICKETS}`,
       },
@@ -54,19 +54,19 @@ export const getSidebarItems = (role) => {
   return [
     {
       id: 0,
-      text: 'Tong quan ticket',
+      text: 'Tổng quan ticket',
       icon: <MdOutlineDashboardCustomize size={24} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`,
     },
     {
       id: 1,
-      text: 'Tao Ticket',
+      text: 'Tạo Ticket',
       icon: <HiOutlineWrenchScrewdriver size={22} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`,
     },
     {
       id: 2,
-      text: 'Yeu cau cua toi',
+      text: 'Yêu cầu của tôi',
       icon: <FaEye size={20} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_REQUESTS}`,
     },

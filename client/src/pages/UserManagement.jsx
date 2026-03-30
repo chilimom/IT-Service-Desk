@@ -265,7 +265,7 @@ function UserManagement() {
       <div className="user-management__toolbar">
         <button type="button" className="user-management__primary-button" onClick={openCreateModal}>
           <FiPlus size={16} />
-          <span>Tao tai khoan</span>
+          <span>Tạo tài khoản</span>
         </button>
 
         <label className="user-management__search">
@@ -285,19 +285,19 @@ function UserManagement() {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Ho va ten</th>
-                <th>Ten dang nhap</th>
-                <th>Vai tro</th>
-                <th>Phong ban</th>
-                <th>Nha may truy cap</th>
-                <th>Ngay tao</th>
-                <th>Thao tac</th>
+                <th>Họ và tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò</th>
+                <th>Phòng ban</th>
+                <th>Nhà máy truy cập</th>
+                <th>Ngày tạo</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {isLoading && (
                 <tr>
-                  <td colSpan="8" className="user-management__empty-cell">Dang tai danh sach user...</td>
+                  <td colSpan="8" className="user-management__empty-cell">Đang tải danh sách user...</td>
                 </tr>
               )}
 
