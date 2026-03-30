@@ -106,15 +106,15 @@ function CreateTicket() {
         return null
       }
       if (!form.equipmentCode?.trim()) {
-        setErrorMessage('Vui long nhap Khu vuc')
+        setErrorMessage('Vui lòng nhập Khu vực')
         return null
       }
       if (!form.assignedTeam?.trim()) {
-        setErrorMessage('Vui long nhap To bao tri')
+        setErrorMessage('Vui long nhap Tổ bảo trì')
         return null
       }
     } else if (!form.title?.trim()) {
-      setErrorMessage('Vui long nhap Tieu de ho tro')
+      setErrorMessage('Vui lòng nhập tiêu đề cho ticket hỗ trợ CNTT')
       return null
     }
 
@@ -163,17 +163,17 @@ function CreateTicket() {
   return (
     <section className="create-ticket-page">
       <div className="form-container">
-        <h2>Tao Ticket</h2>
+        <h2>Tạo Ticket</h2>
         <form onSubmit={handleSubmit}>
-          <label>Loai Ticket</label>
+          <label>Loại Ticket</label>
           <select name="type" value={form.type} onChange={handleChange}>
-            <option value="Maintenance">Tao Lenh bao tri</option>
-            <option value="IT">Ho tro CNTT</option>
+            <option value="Maintenance">Tạo Lệnh bảo trì</option>
+            <option value="IT">Hỗ trợ CNTT</option>
           </select>
 
-          <label>Linh vuc</label>
+          <label>Lĩnh vực</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
-            <option value="">Chon danh muc</option>
+            <option value="">Chọn danh mục</option>
             {filteredCategories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -181,9 +181,9 @@ function CreateTicket() {
             ))}
           </select>
 
-          <label>Nha may</label>
+          <label>Nhà máy</label>
           <select name="factoryId" value={form.factoryId || ''} onChange={handleChange}>
-            <option value="">Chon nha may</option>
+            <option value="">Chọn nhà máy</option>
             {factories.map((factory) => (
               <option key={factory.id} value={factory.id}>
                 {factory.code} - {factory.name}
@@ -193,9 +193,9 @@ function CreateTicket() {
 
           {isMaintenance && (
             <>
-              <label>Loai bao tri</label>
+              <label>Loại bảo trì</label>
               <select name="maintenanceTypeId" value={form.maintenanceTypeId} onChange={handleChange}>
-                <option value="">Chon loai bao tri</option>
+                <option value="">Chọn loại bảo trì</option>
                 {maintenanceTypes.map((type) => (
                   <option key={type.id} value={type.id}>
                     {type.code} - {type.name}
@@ -210,30 +210,30 @@ function CreateTicket() {
               name="title"
               value={form.title}
               onChange={handleChange}
-              placeholder="Vi du: Loi may in, khong dang nhap duoc..."
+              placeholder="Ví dụ: Lỗi máy in, không đăng nhập được..."
             />
           )}
 
           {isMaintenance && (
             <>
               <input name="area" value={form.area} onChange={handleChange} placeholder="Equipment" />
-              <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} placeholder="Khu vuc" />
+              <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} placeholder="Khu vực" />
             </>
           )}
 
-          <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="To bao tri" />
+          <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" />
           <textarea
             name="description"
             value={form.description}
             onChange={handleChange}
-            placeholder="Mo ta..."
+            placeholder="Mô tả...BTSC hỏng thiết bị ..."
             rows="4"
           />
           <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} />
 
           {errorMessage && <div className="form-error">{errorMessage}</div>}
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang tao...' : 'Tao Ticket'}
+            {isSubmitting ? 'Dang tao...' : 'Tạo Ticket'}
           </button>
         </form>
       </div>
