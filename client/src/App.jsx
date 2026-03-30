@@ -8,7 +8,9 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import MyRequests from './pages/MyRequests'
 import TicketDetails from './pages/TicketDetails'
+import UserManagement from './pages/UserManagement'
 import Layout from './styles/Layout'
+import { isAdminRole, isProcessorRole } from './ultils/auth'
 import path from './ultils/path'
 
 function RootRedirect() {
@@ -18,11 +20,11 @@ function RootRedirect() {
     return <Navigate to={path.LOGIN} replace />
   }
 
-  if ((user?.role || '').toLowerCase() === 'admin') {
+  if (isAdminRole(user?.role) || isProcessorRole(user?.role)) {
     return <Navigate to={`/${path.ADMIN}/${path.ADMIN_DASHBOARD}`} replace />
   }
 
-  return <Navigate to={`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`} replace />
+  return <Navigate to={`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`} replace />
 }
 
 function App() {
@@ -40,9 +42,9 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to={`${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`} replace />} />
+          <Route index element={<Navigate to={`${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`} replace />} />
           <Route path={path.USER_TICKETS}>
-            <Route index element={<Navigate to={path.USER_TICKETS_CREATE} replace />} />
+            <Route index element={<Navigate to={path.USER_TICKETS_DASHBOARD} replace />} />
             <Route path={path.USER_TICKETS_DASHBOARD} element={<Dashboard />} />
             <Route path={path.USER_TICKETS_CREATE} element={<CreateTicket />} />
             <Route path={path.USER_TICKETS_REQUESTS} element={<MyRequests />} />
@@ -53,7 +55,7 @@ function App() {
         <Route
           path={path.ADMIN}
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={['admin', 'processor']}>
               <Layout />
             </ProtectedRoute>
           }
@@ -61,6 +63,14 @@ function App() {
           <Route index element={<Navigate to={path.ADMIN_DASHBOARD} replace />} />
           <Route path={path.ADMIN_DASHBOARD} element={<Dashboard />} />
           <Route path={path.ADMIN_TICKETS} element={<AdminTickets />} />
+          <Route
+            path={path.ADMIN_USERS}
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <UserManagement />
+              </ProtectedRoute>
+            }
+          />
           <Route path={path.ADMIN_TICKET_DETAIL} element={<TicketDetails />} />
         </Route>
 

@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { FiEdit2, FiEye, FiSearch } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { buildApiUrl } from '../services/api'
 import path from '../ultils/path'
-import { formatTicketCode } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -21,12 +22,6 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
-function getTicketTypeLabelForTable(ticket) {
-  if (ticket?.categoryType === 'Maintenance') return 'Lenh bao tri'
-  if (ticket?.categoryType === 'Support') return 'Ho tro CNTT'
-  return 'Chua xac dinh'
-}
-
 function getMaintenanceTypeLabel(ticket) {
   if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
   if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
@@ -42,11 +37,23 @@ function getFactoryLabel(ticket) {
   return ticket?.factoryName || 'Chua co nha may'
 }
 
+function getEquipmentLabel(ticket) {
+  return ticket?.area || 'Chua co'
+}
+
+function getAreaLabel(ticket) {
+  return ticket?.equipmentCode || 'Chua co'
+}
+
+function getMaintenanceFilterValue(ticket) {
+  return getMaintenanceTypeLabel(ticket)
+}
+
 function MyRequests() {
   const { user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [statusFilter, setStatusFilter] = useState('ALL')
-  const [typeFilter, setTypeFilter] = useState('ALL')
+  const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
@@ -58,7 +65,7 @@ function MyRequests() {
         setLoading(true)
         if (!user?.id) return
 
-        const response = await fetch(`http://localhost:5017/api/tickets/my?userId=${user.id}`)
+        const response = await fetch(buildApiUrl(`/api/tickets/my?userId=${user.id}`))
         if (!response.ok) {
           throw new Error('Failed to fetch tickets')
         }
@@ -102,29 +109,18 @@ function MyRequests() {
         if (statusFilter === 'ALL') return true
         return (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()
       })
-      .filter((ticket) => {
-        if (typeFilter === 'ALL') return true
-        const ticketType = ticket.categoryType === 'Maintenance' ? 'Maintenance' : 'IT'
-        return ticketType === typeFilter
-      })
+      .filter((ticket) => (maintenanceFilter === 'ALL' ? true : getMaintenanceFilterValue(ticket) === maintenanceFilter))
       .filter((ticket) => {
         if (factoryFilter === 'ALL') return true
         return ticket.factoryName === factoryFilter
       })
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-  }, [factoryFilter, searchTerm, statusFilter, tickets, typeFilter])
+  }, [factoryFilter, maintenanceFilter, searchTerm, statusFilter, tickets])
 
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
 
-  const types = useMemo(() => {
-    const typeList = ['ALL']
-    const hasMaintenance = tickets.some((ticket) => ticket.categoryType === 'Maintenance')
-    const hasIT = tickets.some((ticket) => ticket.categoryType === 'Support')
-
-    if (hasMaintenance) typeList.push('Maintenance')
-    if (hasIT) typeList.push('IT')
-
-    return typeList
+  const maintenanceTypes = useMemo(() => {
+    return ['ALL', ...new Set(tickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
   }, [tickets])
 
   const factories = useMemo(() => {
@@ -183,11 +179,11 @@ function MyRequests() {
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo loại Ticket</span>
-          <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
-            {types.map((type) => (
+          <span>Lọc theo loại bảo trì</span>
+          <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
+            {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tất cả loại Ticket' : type === 'Maintenance' ? 'Lenh bao tri' : 'Ho tro CNTT'}
+                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
               </option>
             ))}
           </select>
@@ -208,8 +204,10 @@ function MyRequests() {
       <section className="requests-table">
         <div className="requests-table__head">
           <span>Ma ticket</span>
-          <span>Loai ticket</span>
+          <span>Equipment</span>
+          <span>Khu vuc</span>
           <span>Loai bao tri</span>
+          <span>So order</span>
           <span>Nha may</span>
           <span>Ngay xu ly</span>
           <span>Trang thai</span>
@@ -223,8 +221,10 @@ function MyRequests() {
                 <strong>{formatTicketCode(ticket)}</strong>
                 <p>{ticket.title || 'Chua co tieu de'}</p>
               </div>
-              <span>{getTicketTypeLabelForTable(ticket)}</span>
+              <span>{getEquipmentLabel(ticket)}</span>
+              <span>{getAreaLabel(ticket)}</span>
               <span>{getMaintenanceTypeLabel(ticket)}</span>
+              <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>

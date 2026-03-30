@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginRequest } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
+import { isAdminRole, isProcessorRole } from '../ultils/auth'
 import path from '../ultils/path'
 import '../styles/login.css'
 
@@ -26,12 +27,12 @@ function Login() {
       const user = await loginRequest(form)
       login(user)
 
-      if ((user.role || '').toLowerCase() === 'admin') {
+      if (isAdminRole(user.role) || isProcessorRole(user.role)) {
         navigate(`/${path.ADMIN}/${path.ADMIN_DASHBOARD}`, { replace: true })
         return
       }
 
-      navigate(`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`, { replace: true })
+      navigate(`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`, { replace: true })
     } catch {
       setError('Sai tên đăng nhập hoặc mật khẩu.')
     } finally {

@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { FiAlertCircle, FiCheckCircle, FiEdit2, FiInfo, FiSave, FiSettings, FiX } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
+import { buildApiUrl } from '../services/api'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
 import { getMaintenanceCategory, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { canAccessFactory, canManageTickets, isAdminRole, isProcessorRole } from '../ultils/auth'
 import '../styles/ticket-details.css'
 
 const SUBMITTED_STATUS_ID = 3
@@ -75,7 +77,9 @@ function getStatusMeta(status) {
 function TicketDetails() {
   const { ticketId } = useParams()
   const { user } = useAuth()
-  const isAdmin = (user?.role || '').toLowerCase() === 'admin'
+  const isAdmin = isAdminRole(user?.role)
+  const isProcessor = isProcessorRole(user?.role)
+  const canProcessTickets = canManageTickets(user)
 
   const [ticket, setTicket] = useState(null)
   const [users, setUsers] = useState([])
@@ -104,12 +108,24 @@ function TicketDetails() {
   const statusText = useMemo(() => (ticket ? getStatusLabel(ticket.statusId, ticket.status) : ''), [ticket])
   const statusMeta = useMemo(() => getStatusMeta(statusText), [statusText])
   const StatusIcon = statusMeta.icon
-  const canUserEdit = useMemo(() => !isAdmin && ticket?.statusId === SUBMITTED_STATUS_ID, [isAdmin, ticket])
-  const showEditButton = isAdmin || canUserEdit
-  const actionLabel = isEditing ? 'Dong' : isAdmin ? 'Xu ly Ticket' : 'Sua ticket'
-  const ActionIcon = isEditing ? FiX : isAdmin ? FiSettings : FiEdit2
+  const canUserEdit = useMemo(() => !canProcessTickets && ticket?.statusId === SUBMITTED_STATUS_ID, [canProcessTickets, ticket])
+  const showEditButton = canProcessTickets || canUserEdit
+  const actionLabel = isEditing ? 'Dong' : canProcessTickets ? 'Xu ly Ticket' : 'Sua ticket'
+  const ActionIcon = isEditing ? FiX : canProcessTickets ? FiSettings : FiEdit2
   const isEditingMaintenance = form.type === 'Maintenance'
   const canMarkDone = !isMaintenance || Boolean(form.orderCode?.trim())
+  const availableFactories = useMemo(() => {
+    if (!isProcessor) return factories
+    return factories.filter((option) => canAccessFactory(user, option.id))
+  }, [factories, isProcessor, user])
+  const assignableUsers = useMemo(() => {
+    const selectedFactoryId = Number(form.factoryId || ticket?.factoryId || 0)
+
+    return users.filter((option) => {
+      if (isAdminRole(option.role)) return true
+      return isProcessorRole(option.role) && canAccessFactory(option, selectedFactoryId)
+    })
+  }, [form.factoryId, ticket, users])
 
   const maintenanceHeadline = useMemo(() => {
     if (ticket?.maintenanceTypeId) {
@@ -177,8 +193,8 @@ function TicketDetails() {
     async function loadMetadata() {
       try {
         const [factoriesResponse, maintenanceTypesResponse] = await Promise.all([
-          fetch('http://localhost:5017/api/tickets/factories'),
-          fetch('http://localhost:5017/api/MaintenanceTypes'),
+          fetch(buildApiUrl('/api/tickets/factories')),
+          fetch(buildApiUrl('/api/MaintenanceTypes')),
         ])
 
         const factoriesData = factoriesResponse.ok ? await factoriesResponse.json() : []
@@ -196,12 +212,12 @@ function TicketDetails() {
   }, [])
 
   useEffect(() => {
-    if (!isAdmin) return
+    if (!canProcessTickets) return
 
     getUsers()
       .then((data) => setUsers(Array.isArray(data) ? data : []))
       .catch(() => setUsers([]))
-  }, [isAdmin])
+  }, [canProcessTickets])
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -216,7 +232,7 @@ function TicketDetails() {
     setMessage('')
 
     try {
-      if (isAdmin) {
+      if (canProcessTickets) {
         if (isMaintenance && Number(form.statusId) === DONE_STATUS_ID && !form.orderCode?.trim()) {
           setError('Lenh bao tri phai co so order truoc khi chuyen sang Done.')
           return
@@ -281,6 +297,9 @@ function TicketDetails() {
 
   if (error && !ticket) return <div className="ticket-details__alert">{error}</div>
   if (!ticket) return <div className="ticket-details__alert">Dang tai chi tiet ticket...</div>
+  if (isProcessor && !canAccessFactory(user, ticket.factoryId)) {
+    return <div className="ticket-details__alert">Ban khong co quyen xu ly ticket cua nha may nay.</div>
+  }
 
   return (
     <section className="ticket-details">
@@ -353,7 +372,7 @@ function TicketDetails() {
                 <label>Tổ xử lý</label>
                 <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
-                {!isAdmin && (
+                {!canProcessTickets && (
                   <>
                     <label>Người tiếp nhận</label>
                     <div className="ticket-details__field-view">{assigneeDisplay}</div>
@@ -366,7 +385,7 @@ function TicketDetails() {
                 <label>Ngày hoàn thành</label>
                 <div className="ticket-details__field-view">{formatDate(ticket.dueDate)}</div>
 
-                {isAdmin && (
+                {canProcessTickets && (
                   <>
                     <label>Nguoi tao</label>
                     <div className="ticket-details__field-view">{requesterDisplay}</div>
@@ -387,13 +406,13 @@ function TicketDetails() {
 
             {isEditing && (
               <form className="ticket-details__form" onSubmit={handleSave}>
-                {!isAdmin && (
+                {!canProcessTickets && (
                   <>
                     <label className="ticket-details__form-field ticket-details__form-field--full">
                       <span>Nhà máy</span>
                       <select name="factoryId" value={form.factoryId} onChange={handleChange}>
                         <option value="">Chọn nhà máy</option>
-                        {factories.map((option) => (
+                        {availableFactories.map((option) => (
                           <option key={option.id} value={option.id}>
                             {option.code} - {option.name}
                           </option>
@@ -453,13 +472,13 @@ function TicketDetails() {
                   </>
                 )}
 
-                {isAdmin && (
+                {canProcessTickets && (
                   <>
                     <label className="ticket-details__form-field ticket-details__form-field--full">
                       <span>Nhà máy</span>
                       <select name="factoryId" value={form.factoryId} onChange={handleChange}>
                         <option value="">Chọn nhà máy</option>
-                        {factories.map((option) => (
+                        {availableFactories.map((option) => (
                           <option key={option.id} value={option.id}>
                             {option.code} - {option.name}
                           </option>
@@ -511,7 +530,7 @@ function TicketDetails() {
                         <span>Người tiếp nhận</span>
                         <select name="assignedTo" value={form.assignedTo} onChange={handleChange}>
                           <option value="">Chọn người tiếp nhận</option>
-                          {users.map((option) => (
+                          {assignableUsers.map((option) => (
                             <option key={option.id} value={option.id}>
                               {option.id} - {option.username}
                             </option>
@@ -555,7 +574,7 @@ function TicketDetails() {
                   </>
                 )}
 
-                {(isAdmin || canUserEdit) && (
+                {(canProcessTickets || canUserEdit) && (
                   <button
                     type="submit"
                     className="ticket-details__button ticket-details__button--icon"

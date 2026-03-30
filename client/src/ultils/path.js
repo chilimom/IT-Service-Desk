@@ -11,6 +11,7 @@ const path = {
   ADMIN_DASHBOARD: 'dashboard',
   ADMIN_TICKETS: 'tickets',
   ADMIN_TICKET_DETAIL: 'tickets/:ticketId',
+  ADMIN_USERS: 'users',
 }
 
 export default path

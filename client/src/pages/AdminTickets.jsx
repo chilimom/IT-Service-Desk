@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { FiSettings, FiTrash2 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { deleteTicket, getTickets } from '../services/ticketService'
 import path from '../ultils/path'
-import { formatTicketCode } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -22,12 +24,6 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
-function getTicketTypeLabelForTable(ticket) {
-  if (ticket?.categoryType === 'Maintenance') return 'Lenh bao tri'
-  if (ticket?.categoryType === 'Support') return 'Ho tro CNTT'
-  return 'Chua xac dinh'
-}
-
 function getMaintenanceTypeLabel(ticket) {
   if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
   if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
@@ -43,14 +39,28 @@ function getFactoryLabel(ticket) {
   return ticket?.factoryName || 'Chua co nha may'
 }
 
+function getEquipmentLabel(ticket) {
+  return ticket?.area || 'Chua co'
+}
+
+function getAreaLabel(ticket) {
+  return ticket?.equipmentCode || 'Chua co'
+}
+
+function getMaintenanceFilterValue(ticket) {
+  return getMaintenanceTypeLabel(ticket)
+}
+
 function AdminTickets() {
+  const { user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [factoryFilter, setFactoryFilter] = useState('ALL')
   const [statusFilter, setStatusFilter] = useState('ALL')
-  const [typeFilter, setTypeFilter] = useState('ALL')
+  const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
   const [error, setError] = useState('')
   const [deletingTicketId, setDeletingTicketId] = useState(null)
+  const canDeleteTicket = isAdminRole(user?.role)
 
   useEffect(() => {
     getTickets().then(setTickets).catch(() => setError('Khong the tai danh sach ticket.'))
@@ -77,7 +87,7 @@ function AdminTickets() {
   const filteredTickets = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
 
-    return [...tickets]
+    return [...filterTicketsByAccess(tickets, user)]
       .filter((ticket) => {
         if (!keyword) return true
 
@@ -100,25 +110,17 @@ function AdminTickets() {
       })
       .filter((ticket) => (factoryFilter === 'ALL' ? true : (ticket.factoryName || '') === factoryFilter))
       .filter((ticket) => (statusFilter === 'ALL' ? true : (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()))
-      .filter((ticket) => {
-        if (typeFilter === 'ALL') return true
-        const ticketType = ticket.categoryType === 'Maintenance' ? 'Maintenance' : 'IT'
-        return ticketType === typeFilter
-      })
+      .filter((ticket) => (maintenanceFilter === 'ALL' ? true : getMaintenanceFilterValue(ticket) === maintenanceFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-  }, [factoryFilter, searchTerm, statusFilter, tickets, typeFilter])
+  }, [factoryFilter, maintenanceFilter, searchTerm, statusFilter, tickets, user])
 
-  const factories = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.factoryName).filter(Boolean))], [tickets])
-  const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
+  const visibleTickets = useMemo(() => filterTicketsByAccess(tickets, user), [tickets, user])
+  const factories = useMemo(() => ['ALL', ...new Set(visibleTickets.map((ticket) => ticket.factoryName).filter(Boolean))], [visibleTickets])
+  const statuses = useMemo(() => ['ALL', ...new Set(visibleTickets.map((ticket) => ticket.status).filter(Boolean))], [visibleTickets])
 
-  const types = useMemo(() => {
-    const typeList = ['ALL']
-    const hasMaintenance = tickets.some((ticket) => ticket.categoryType === 'Maintenance')
-    const hasIT = tickets.some((ticket) => ticket.categoryType === 'Support')
-    if (hasMaintenance) typeList.push('Maintenance')
-    if (hasIT) typeList.push('IT')
-    return typeList
-  }, [tickets])
+  const maintenanceTypes = useMemo(() => {
+    return ['ALL', ...new Set(visibleTickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
+  }, [visibleTickets])
 
   return (
     <section className="requests-page">
@@ -170,11 +172,11 @@ function AdminTickets() {
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo loại Ticket</span>
-          <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
-            {types.map((type) => (
+          <span>Lọc theo loại bảo trì</span>
+          <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
+            {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tất cả loại ticket' : type === 'Maintenance' ? 'Lenh bao tri' : 'Ho tro CNTT'}
+                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
               </option>
             ))}
           </select>
@@ -184,8 +186,10 @@ function AdminTickets() {
       <section className="requests-table">
         <div className="requests-table__head">
           <span>Ma ticket</span>
-          <span>Loai ticket</span>
+          <span>Equipment</span>
+          <span>Khu vuc</span>
           <span>Loai bao tri</span>
+          <span>So order</span>
           <span>Nha may</span>
           <span>Ngay xu ly</span>
           <span>Trang thai</span>
@@ -199,8 +203,10 @@ function AdminTickets() {
                 <strong>{formatTicketCode(ticket)}</strong>
                 <p>{ticket.title || 'Chua co tieu de'}</p>
               </div>
-              <span>{getTicketTypeLabelForTable(ticket)}</span>
+              <span>{getEquipmentLabel(ticket)}</span>
+              <span>{getAreaLabel(ticket)}</span>
               <span>{getMaintenanceTypeLabel(ticket)}</span>
+              <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
@@ -217,20 +223,22 @@ function AdminTickets() {
                     <FiSettings size={16} />
                   </span>
                 </Link>
-                <button
-                  type="button"
-                  className="requests-row__action requests-row__action--danger"
-                  title="Xoa"
-                  aria-label="Xoa"
-                  data-tooltip="Xoa"
-                  onClick={() => handleDelete(ticket)}
-                  disabled={deletingTicketId === ticket.id}
-                >
-                  <span className="sr-only">Xoa</span>
-                  <span className="requests-row__action-icon">
-                    <FiTrash2 size={16} />
-                  </span>
-                </button>
+                {canDeleteTicket && (
+                  <button
+                    type="button"
+                    className="requests-row__action requests-row__action--danger"
+                    title="Xoa"
+                    aria-label="Xoa"
+                    data-tooltip="Xoa"
+                    onClick={() => handleDelete(ticket)}
+                    disabled={deletingTicketId === ticket.id}
+                  >
+                    <span className="sr-only">Xoa</span>
+                    <span className="requests-row__action-icon">
+                      <FiTrash2 size={16} />
+                    </span>
+                  </button>
+                )}
               </div>
             </article>
           ))}

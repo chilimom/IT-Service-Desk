@@ -9,7 +9,6 @@ import {
   MdClose,
   MdOutlineDevicesOther,
 } from 'react-icons/md'
-// import { HiOutlineDotsHorizontal } from 'react-icons/hi';
 import {
   IoBagCheck,
   IoHome,

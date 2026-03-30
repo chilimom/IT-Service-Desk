@@ -12,6 +12,6 @@ namespace ITServiceDesk.Api.DTOs
         public int? RequestedBy { get; set; }
         public string? AssignedTeam { get; set; }
         public DateTime? DueDate { get; set; }
-        public int? MaintenanceTypeId { get; set; } // Thêm dòng này
+        public int? MaintenanceTypeId { get; set; }
     }
 }

@@ -160,8 +160,9 @@
 
 .dashboard-chart-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.75fr) minmax(260px, 0.72fr) minmax(320px, 0.78fr);
   gap: 18px;
+  align-items: stretch;
 }
 
 .dashboard-panel {
@@ -170,6 +171,21 @@
   background: #fff;
   border: 1px solid #d8e1ec;
   box-shadow: 0 16px 36px rgba(15, 76, 151, 0.08);
+}
+
+.dashboard-panel--maintenance {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.dashboard-panel--ticket-type {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.dashboard-panel--factory {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
 }
 
 .dashboard-panel__header {
@@ -256,7 +272,7 @@
 .ticket-table__head,
 .ticket-row {
   display: grid;
-  grid-template-columns: 1.3fr 0.8fr 1.2fr 0.9fr 0.8fr 0.7fr;
+  grid-template-columns: 1.3fr 0.9fr 0.9fr 1.15fr 0.95fr 1.1fr 0.8fr 0.7fr;
   gap: 14px;
   align-items: center;
 }
@@ -305,7 +321,7 @@
 
 .maintenance-overview {
   display: grid;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  grid-template-columns: minmax(240px, 0.52fr) minmax(560px, 1.48fr);
   gap: 24px;
   align-items: stretch;
 }
@@ -411,7 +427,12 @@
 .maintenance-legend-grid {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-panel--ticket-type .chart-container--bar,
+.dashboard-panel--factory .chart-container--bar-factory {
+  height: 240px;
 }
 
 .maintenance-legend-card {
@@ -494,6 +515,13 @@
   .dashboard-grid,
   .maintenance-overview {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-panel--maintenance,
+  .dashboard-panel--ticket-type,
+  .dashboard-panel--factory {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .maintenance-legend-grid {

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { useAuth } from '../context/AuthContext'
 import { getTicketDashboard, getTickets } from '../services/ticketService'
-import { formatTicketCode, getTicketTypeLabel } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { filterTicketsByAccess } from '../ultils/auth'
 import '../styles/dashboard.css'
 
 const MAINTENANCE_CARD_TINTS = [
@@ -14,6 +16,8 @@ const MAINTENANCE_CARD_TINTS = [
   { background: 'linear-gradient(180deg, rgba(255,247,237,0.96), rgba(254,215,170,0.82))', borderColor: '#fed7aa' },
   { background: 'linear-gradient(180deg, rgba(238,242,255,0.96), rgba(199,210,254,0.82))', borderColor: '#c7d2fe' },
 ]
+
+const MAINTENANCE_DISPLAY_ORDER = ['PM01', 'PM02', 'PM03', 'PM05', 'ZPM5', 'ZPM6', 'ZPM7', 'QMTD']
 
 function formatDate(dateValue) {
   if (!dateValue) return 'Chua co'
@@ -38,18 +42,20 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
-function getDashboardTicketType(ticket) {
-  if (ticket?.categoryType === 'Maintenance') return 'Lenh bao tri'
-  if (ticket?.categoryType === 'Support') return 'Ho tro CNTT'
-  return getTicketTypeLabel(ticket)
-}
-
 function getDashboardMaintenanceType(ticket) {
   if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
   if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
     return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
   }
   return ticket?.maintenanceTypeName || 'Chua co loai bao tri'
+}
+
+function getDashboardEquipment(ticket) {
+  return ticket?.area || 'Chua co'
+}
+
+function getDashboardArea(ticket) {
+  return ticket?.equipmentCode || 'Chua co'
 }
 
 function getDashboardFactory(ticket) {
@@ -60,6 +66,7 @@ function getDashboardFactory(ticket) {
 }
 
 function Dashboard() {
+  const { user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [dashboard, setDashboard] = useState({ total: 0, today: 0, byStatus: [] })
   const [error, setError] = useState('')
@@ -82,13 +89,19 @@ function Dashboard() {
   }, [])
 
   const statusLookup = useMemo(() => {
+    const visibleTickets = filterTicketsByAccess(tickets, user)
     const lookup = new Map()
-    ;(dashboard.byStatus || []).forEach((item) => {
-      lookup.set(Number(item.statusId), Number(item.count) || 0)
-      lookup.set(String(item.statusName || '').toLowerCase(), Number(item.count) || 0)
+
+    visibleTickets.forEach((ticket) => {
+      const count = (lookup.get(Number(ticket.statusId)) || 0) + 1
+      lookup.set(Number(ticket.statusId), count)
+      lookup.set(String(ticket.status || '').toLowerCase(), count)
     })
+
     return lookup
-  }, [dashboard.byStatus])
+  }, [tickets, user])
+
+  const visibleTickets = useMemo(() => filterTicketsByAccess(tickets, user), [tickets, user])
 
   const stats = useMemo(() => {
     const done = statusLookup.get(1) ?? statusLookup.get('done') ?? 0
@@ -96,21 +109,21 @@ function Dashboard() {
     const submitted = statusLookup.get(3) ?? statusLookup.get('submitted') ?? 0
 
     return [
-      { label: 'Tong yeu cau', value: Number(dashboard.total) || tickets.length, tone: 'total' },
+      { label: 'Tong yeu cau', value: visibleTickets.length, tone: 'total' },
       { label: 'Hoan thanh', value: done, tone: 'done' },
       { label: 'Dang xu ly', value: inProgress, tone: 'progress' },
       { label: 'Moi tao', value: submitted, tone: 'submitted' },
     ]
-  }, [dashboard.total, statusLookup, tickets.length])
+  }, [statusLookup, visibleTickets.length])
 
   const recentTickets = useMemo(() => {
-    return [...tickets]
+    return [...visibleTickets]
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
       .slice(0, 6)
-  }, [tickets])
+  }, [visibleTickets])
 
   const ticketTypeChartData = useMemo(() => {
-    const grouped = tickets.reduce(
+    const grouped = visibleTickets.reduce(
       (accumulator, ticket) => {
         if (ticket.categoryType === 'Maintenance') {
           accumulator.maintenance += 1
@@ -130,10 +143,10 @@ function Dashboard() {
       { name: 'Ho tro CNTT', value: grouped.support, fill: 'url(#ticketTypeSupport)' },
       { name: 'Khac', value: grouped.other, fill: 'url(#ticketTypeOther)' },
     ].filter((item) => item.value > 0)
-  }, [tickets])
+  }, [visibleTickets])
 
   const factoryChartData = useMemo(() => {
-    const grouped = tickets.reduce((accumulator, ticket) => {
+    const grouped = visibleTickets.reduce((accumulator, ticket) => {
       const key =
         ticket.factoryCode && ticket.factoryName
           ? `${ticket.factoryCode} - ${ticket.factoryName}`
@@ -146,11 +159,12 @@ function Dashboard() {
       .map(([name, value]) => ({ name, value, fill: 'url(#factoryBarGradient)' }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 6)
-  }, [tickets])
+  }, [visibleTickets])
 
   const maintenanceChartData = useMemo(() => {
     const colors = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#14b8a6', '#f97316', '#6366f1']
-    const grouped = tickets.reduce((accumulator, ticket) => {
+    const orderLookup = new Map(MAINTENANCE_DISPLAY_ORDER.map((code, index) => [code, index]))
+    const grouped = visibleTickets.reduce((accumulator, ticket) => {
       const isMaintenance = ticket.categoryType === 'Maintenance'
       if (!isMaintenance) return accumulator
 
@@ -165,14 +179,21 @@ function Dashboard() {
       .map(([key, value], index) => {
         const [code, name] = key.split('|')
         return {
+          code,
           name: code && code !== 'N/A' ? `${code} - ${name}` : name,
           value,
           color: colors[index % colors.length],
         }
       })
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 6)
-  }, [tickets])
+      .sort((a, b) => {
+        const leftOrder = orderLookup.get(a.code) ?? Number.MAX_SAFE_INTEGER
+        const rightOrder = orderLookup.get(b.code) ?? Number.MAX_SAFE_INTEGER
+
+        if (leftOrder !== rightOrder) return leftOrder - rightOrder
+        if (b.value !== a.value) return b.value - a.value
+        return a.name.localeCompare(b.name)
+      })
+  }, [visibleTickets])
 
   const totalMaintenance = maintenanceChartData.reduce((sum, item) => sum + item.value, 0)
   const activeItem = activeIndex !== null ? maintenanceChartData[activeIndex] : null
@@ -226,7 +247,7 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-chart-grid">
-        <section className="dashboard-panel">
+        <section className="dashboard-panel dashboard-panel--maintenance">
           <div className="dashboard-panel__header">
             <div>
               <h2 className="dashboard-panel__title">Thong ke loai bao tri</h2>
@@ -330,7 +351,7 @@ function Dashboard() {
           </div>
         </section>
 
-        <section className="dashboard-panel">
+        <section className="dashboard-panel dashboard-panel--ticket-type">
           <div className="dashboard-panel__header">
             <div>
               <h2 className="dashboard-panel__title">Loai Ticket</h2>
@@ -369,7 +390,7 @@ function Dashboard() {
           </div>
         </section>
 
-        <section className="dashboard-panel">
+        <section className="dashboard-panel dashboard-panel--factory">
           <div className="dashboard-panel__header">
             <div>
               <h2 className="dashboard-panel__title">Thong ke theo nha may</h2>
@@ -420,8 +441,10 @@ function Dashboard() {
         <div className="ticket-table">
           <div className="ticket-table__head">
             <span>Ma Ticket</span>
-            <span>Loai ticket</span>
+            <span>Equipment</span>
+            <span>Khu vuc</span>
             <span>Loai bao tri</span>
+            <span>So order</span>
             <span>Nha may</span>
             <span>Ngay xu ly</span>
             <span>Trang thai</span>
@@ -434,8 +457,10 @@ function Dashboard() {
                   <strong>{formatTicketCode(ticket)}</strong>
                   <p>{ticket.title || 'Chua co tieu de'}</p>
                 </div>
-                <span>{getDashboardTicketType(ticket)}</span>
+                <span>{getDashboardEquipment(ticket)}</span>
+                <span>{getDashboardArea(ticket)}</span>
                 <span>{getDashboardMaintenanceType(ticket)}</span>
+                <span>{getOrderCodeDisplay(ticket)}</span>
                 <span>{getDashboardFactory(ticket)}</span>
                 <span>{formatDate(ticket.dueDate)}</span>
                 <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>

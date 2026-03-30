@@ -1,15 +1,17 @@
 import icons from './icons'
+import { isAdminRole, isProcessorRole } from './auth'
 import path from './path'
 
 const {
   MdOutlineDashboardCustomize,
+  MdGroups,
   HiOutlineWrenchScrewdriver,
   FaEye,
   FaUser,
 } = icons
 
 export const getSidebarItems = (role) => {
-  if ((role || '').toLowerCase() === 'admin') {
+  if (isAdminRole(role)) {
     return [
       {
         id: 0,
@@ -19,7 +21,30 @@ export const getSidebarItems = (role) => {
       },
       {
         id: 1,
-        text: 'Quản trị Ticket',
+        text: 'Quan tri Ticket',
+        icon: <FaUser size={20} />,
+        path: `/${path.ADMIN}/${path.ADMIN_TICKETS}`,
+      },
+      {
+        id: 2,
+        text: 'Quan ly User',
+        icon: <MdGroups size={22} />,
+        path: `/${path.ADMIN}/${path.ADMIN_USERS}`,
+      },
+    ]
+  }
+
+  if (isProcessorRole(role)) {
+    return [
+      {
+        id: 0,
+        text: 'Dashboard',
+        icon: <MdOutlineDashboardCustomize size={24} />,
+        path: `/${path.ADMIN}/${path.ADMIN_DASHBOARD}`,
+      },
+      {
+        id: 1,
+        text: 'Xu ly Ticket',
         icon: <FaUser size={20} />,
         path: `/${path.ADMIN}/${path.ADMIN_TICKETS}`,
       },
@@ -29,19 +54,19 @@ export const getSidebarItems = (role) => {
   return [
     {
       id: 0,
-      text: 'Tổng quan ticket',
+      text: 'Tong quan ticket',
       icon: <MdOutlineDashboardCustomize size={24} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`,
     },
     {
       id: 1,
-      text: 'Tạo Ticket',
+      text: 'Tao Ticket',
       icon: <HiOutlineWrenchScrewdriver size={22} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`,
     },
     {
       id: 2,
-      text: 'Yêu cầu của tôi',
+      text: 'Yeu cau cua toi',
       icon: <FaEye size={20} />,
       path: `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_REQUESTS}`,
     },

@@ -28,8 +28,21 @@ namespace ITServiceDesk.Api.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                Role = user.Role
+                Role = user.Role,
+                FullName = user.FullName,
+                AuthorizedFactoryIds = user.AuthorizedFactoryIds,
+                AuthorizedFactoryIdList = ParseAuthorizedFactoryIds(user.AuthorizedFactoryIds)
             };
+        }
+
+        private static List<int> ParseAuthorizedFactoryIds(string? rawFactoryIds)
+        {
+            return (rawFactoryIds ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(value => int.TryParse(value, out var id) ? id : 0)
+                .Where(id => id > 0)
+                .Distinct()
+                .ToList();
         }
     }
 }

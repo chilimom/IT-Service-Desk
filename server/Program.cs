@@ -18,7 +18,11 @@ builder.Services.AddCors(options =>
                 "http://localhost:3001",
                 "https://localhost:3001",
                 "http://localhost:5173",
-                "https://localhost:5173")
+                "https://localhost:5173",
+                "http://localhost:3002",
+                "https://localhost:3002",
+                "http://10.192.72.45:3002",
+                "https://10.192.72.45:3002")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -40,6 +44,13 @@ using (var scope = app.Services.CreateScope())
         IF COL_LENGTH('Tickets', 'Factory') IS NULL
         BEGIN
             ALTER TABLE Tickets ADD Factory NVARCHAR(100) NULL;
+        END
+    ");
+
+    dbContext.Database.ExecuteSqlRaw(@"
+        IF COL_LENGTH('Users', 'AuthorizedFactoryIds') IS NULL
+        BEGIN
+            ALTER TABLE Users ADD AuthorizedFactoryIds NVARCHAR(200) NULL;
         END
     ");
 }

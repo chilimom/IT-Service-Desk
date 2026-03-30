@@ -1,4 +1,6 @@
-const AUTH_API_URL = 'http://localhost:5017/api/auth'
+import { buildApiUrl } from './api'
+
+const AUTH_API_URL = buildApiUrl('/api/auth')
 
 export async function loginRequest(payload) {
   const response = await fetch(`${AUTH_API_URL}/login`, {

@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { isAdminRole, isProcessorRole } from '../../ultils/auth'
 import path from '../../ultils/path'
 
 function ProtectedRoute({ allowedRoles, children }) {
@@ -11,9 +12,9 @@ function ProtectedRoute({ allowedRoles, children }) {
 
   if (allowedRoles && !allowedRoles.includes((user?.role || '').toLowerCase())) {
     const fallbackPath =
-      (user?.role || '').toLowerCase() === 'admin'
+      isAdminRole(user?.role) || isProcessorRole(user?.role)
         ? `/${path.ADMIN}/${path.ADMIN_DASHBOARD}`
-        : `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`
+        : `/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`
 
     return <Navigate to={fallbackPath} replace />
   }

@@ -15,7 +15,7 @@ const Sidebar = ({ isMini, onExpand }) => {
 
   useEffect(() => {
     if (location.pathname === `/${path.USER}` || location.pathname === `/${path.USER}/`) {
-      navigate(`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_CREATE}`, { replace: true })
+      navigate(`/${path.USER}/${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`, { replace: true })
     }
 
     if (location.pathname === `/${path.ADMIN}` || location.pathname === `/${path.ADMIN}/`) {
