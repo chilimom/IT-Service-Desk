@@ -331,7 +331,7 @@ function UserManagement() {
 
               {!isLoading && filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="user-management__empty-cell">Khong tim thay user phu hop.</td>
+                  <td colSpan="8" className="user-management__empty-cell">Không tìm thấy người dùng phù hợp.</td>
                 </tr>
               )}
             </tbody>
@@ -343,7 +343,7 @@ function UserManagement() {
         <div className="user-management__modal-backdrop" onClick={closeModal}>
           <section className="user-management__modal" onClick={(event) => event.stopPropagation()}>
             <div className="user-management__modal-header">
-              <h2>{selectedUserId ? 'Cap nhat tai khoan' : 'Tao tai khoan'}</h2>
+              <h2>{selectedUserId ? 'Cập nhật tài khoản' : 'Tạo tài khoản'}</h2>
               <button type="button" className="user-management__close-button" onClick={closeModal}>
                 <FiX size={22} />
               </button>
@@ -352,22 +352,22 @@ function UserManagement() {
             <form className="user-form" onSubmit={handleSubmit}>
               <div className="user-form__grid">
                 <label className="user-form__field">
-                  <span>Ho ten</span>
-                  <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Ho ten" />
+                  <span>Họ và tên</span>
+                  <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Họ và tên" />
                 </label>
 
                 <label className="user-form__field">
-                  <span>Ten dang nhap</span>
-                  <input name="username" value={form.username} onChange={handleChange} placeholder="Ten dang nhap" />
+                  <span>Tên đăng nhập</span>
+                  <input name="username" value={form.username} onChange={handleChange} placeholder="Tên đăng nhập" />
                 </label>
 
                 <label className="user-form__field">
-                  <span>Phong ban</span>
-                  <input name="department" value={form.department} onChange={handleChange} placeholder="Phong ban" />
+                  <span>Phòng ban</span>
+                  <input name="department" value={form.department} onChange={handleChange} placeholder="Phòng ban" />
                 </label>
 
                 <label className="user-form__field">
-                  <span>Phan quyen</span>
+                  <span>Phân quyền</span>
                   <select name="role" value={form.role} onChange={handleChange}>
                     <option value="admin">Admin</option>
                     <option value="processor">User tiep nhan ticket</option>
@@ -376,20 +376,20 @@ function UserManagement() {
                 </label>
 
                 <label className="user-form__field user-form__field--full">
-                  <span>{selectedUserId ? 'Mat khau moi (de trong neu khong doi)' : 'Mat khau'}</span>
+                  <span>{selectedUserId ? 'Mật khẩu mới (de trong neu khong doi)' : 'Mật khẩu'}</span>
                   <input
                     type="password"
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="Mat khau"
+                    placeholder="Mật khẩu"
                   />
                 </label>
               </div>
 
               {form.role === 'processor' && (
                 <div className="user-form__field">
-                  <span>Nha may duoc truy cap</span>
+                  <span>Nhà máy được truy cập</span>
                   <div className="factory-picker">
                     {factories.map((factory) => (
                       <label
@@ -411,7 +411,7 @@ function UserManagement() {
               <div className="user-form__actions">
                 <button type="submit" className="user-management__submit-button" disabled={isSaving}>
                   <FiSave size={16} />
-                  <span>{isSaving ? 'Dang luu...' : selectedUserId ? 'Cap nhat tai khoan' : 'Tao tai khoan'}</span>
+                  <span>{isSaving ? 'Dang luu...' : selectedUserId ? 'Cập nhật tài khoản' : 'Tạo tài khoản'}</span>
                 </button>
               </div>
             </form>
@@ -420,12 +420,12 @@ function UserManagement() {
               <div className="user-management__modal-footer">
                 <div className="user-management__reset-box">
                   <label className="user-form__field user-form__field--compact">
-                    <span>Reset mat khau</span>
+                    <span>Reset mật khẩu</span>
                     <input
                       type="password"
                       value={resetPassword}
                       onChange={(event) => setResetPassword(event.target.value)}
-                      placeholder="Nhap mat khau moi"
+                      placeholder="Nhập mật khẩu mới"
                     />
                   </label>
 
@@ -447,7 +447,7 @@ function UserManagement() {
                   disabled={isDeleting}
                 >
                   <FiTrash2 size={16} />
-                  <span>{isDeleting ? 'Dang xoa...' : 'Xoa user'}</span>
+                  <span>{isDeleting ? 'Dang xoa...' : 'Xoá user'}</span>
                 </button>
               </div>
             )}

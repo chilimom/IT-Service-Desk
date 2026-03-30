@@ -43,8 +43,8 @@ function getStatusMeta(status) {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--submitted',
       icon: FiInfo,
-      title: 'Ticket da gui va chua duoc tiep nhan',
-      description: 'Ban co the sua noi dung ticket trong giai doan nay truoc khi bo phan xu ly bat dau tiep nhan.',
+      title: 'Ticket đã gửi và chưa được tiếp nhận',
+      // description: 'Ban co the sua noi dung ticket trong giai doan nay truoc khi bo phan xu ly bat dau tiep nhan.',
     }
   }
 
