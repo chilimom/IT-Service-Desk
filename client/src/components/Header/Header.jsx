@@ -42,7 +42,7 @@ const Header = ({ onToggleSidebar }) => {
 
         <div className="topbar__profile" onClick={() => setIsShowOption((prev) => !prev)}>
           <img src={avatar} alt="avatar" className="topbar__avatar" />
-          <span className="topbar__name">{user?.username || 'User'} ({user?.role || 'user'})</span>
+          <span className="topbar__name">{user?.username || 'User'} </span>
           <FaSortDown />
 
           {isShowOption && (
