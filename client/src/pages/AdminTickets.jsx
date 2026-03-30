@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
+import { FiSettings, FiTrash2 } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getTickets } from '../services/ticketService'
-import { getOrderCodeDisplay } from '../ultils/ticketMeta'
-import { filterTicketsByAccess } from '../ultils/auth'
+import { deleteTicket, getTickets } from '../services/ticketService'
+import path from '../ultils/path'
+import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
 import '../styles/requests.css'
 
 function formatDate(value) {
@@ -68,10 +71,30 @@ function AdminTickets() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
   const [error, setError] = useState('')
+  const [deletingTicketId, setDeletingTicketId] = useState(null)
+  const canDeleteTicket = isAdminRole(user?.role)
 
   useEffect(() => {
     getTickets().then(setTickets).catch(() => setError('Khong the tai danh sach ticket.'))
   }, [])
+
+  async function handleDelete(ticket) {
+    const ticketCode = formatTicketCode(ticket)
+    const confirmed = window.confirm(`Ban co chac muon xoa ticket ${ticketCode} khong?`)
+    if (!confirmed) return
+
+    setDeletingTicketId(ticket.id)
+    setError('')
+
+    try {
+      await deleteTicket(ticket.id)
+      setTickets((currentTickets) => currentTickets.filter((item) => item.id !== ticket.id))
+    } catch {
+      setError('Khong the xoa ticket. Vui long thu lai.')
+    } finally {
+      setDeletingTicketId(null)
+    }
+  }
 
   const filteredTickets = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -81,6 +104,7 @@ function AdminTickets() {
         if (!keyword) return true
 
         const searchableValues = [
+          formatTicketCode(ticket),
           ticket.code,
           ticket.id,
           ticket.title,
@@ -223,7 +247,7 @@ function AdminTickets() {
     <section className="requests-page">
       <div className="requests-page__hero">
         <p className="requests-page__eyebrow">Admin</p>
-        <h1 className="requests-page__title">Quản lý Ticket</h1>
+        <h1 className="requests-page__title">Quản trị Ticket</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
@@ -239,7 +263,7 @@ function AdminTickets() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Nhập ticket, loại bảo trì, nhà máy, người yêu cầu..."
+              placeholder="Nhập mã ticket, loại bảo trì, nhà máy, trạng thái..."
             />
           </div>
         </label>
@@ -286,32 +310,61 @@ function AdminTickets() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>STT</span>
+          <span>Mã ticket</span>
           <span>Equipment</span>
           <span>Khu vực</span>
           <span>Loại bảo trì</span>
           <span>Số order</span>
           <span>Nhà máy</span>
-          <span>Người yêu cầu</span>
           <span>Ngày xử lý</span>
           <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket, index) => (
+          {filteredTickets.map((ticket) => (
             <article key={ticket.id} className="requests-row">
               <div>
-                <strong>{index + 1}</strong>
-                <p>{ticket.title || 'Chưa có tiêu đề'}</p>
+                <strong>{formatTicketCode(ticket)}</strong>
+                <p>{ticket.title || 'Chua co tieu de'}</p>
               </div>
               <span>{getEquipmentLabel(ticket)}</span>
               <span>{getAreaLabel(ticket)}</span>
               <span>{getMaintenanceTypeLabel(ticket)}</span>
               <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
-              <span>{getRequesterLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
               <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+              <div className="requests-row__actions requests-row__actions--end">
+                <Link
+                  className="requests-row__action"
+                  to={`/${path.ADMIN}/${path.ADMIN_TICKETS}/${ticket.id}`}
+                  title="Config"
+                  aria-label="Config"
+                  data-tooltip="Config"
+                >
+                  <span className="sr-only">Config</span>
+                  <span className="requests-row__action-icon">
+                    <FiSettings size={16} />
+                  </span>
+                </Link>
+                {canDeleteTicket && (
+                  <button
+                    type="button"
+                    className="requests-row__action requests-row__action--danger"
+                    title="Xóa"
+                    aria-label="Xóa"
+                    data-tooltip="Xóa"
+                    onClick={() => handleDelete(ticket)}
+                    disabled={deletingTicketId === ticket.id}
+                  >
+                    <span className="sr-only">Xóa</span>
+                    <span className="requests-row__action-icon">
+                      <FiTrash2 size={16} />
+                    </span>
+                  </button>
+                )}
+              </div>
             </article>
           ))}
 

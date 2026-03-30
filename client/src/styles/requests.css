@@ -164,6 +164,10 @@
   letter-spacing: 0.04em;
 }
 
+.requests-table__head span:last-child {
+  text-align: center;
+}
+
 .requests-table__body {
   display: flex;
   flex-direction: column;
@@ -212,6 +216,8 @@
 }
 
 .requests-row__actions--end {
+  width: 100%;
+  justify-self: center;
   justify-content: flex-end;
 }
 
