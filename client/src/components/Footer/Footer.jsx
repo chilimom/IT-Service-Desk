@@ -5,7 +5,7 @@ const Footer = () => {
 
   return (
     <div className="footer-bar">
-      Quan ly thiet bi {year}
+      Copyright © {year} - IT Service Desk
     </div>
   )
 }

@@ -7,6 +7,8 @@ import path from '../ultils/path'
 import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
+const ITEMS_PER_PAGE = 10
+
 function formatDate(value) {
   if (!value) return 'Chua co'
   const date = new Date(value)
@@ -58,6 +60,7 @@ function MyRequests() {
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     async function fetchTickets() {
@@ -66,9 +69,7 @@ function MyRequests() {
         if (!user?.id) return
 
         const response = await fetch(buildApiUrl(`/api/tickets/my?userId=${user.id}`))
-        if (!response.ok) {
-          throw new Error('Failed to fetch tickets')
-        }
+        if (!response.ok) throw new Error('Failed to fetch tickets')
 
         const data = await response.json()
         setTickets(Array.isArray(data) ? data : [])
@@ -105,24 +106,14 @@ function MyRequests() {
 
         return searchableValues.some((value) => String(value || '').toLowerCase().includes(keyword))
       })
-      .filter((ticket) => {
-        if (statusFilter === 'ALL') return true
-        return (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()
-      })
+      .filter((ticket) => (statusFilter === 'ALL' ? true : (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()))
       .filter((ticket) => (maintenanceFilter === 'ALL' ? true : getMaintenanceFilterValue(ticket) === maintenanceFilter))
-      .filter((ticket) => {
-        if (factoryFilter === 'ALL') return true
-        return ticket.factoryName === factoryFilter
-      })
+      .filter((ticket) => (factoryFilter === 'ALL' ? true : ticket.factoryName === factoryFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
   }, [factoryFilter, maintenanceFilter, searchTerm, statusFilter, tickets])
 
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
-
-  const maintenanceTypes = useMemo(() => {
-    return ['ALL', ...new Set(tickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
-  }, [tickets])
-
+  const maintenanceTypes = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))], [tickets])
   const factories = useMemo(() => {
     const factorySet = new Set(['ALL'])
     tickets.forEach((ticket) => {
@@ -130,6 +121,20 @@ function MyRequests() {
     })
     return Array.from(factorySet)
   }, [tickets])
+
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ITEMS_PER_PAGE))
+  const paginatedTickets = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredTickets.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [currentPage, filteredTickets])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, statusFilter, maintenanceFilter, factoryFilter])
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages))
+  }, [totalPages])
 
   function canEditTicket(ticket) {
     return (ticket?.status || '').toLowerCase() === 'submitted'
@@ -142,16 +147,15 @@ function MyRequests() {
   return (
     <section className="requests-page">
       <div className="requests-page__hero">
-        <p className="requests-page__eyebrow">Tổng hợp danh sách</p>
-        <h1 className="requests-page__title">Yêu cầu của tôi</h1>
-        {/* <p className="requests-page__subtitle">Trang nay hien thi cac ticket ban da tao.</p> */}
+        <p className="requests-page__eyebrow">Tong hop danh sach</p>
+        <h1 className="requests-page__title">Yeu cau cua toi</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tìm kiếm Ticket</span>
+          <span>Tim kiem Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FiSearch size={16} />
@@ -160,7 +164,7 @@ function MyRequests() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Mã Ticket, Loại bảo trì, Nhà máy, Trạng thái..."
+              placeholder="Ma ticket, loai bao tri, nha may, trang thai..."
             />
           </div>
         </label>
@@ -168,18 +172,18 @@ function MyRequests() {
 
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Lọc theo trạng thái</span>
+          <span>Loc theo trang thai</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tất cả trạng thái' : status}
+                {status === 'ALL' ? 'Tat ca trang thai' : status}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo loại bảo trì</span>
+          <span>Loc theo loai bao tri</span>
           <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
             {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
@@ -190,11 +194,11 @@ function MyRequests() {
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo nhà máy</span>
+          <span>Loc theo nha may</span>
           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
             {factories.map((factory) => (
               <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
+                {factory === 'ALL' ? 'Tat ca nha may' : factory}
               </option>
             ))}
           </select>
@@ -203,19 +207,19 @@ function MyRequests() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Mã ticket</span>
+          <span>Ma ticket</span>
           <span>Equipment</span>
-          <span>Khu vực</span>
-          <span>Loại bảo trì</span>
-          <span>Số order</span>
-          <span>Nhà máy</span>
-          <span>Ngày xử lý</span>
-          <span>Trạng thái</span>
-          <span>Thao tác</span>
+          <span>Khu vuc</span>
+          <span>Loai bao tri</span>
+          <span>So order</span>
+          <span>Nha may</span>
+          <span>Ngay xu ly</span>
+          <span>Trang thai</span>
+          <span>Thao tac</span>
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket) => (
+          {paginatedTickets.map((ticket) => (
             <article key={ticket.id} className="requests-row">
               <div>
                 <strong>{formatTicketCode(ticket)}</strong>
@@ -250,6 +254,33 @@ function MyRequests() {
           )}
         </div>
       </section>
+
+      {filteredTickets.length > 0 && (
+        <div className="requests-pagination">
+          <div className="requests-pagination__summary">
+            Hien thi {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
+          </div>
+          <div className="requests-pagination__controls">
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+            >
+              Truoc
+            </button>
+            <span className="requests-pagination__page">Trang {currentPage} / {totalPages}</span>
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

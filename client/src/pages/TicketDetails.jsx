@@ -297,6 +297,9 @@ function TicketDetails() {
 
   if (error && !ticket) return <div className="ticket-details__alert">{error}</div>
   if (!ticket) return <div className="ticket-details__alert">Dang tai chi tiet ticket...</div>
+  if (!canProcessTickets && Number(ticket.requestedBy) !== Number(user?.id)) {
+    return <div className="ticket-details__alert">Ban khong co quyen xem ticket cua nguoi dung khac.</div>
+  }
   if (isProcessor && !canAccessFactory(user, ticket.factoryId)) {
     return <div className="ticket-details__alert">Ban khong co quyen xu ly ticket cua nha may nay.</div>
   }

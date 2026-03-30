@@ -9,6 +9,8 @@ import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
 import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
 import '../styles/requests.css'
 
+const ITEMS_PER_PAGE = 10
+
 function formatDate(value) {
   if (!value) return 'Chua co'
   const date = new Date(value)
@@ -72,6 +74,7 @@ function AdminTickets() {
   const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
   const [error, setError] = useState('')
   const [deletingTicketId, setDeletingTicketId] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const canDeleteTicket = isAdminRole(user?.role)
 
   useEffect(() => {
@@ -135,6 +138,20 @@ function AdminTickets() {
     return ['ALL', ...new Set(visibleTickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
   }, [visibleTickets])
 
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ITEMS_PER_PAGE))
+  const paginatedTickets = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredTickets.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [currentPage, filteredTickets])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, factoryFilter, statusFilter, maintenanceFilter])
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages))
+  }, [totalPages])
+
   function handleExportExcel() {
     const columns = [
       { header: 'STT', align: 'center', width: 48 },
@@ -169,37 +186,12 @@ function AdminTickets() {
         <head>
           <meta charset="UTF-8" />
           <style>
-            table {
-              border-collapse: collapse;
-              font-family: Arial, sans-serif;
-              font-size: 12px;
-            }
-
-            th, td {
-              border: 1px solid #9fb6ce;
-              padding: 8px 10px;
-              vertical-align: middle;
-              line-height: 1.4;
-            }
-
-            th {
-              background: #dbe9f8;
-              color: #12385f;
-              font-weight: 700;
-              text-align: center;
-            }
-
-            .text-left {
-              text-align: left;
-            }
-
-            .text-center {
-              text-align: center;
-            }
-
-            .text-right {
-              text-align: right;
-            }
+            table { border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; }
+            th, td { border: 1px solid #9fb6ce; padding: 8px 10px; vertical-align: middle; line-height: 1.4; }
+            th { background: #dbe9f8; color: #12385f; font-weight: 700; text-align: center; }
+            .text-left { text-align: left; }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
           </style>
         </head>
         <body>
@@ -215,10 +207,7 @@ function AdminTickets() {
                 .map(
                   (row) =>
                     `<tr>${row.values
-                      .map(
-                        (cell, index) =>
-                          `<td class="text-${columns[index].align}">${escapeExcelValue(cell)}</td>`
-                      )
+                      .map((cell, index) => `<td class="text-${columns[index].align}">${escapeExcelValue(cell)}</td>`)
                       .join('')}</tr>`
                 )
                 .join('')}
@@ -228,10 +217,7 @@ function AdminTickets() {
       </html>
     `
 
-    const blob = new Blob([`\uFEFF${html}`], {
-      type: 'application/vnd.ms-excel;charset=utf-8;',
-    })
-
+    const blob = new Blob([`\uFEFF${html}`], { type: 'application/vnd.ms-excel;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     const exportDate = new Date().toISOString().slice(0, 10)
@@ -247,14 +233,14 @@ function AdminTickets() {
     <section className="requests-page">
       <div className="requests-page__hero">
         <p className="requests-page__eyebrow">Admin</p>
-        <h1 className="requests-page__title">Quản trị Ticket</h1>
+        <h1 className="requests-page__title">Quan tri Ticket</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tìm kiếm Ticket</span>
+          <span>Tim kiem Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FaSearch size={14} />
@@ -263,45 +249,45 @@ function AdminTickets() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Nhập mã ticket, loại bảo trì, nhà máy, trạng thái..."
+              placeholder="Nhap ma ticket, loai bao tri, nha may, trang thai..."
             />
           </div>
         </label>
 
         <button type="button" className="requests-search__export" onClick={handleExportExcel}>
-          Xuất Excel
+          Xuat Excel
         </button>
       </section>
 
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Lọc theo nhà máy</span>
+          <span>Loc theo nha may</span>
           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
             {factories.map((factory) => (
               <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
+                {factory === 'ALL' ? 'Tat ca nha may' : factory}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo trạng thái</span>
+          <span>Loc theo trang thai</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tất cả trạng thái' : status}
+                {status === 'ALL' ? 'Tat ca trang thai' : status}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo loại bảo trì</span>
+          <span>Loc theo loai bao tri</span>
           <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
             {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tất cả loại bảo trì' : type}
+                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
               </option>
             ))}
           </select>
@@ -310,19 +296,19 @@ function AdminTickets() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Mã ticket</span>
+          <span>Ma ticket</span>
           <span>Equipment</span>
-          <span>Khu vực</span>
-          <span>Loại bảo trì</span>
-          <span>Số order</span>
-          <span>Nhà máy</span>
-          <span>Ngày xử lý</span>
-          <span>Trạng thái</span>
-          <span>Thao tác</span>
+          <span>Khu vuc</span>
+          <span>Loai bao tri</span>
+          <span>So order</span>
+          <span>Nha may</span>
+          <span>Ngay xu ly</span>
+          <span>Trang thai</span>
+          <span>Thao tac</span>
         </div>
 
         <div className="requests-table__body">
-          {filteredTickets.map((ticket) => (
+          {paginatedTickets.map((ticket) => (
             <article key={ticket.id} className="requests-row">
               <div>
                 <strong>{formatTicketCode(ticket)}</strong>
@@ -352,13 +338,13 @@ function AdminTickets() {
                   <button
                     type="button"
                     className="requests-row__action requests-row__action--danger"
-                    title="Xóa"
-                    aria-label="Xóa"
-                    data-tooltip="Xóa"
+                    title="Xoa"
+                    aria-label="Xoa"
+                    data-tooltip="Xoa"
                     onClick={() => handleDelete(ticket)}
                     disabled={deletingTicketId === ticket.id}
                   >
-                    <span className="sr-only">Xóa</span>
+                    <span className="sr-only">Xoa</span>
                     <span className="requests-row__action-icon">
                       <FiTrash2 size={16} />
                     </span>
@@ -369,10 +355,37 @@ function AdminTickets() {
           ))}
 
           {filteredTickets.length === 0 && (
-            <div className="requests-empty">Không tìm thấy ticket phù hợp với bộ lọc hoặc từ khóa tìm kiếm.</div>
+            <div className="requests-empty">Khong tim thay ticket phu hop voi bo loc hoac tu khoa tim kiem.</div>
           )}
         </div>
       </section>
+
+      {filteredTickets.length > 0 && (
+        <div className="requests-pagination">
+          <div className="requests-pagination__summary">
+            Hien thi {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
+          </div>
+          <div className="requests-pagination__controls">
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+            >
+              Truoc
+            </button>
+            <span className="requests-pagination__page">Trang {currentPage} / {totalPages}</span>
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
