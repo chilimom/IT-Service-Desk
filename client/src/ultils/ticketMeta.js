@@ -21,6 +21,16 @@ function normalize(value) {
   return (value || '').toLowerCase()
 }
 
+export function getStatusDisplayLabel(status) {
+  const normalizedStatus = normalize(status)
+
+  if (normalizedStatus === 'submitted') return 'Cho xu ly'
+  if (normalizedStatus === 'inprogress') return 'Dang xu ly'
+  if (normalizedStatus === 'done') return 'Hoan thanh'
+
+  return status || 'Unknown'
+}
+
 function getTicketTypeSource(ticketOrType) {
   if (typeof ticketOrType === 'string') {
     return ticketOrType

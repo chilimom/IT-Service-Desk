@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { deleteTicket, getTickets } from '../services/ticketService'
 import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
 import '../styles/requests.css'
 
@@ -175,7 +175,7 @@ function AdminTickets() {
         getFactoryLabel(ticket),
         getRequesterLabel(ticket),
         formatDate(ticket.dueDate),
-        ticket.status || 'Unknown',
+        getStatusDisplayLabel(ticket.status),
       ],
     }))
 
@@ -276,7 +276,7 @@ function AdminTickets() {
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tat ca trang thai' : status}
+                {status === 'ALL' ? 'Tat ca trang thai' : getStatusDisplayLabel(status)}
               </option>
             ))}
           </select>
@@ -320,7 +320,7 @@ function AdminTickets() {
               <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
-              <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+              <span className={getStatusClass(ticket.status)}>{getStatusDisplayLabel(ticket.status)}</span>
               <div className="requests-row__actions requests-row__actions--end">
                 <Link
                   className="requests-row__action"

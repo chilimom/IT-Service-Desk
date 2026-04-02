@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
-import { getMaintenanceCategory, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { getMaintenanceCategory, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { canAccessFactory, canManageTickets, isAdminRole, isProcessorRole } from '../ultils/auth'
 import '../styles/ticket-details.css'
 
@@ -21,25 +21,25 @@ function formatDate(value) {
 }
 
 function getStatusLabel(statusId, statusName) {
-  if (statusName) return statusName
-  if (statusId === SUBMITTED_STATUS_ID) return 'Submitted'
-  if (statusId === IN_PROGRESS_STATUS_ID) return 'InProgress'
-  if (statusId === DONE_STATUS_ID) return 'Done'
+  if (statusName) return getStatusDisplayLabel(statusName)
+  if (statusId === SUBMITTED_STATUS_ID) return 'Cho xu ly'
+  if (statusId === IN_PROGRESS_STATUS_ID) return 'Dang xu ly'
+  if (statusId === DONE_STATUS_ID) return 'Hoan thanh'
   return 'Unknown'
 }
 
 function getStatusClass(status) {
   const normalized = (status || '').toLowerCase()
-  if (normalized === 'submitted') return 'status-pill status-pill--submitted'
-  if (normalized === 'inprogress') return 'status-pill status-pill--progress'
-  if (normalized === 'done') return 'status-pill status-pill--done'
+  if (normalized === 'submitted' || normalized === 'cho xu ly') return 'status-pill status-pill--submitted'
+  if (normalized === 'inprogress' || normalized === 'dang xu ly') return 'status-pill status-pill--progress'
+  if (normalized === 'done' || normalized === 'hoan thanh') return 'status-pill status-pill--done'
   return 'status-pill'
 }
 
 function getStatusMeta(status) {
   const normalized = (status || '').toLowerCase()
 
-  if (normalized === 'submitted') {
+  if (normalized === 'submitted' || normalized === 'cho xu ly') {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--submitted',
       icon: FiInfo,
@@ -48,7 +48,7 @@ function getStatusMeta(status) {
     }
   }
 
-  if (normalized === 'inprogress') {
+  if (normalized === 'inprogress' || normalized === 'dang xu ly') {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--progress',
       icon: FiAlertCircle,
@@ -57,7 +57,7 @@ function getStatusMeta(status) {
     }
   }
 
-  if (normalized === 'done') {
+  if (normalized === 'done' || normalized === 'hoan thanh') {
     return {
       className: 'ticket-details__status-banner ticket-details__status-banner--done',
       icon: FiCheckCircle,
@@ -554,10 +554,10 @@ function TicketDetails() {
                       <label className="ticket-details__form-field">
                         <span>Trạng thái</span>
                         <select name="statusId" value={form.statusId} onChange={handleChange}>
-                          <option value={SUBMITTED_STATUS_ID}>Submitted</option>
-                          <option value={IN_PROGRESS_STATUS_ID}>InProgress</option>
+                          <option value={SUBMITTED_STATUS_ID}>Cho xu ly</option>
+                          <option value={IN_PROGRESS_STATUS_ID}>Dang xu ly</option>
                           <option value={DONE_STATUS_ID} disabled={!canMarkDone}>
-                            Done
+                            Hoan thanh
                           </option>
                         </select>
                       </label>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 const ITEMS_PER_PAGE = 10
@@ -176,7 +176,7 @@ function MyRequests() {
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tat ca trang thai' : status}
+                {status === 'ALL' ? 'Tat ca trang thai' : getStatusDisplayLabel(status)}
               </option>
             ))}
           </select>
@@ -231,7 +231,7 @@ function MyRequests() {
               <span>{getOrderCodeDisplay(ticket)}</span>
               <span>{getFactoryLabel(ticket)}</span>
               <span>{formatDate(ticket.dueDate)}</span>
-              <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+              <span className={getStatusClass(ticket.status)}>{getStatusDisplayLabel(ticket.status)}</span>
               <Link
                 className="requests-row__action"
                 to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}

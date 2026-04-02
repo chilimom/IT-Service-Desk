@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useAuth } from '../context/AuthContext'
 import { getTicketDashboard, getTickets } from '../services/ticketService'
-import { formatTicketCode, getOrderCodeDisplay } from '../ultils/ticketMeta'
+import { formatTicketCode, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { filterTicketsByAccess } from '../ultils/auth'
 import '../styles/dashboard.css'
 
@@ -112,7 +112,7 @@ function Dashboard() {
       { label: 'Tổng yêu cầu', value: visibleTickets.length, tone: 'total' },
       { label: 'Hoàn thành', value: done, tone: 'done' },
       { label: 'Đang xử lý', value: inProgress, tone: 'progress' },
-      { label: 'Mới tạo', value: submitted, tone: 'submitted' },
+      { label: 'Chờ xử lý', value: submitted, tone: 'submitted' },
     ]
   }, [statusLookup, visibleTickets.length])
 
@@ -463,7 +463,7 @@ function Dashboard() {
                 <span>{getOrderCodeDisplay(ticket)}</span>
                 <span>{getDashboardFactory(ticket)}</span>
                 <span>{formatDate(ticket.dueDate)}</span>
-                <span className={getStatusClass(ticket.status)}>{ticket.status || 'Unknown'}</span>
+                <span className={getStatusClass(ticket.status)}>{getStatusDisplayLabel(ticket.status)}</span>
               </article>
             ))}
             {recentTickets.length === 0 && <div className="dashboard-empty dashboard-empty--table">Chua co ticket de hien thi.</div>}
