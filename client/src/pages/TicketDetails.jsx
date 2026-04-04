@@ -22,9 +22,9 @@ function formatDate(value) {
 
 function getStatusLabel(statusId, statusName) {
   if (statusName) return getStatusDisplayLabel(statusName)
-  if (statusId === SUBMITTED_STATUS_ID) return 'Cho xu ly'
-  if (statusId === IN_PROGRESS_STATUS_ID) return 'Dang xu ly'
-  if (statusId === DONE_STATUS_ID) return 'Hoan thanh'
+  if (statusId === SUBMITTED_STATUS_ID) return 'Chờ xử lý'
+  if (statusId === IN_PROGRESS_STATUS_ID) return 'Đang xử lý'
+  if (statusId === DONE_STATUS_ID) return 'Hoàn thành'
   return 'Unknown'
 }
 
@@ -554,10 +554,10 @@ function TicketDetails() {
                       <label className="ticket-details__form-field">
                         <span>Trạng thái</span>
                         <select name="statusId" value={form.statusId} onChange={handleChange}>
-                          <option value={SUBMITTED_STATUS_ID}>Cho xu ly</option>
-                          <option value={IN_PROGRESS_STATUS_ID}>Dang xu ly</option>
+                          <option value={SUBMITTED_STATUS_ID}>Chờ xử lý</option>
+                          <option value={IN_PROGRESS_STATUS_ID}>Đang xử lý</option>
                           <option value={DONE_STATUS_ID} disabled={!canMarkDone}>
-                            Hoan thanh
+                            Hoàn thành
                           </option>
                         </select>
                       </label>
@@ -570,7 +570,7 @@ function TicketDetails() {
                       ) : (
                         <div className="ticket-details__static-field">
                           <strong>Số order</strong>
-                          <p>Khong ap dung cho ticket ho tro CNTT.</p>
+                          <p>Không áp dụng cho ticket hỗ trợ CNTT.</p>
                         </div>
                       )}
                     </div>
