@@ -147,15 +147,15 @@ function MyRequests() {
   return (
     <section className="requests-page">
       <div className="requests-page__hero">
-        <p className="requests-page__eyebrow">Tong hop danh sach</p>
-        <h1 className="requests-page__title">Yeu cau cua toi</h1>
+        <p className="requests-page__eyebrow">Tổng hợp danh sách</p>
+        <h1 className="requests-page__title">Yêu cầu của tôi</h1>
       </div>
 
       {error && <div className="requests-page__alert">{error}</div>}
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tim kiem Ticket</span>
+          <span>Tìm kiếm Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FiSearch size={16} />
@@ -164,7 +164,7 @@ function MyRequests() {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Ma ticket, loai bao tri, nha may, trang thai..."
+              placeholder="Mã ticket, loại bảo trì, nhà máy, trạng thái..."
             />
           </div>
         </label>
@@ -172,33 +172,33 @@ function MyRequests() {
 
       <section className="requests-filters">
         <label className="requests-filters__field">
-          <span>Loc theo trang thai</span>
+          <span>Lọc theo trạng thái</span>
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status === 'ALL' ? 'Tat ca trang thai' : getStatusDisplayLabel(status)}
+                {status === 'ALL' ? 'Tất cả trạng thái' : getStatusDisplayLabel(status)}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo loai bao tri</span>
+          <span>Lọc theo loại bảo trì</span>
           <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
             {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
+                {type === 'ALL' ? 'Tất cả loại bảo trì' : type}
               </option>
             ))}
           </select>
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo nha may</span>
+          <span>Lọc theo nhà máy</span>
           <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
             {factories.map((factory) => (
               <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tat ca nha may' : factory}
+                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
               </option>
             ))}
           </select>
@@ -207,15 +207,15 @@ function MyRequests() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Ma ticket</span>
+          <span>Mã ticket</span>
           <span>Equipment</span>
-          <span>Khu vuc</span>
-          <span>Loai bao tri</span>
-          <span>So order</span>
-          <span>Nha may</span>
-          <span>Ngay xu ly</span>
-          <span>Trang thai</span>
-          <span>Thao tac</span>
+          <span>Khu vực</span>
+          <span>Loại bảo trì</span>
+          <span>Số order</span>
+          <span>Nhà máy</span>
+          <span>Ngày xử lý</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
 
         <div className="requests-table__body">
@@ -235,11 +235,11 @@ function MyRequests() {
               <Link
                 className="requests-row__action"
                 to={`/${path.USER}/${path.USER_TICKETS}/requests/${ticket.id}`}
-                title={canEditTicket(ticket) ? 'Sua' : 'Xem'}
-                aria-label={canEditTicket(ticket) ? 'Sua' : 'Xem'}
-                data-tooltip={canEditTicket(ticket) ? 'Sua' : 'Xem'}
+                title={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
+                aria-label={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
+                data-tooltip={canEditTicket(ticket) ? 'Sửa' : 'Xem'}
               >
-                <span className="sr-only">{canEditTicket(ticket) ? 'Sua' : 'Xem'}</span>
+                <span className="sr-only">{canEditTicket(ticket) ? 'Sửa' : 'Xem'}</span>
                 <span className="requests-row__action-icon">
                   {canEditTicket(ticket) ? <FiEdit2 size={16} /> : <FiEye size={16} />}
                 </span>
@@ -258,7 +258,7 @@ function MyRequests() {
       {filteredTickets.length > 0 && (
         <div className="requests-pagination">
           <div className="requests-pagination__summary">
-            Hien thi {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
+            Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
           </div>
           <div className="requests-pagination__controls">
             <button
@@ -267,7 +267,7 @@ function MyRequests() {
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
               disabled={currentPage === 1}
             >
-              Truoc
+              Trước
             </button>
             <span className="requests-pagination__page">Trang {currentPage} / {totalPages}</span>
             <button
