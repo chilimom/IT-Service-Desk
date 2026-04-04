@@ -43,7 +43,7 @@ function getStatusClass(status) {
 }
 
 function getDashboardMaintenanceType(ticket) {
-  if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
+  if (ticket?.categoryType !== 'Maintenance') return 'Không áp dụng'
   if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
     return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
   }
@@ -51,11 +51,11 @@ function getDashboardMaintenanceType(ticket) {
 }
 
 function getDashboardEquipment(ticket) {
-  return ticket?.area || 'Chua co'
+  return ticket?.area || 'Chưa có'
 }
 
 function getDashboardArea(ticket) {
-  return ticket?.equipmentCode || 'Chua co'
+  return ticket?.equipmentCode || 'Chưa có'
 }
 
 function getDashboardFactory(ticket) {
