@@ -114,7 +114,7 @@ export const getFactoryLabel = (factoryId) => {
 
 export function getOrderCodeDisplay(ticket) {
   if (!isMaintenanceTicket(ticket)) {
-    return 'Khong ap dung'
+    return 'Không áp dụng'
   }
 
   const orderCode = String(ticket?.orderCode || '').trim()
@@ -130,7 +130,7 @@ export function getOrderCodeDisplay(ticket) {
     normalizedStatus === 'inprogress' ||
     normalizedStatus === 'done'
 
-  return isAccepted ? 'Dang cho cap order' : 'Cho tiep nhan'
+  return isAccepted ? 'Dang cho cap order' : 'Chờ tiếp nhận'
 }
 
 export function formatTicketCode(ticket) {
