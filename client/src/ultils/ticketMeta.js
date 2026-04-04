@@ -1,21 +1,21 @@
-// export const maintenanceOptions = [
-//   { code: 'PM01', name: 'Bao tri su co' },
-//   { code: 'PM02', name: 'Bao tri nguoi co hoi' },
-//   { code: 'PM03', name: 'Bao tri chien luoc' },
-//   { code: 'PM05', name: 'Bao tri CBM' },
-//   { code: 'ZPM5', name: 'Cai tao, cai tien' },
-//   { code: 'ZPM6', name: 'Trung tu, dai tu' },
-//   { code: 'ZPM7', name: 'Bao tri phuc hoi' },
-//   { code: 'QMTD', name: 'Hieu chuan - kiem dinh' },
-// ]
+export const maintenanceOptions = [
+  { code: 'PM01', name: 'Bao tri su co' },
+  { code: 'PM02', name: 'Bao tri nguoi co hoi' },
+  { code: 'PM03', name: 'Bao tri chien luoc' },
+  { code: 'PM05', name: 'Bao tri CBM' },
+  { code: 'ZPM5', name: 'Cai tao, cai tien' },
+  { code: 'ZPM6', name: 'Trung tu, dai tu' },
+  { code: 'ZPM7', name: 'Bao tri phuc hoi' },
+  { code: 'QMTD', name: 'Hieu chuan - kiem dinh' },
+]
 
-// export const factoryOptions = [
-//   { code: 'NM01', name: 'Nha may Luyen Gang 1' },
-//   { code: 'NM02', name: 'Nha may Luyen Gang 2' },
-//   { code: 'NM03', name: 'Nha may Nhiet Dien 1' },
-//   { code: 'NM04', name: 'Nha may Nhiet Dien 2' },
-//   { code: 'NM05', name: 'Xuong Nang Luong' },
-// ]
+export const factoryOptions = [
+  { code: 'NM01', name: 'Nha may Luyen Gang 1' },
+  { code: 'NM02', name: 'Nha may Luyen Gang 2' },
+  { code: 'NM03', name: 'Nha may Nhiet Dien 1' },
+  { code: 'NM04', name: 'Nha may Nhiet Dien 2' },
+  { code: 'NM05', name: 'Xuong Nang Luong' },
+]
 
 function normalize(value) {
   return (value || '').toLowerCase()

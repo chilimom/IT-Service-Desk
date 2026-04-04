@@ -69,8 +69,8 @@ function getStatusMeta(status) {
   return {
     className: 'ticket-details__status-banner',
     icon: FiInfo,
-    title: 'Trang thai ticket',
-    description: 'Trang thai hien tai cua ticket dang duoc cap nhat.',
+    title: 'Trạng thái ticket',
+    description: 'Trang thái hiện tại của ticket đang được cập nhật.',
   }
 }
 
