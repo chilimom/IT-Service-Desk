@@ -283,11 +283,11 @@ function AdminTickets() {
         </label>
 
         <label className="requests-filters__field">
-          <span>Loc theo loai bao tri</span>
+          <span>Lọc theo loại bảo trì</span>
           <select value={maintenanceFilter} onChange={(event) => setMaintenanceFilter(event.target.value)}>
             {maintenanceTypes.map((type) => (
               <option key={type} value={type}>
-                {type === 'ALL' ? 'Tat ca loai bao tri' : type}
+                {type === 'ALL' ? 'Tất cả loại bảo trì' : type}
               </option>
             ))}
           </select>
@@ -296,15 +296,15 @@ function AdminTickets() {
 
       <section className="requests-table">
         <div className="requests-table__head">
-          <span>Ma ticket</span>
+          <span>Mã ticket</span>
           <span>Equipment</span>
-          <span>Khu vuc</span>
-          <span>Loai bao tri</span>
-          <span>So order</span>
-          <span>Nha may</span>
-          <span>Ngay xu ly</span>
-          <span>Trang thai</span>
-          <span>Thao tac</span>
+          <span>Khu vực</span>
+          <span>Loại bảo trì</span>
+          <span>Số order</span>
+          <span>Nhà máy</span>
+          <span>Ngày xử lý</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
 
         <div className="requests-table__body">
@@ -312,7 +312,7 @@ function AdminTickets() {
             <article key={ticket.id} className="requests-row">
               <div>
                 <strong>{formatTicketCode(ticket)}</strong>
-                <p>{ticket.title || 'Chua co tieu de'}</p>
+                <p>{ticket.title || 'Chưa có tiêu đề'}</p>
               </div>
               <span>{getEquipmentLabel(ticket)}</span>
               <span>{getAreaLabel(ticket)}</span>
@@ -338,13 +338,13 @@ function AdminTickets() {
                   <button
                     type="button"
                     className="requests-row__action requests-row__action--danger"
-                    title="Xoa"
-                    aria-label="Xoa"
-                    data-tooltip="Xoa"
+                    title="Xóa"
+                    aria-label="Xóa"
+                    data-tooltip="Xóa"
                     onClick={() => handleDelete(ticket)}
                     disabled={deletingTicketId === ticket.id}
                   >
-                    <span className="sr-only">Xoa</span>
+                    <span className="sr-only">Xóa</span>
                     <span className="requests-row__action-icon">
                       <FiTrash2 size={16} />
                     </span>
@@ -372,7 +372,7 @@ function AdminTickets() {
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
               disabled={currentPage === 1}
             >
-              Truoc
+              Trước
             </button>
             <span className="requests-pagination__page">Trang {currentPage} / {totalPages}</span>
             <button
