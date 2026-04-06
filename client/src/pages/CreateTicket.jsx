@@ -205,14 +205,14 @@ function CreateTicket() {
             </>
           )}
 
-          {!isMaintenance && (
+          {/* {!isMaintenance && (
             <input
               name="title"
               value={form.title}
               onChange={handleChange}
               placeholder="Ví dụ: Lỗi máy in, không đăng nhập được..."
             />
-          )}
+          )} */}
 
           {isMaintenance && (
             <>
