@@ -363,7 +363,7 @@ function AdminTickets() {
       {filteredTickets.length > 0 && (
         <div className="requests-pagination">
           <div className="requests-pagination__summary">
-            Hien thi {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
+            Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} / {filteredTickets.length} ticket
           </div>
           <div className="requests-pagination__controls">
             <button

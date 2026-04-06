@@ -51,12 +51,18 @@ function getMaintenanceFilterValue(ticket) {
   return getMaintenanceTypeLabel(ticket)
 }
 
+function getTicketTypeLabel(ticket) {
+  if (ticket?.categoryType) return ticket.categoryType
+  if (ticket?.maintenanceTypeCode || ticket?.maintenanceTypeName) return 'Maintenance'
+  return 'Support'
+}
+
 function MyRequests() {
   const { user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [maintenanceFilter, setMaintenanceFilter] = useState('ALL')
-  const [factoryFilter, setFactoryFilter] = useState('ALL')
+  const [ticketTypeFilter, setTicketTypeFilter] = useState('ALL')
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -108,18 +114,18 @@ function MyRequests() {
       })
       .filter((ticket) => (statusFilter === 'ALL' ? true : (ticket.status || '').toLowerCase() === statusFilter.toLowerCase()))
       .filter((ticket) => (maintenanceFilter === 'ALL' ? true : getMaintenanceFilterValue(ticket) === maintenanceFilter))
-      .filter((ticket) => (factoryFilter === 'ALL' ? true : ticket.factoryName === factoryFilter))
+      .filter((ticket) => (ticketTypeFilter === 'ALL' ? true : getTicketTypeLabel(ticket) === ticketTypeFilter))
       .sort((first, second) => new Date(second.createdAt || 0) - new Date(first.createdAt || 0))
-  }, [factoryFilter, maintenanceFilter, searchTerm, statusFilter, tickets])
+  }, [maintenanceFilter, searchTerm, statusFilter, ticketTypeFilter, tickets])
 
   const statuses = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))], [tickets])
   const maintenanceTypes = useMemo(() => ['ALL', ...new Set(tickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))], [tickets])
-  const factories = useMemo(() => {
-    const factorySet = new Set(['ALL'])
+  const ticketTypes = useMemo(() => {
+    const ticketTypeSet = new Set(['ALL'])
     tickets.forEach((ticket) => {
-      if (ticket.factoryName) factorySet.add(ticket.factoryName)
+      ticketTypeSet.add(getTicketTypeLabel(ticket))
     })
-    return Array.from(factorySet)
+    return Array.from(ticketTypeSet)
   }, [tickets])
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ITEMS_PER_PAGE))
@@ -130,7 +136,7 @@ function MyRequests() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, statusFilter, maintenanceFilter, factoryFilter])
+  }, [searchTerm, statusFilter, maintenanceFilter, ticketTypeFilter])
 
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages))
@@ -194,11 +200,11 @@ function MyRequests() {
         </label>
 
         <label className="requests-filters__field">
-          <span>Lọc theo nhà máy</span>
-          <select value={factoryFilter} onChange={(event) => setFactoryFilter(event.target.value)}>
-            {factories.map((factory) => (
-              <option key={factory} value={factory}>
-                {factory === 'ALL' ? 'Tất cả nhà máy' : factory}
+          <span>Lọc theo loại Ticket</span>
+          <select value={ticketTypeFilter} onChange={(event) => setTicketTypeFilter(event.target.value)}>
+            {ticketTypes.map((ticketType) => (
+              <option key={ticketType} value={ticketType}>
+                {ticketType === 'ALL' ? 'Tất cả loại ticket' : ticketType}
               </option>
             ))}
           </select>
