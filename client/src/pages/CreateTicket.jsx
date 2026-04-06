@@ -221,7 +221,7 @@ function CreateTicket() {
             </>
           )}
 
-          {/* <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" /> */}
+          <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" />
           <textarea
             name="description"
             value={form.description}
