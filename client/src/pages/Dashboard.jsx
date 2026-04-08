@@ -59,9 +59,6 @@ function getDashboardArea(ticket) {
 }
 
 function getDashboardFactory(ticket) {
-  if (ticket?.factoryCode && ticket?.factoryName) {
-    return `${ticket.factoryCode} - ${ticket.factoryName}`
-  }
   return ticket?.factoryName || 'Chua co nha may'
 }
 
@@ -148,9 +145,7 @@ function Dashboard() {
   const factoryChartData = useMemo(() => {
     const grouped = visibleTickets.reduce((accumulator, ticket) => {
       const key =
-        ticket.factoryCode && ticket.factoryName
-          ? `${ticket.factoryCode} - ${ticket.factoryName}`
-          : ticket.factoryName || 'Chua co nha may'
+        ticket.factoryName || 'Chua co nha may'
       accumulator[key] = (accumulator[key] || 0) + 1
       return accumulator
     }, {})

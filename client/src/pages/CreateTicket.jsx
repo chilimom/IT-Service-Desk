@@ -186,7 +186,7 @@ function CreateTicket() {
             <option value="">Chọn nhà máy</option>
             {factories.map((factory) => (
               <option key={factory.id} value={factory.id}>
-                {factory.code} - {factory.name}
+                {factory.name}
               </option>
             ))}
           </select>
@@ -198,7 +198,7 @@ function CreateTicket() {
                 <option value="">Chọn loại bảo trì</option>
                 {maintenanceTypes.map((type) => (
                   <option key={type.id} value={type.id}>
-                    {type.code} - {type.name}
+                    {type.name}
                   </option>
                 ))}
               </select>

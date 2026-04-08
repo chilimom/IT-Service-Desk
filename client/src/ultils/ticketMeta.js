@@ -106,7 +106,7 @@ export const getFactoryLabel = (factoryId) => {
   )
 
   if (factory) {
-    return `${factory.code} - ${factory.name}`
+    return factory.name
   }
 
   return normalizedFactoryId

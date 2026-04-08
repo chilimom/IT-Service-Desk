@@ -131,35 +131,35 @@ function TicketDetails() {
     if (ticket?.maintenanceTypeId) {
       const selectedType = maintenanceTypes.find((item) => Number(item.id) === Number(ticket.maintenanceTypeId))
       if (selectedType) {
-        return `${selectedType.code} - ${selectedType.name}`
+        return selectedType.name
       }
     }
 
     if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
-      return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
+      return ticket.maintenanceTypeName
     }
 
     const maintenanceCategory = getMaintenanceCategory(ticket)
-    return maintenanceCategory ? `${maintenanceCategory.code} - ${maintenanceCategory.name}` : 'Chua co loai bao tri'
+    return maintenanceCategory ? maintenanceCategory.name : 'Chua co loai bao tri'
   }, [maintenanceTypes, ticket])
 
   const requesterDisplay = useMemo(() => {
     const requesterId = ticket?.requestedBy
     const requesterName = ticket?.requestedByName
-    if (requesterId && requesterName) return `${requesterId} - ${requesterName}`
-    if (requesterId) return String(requesterId)
     if (requesterName) return requesterName
+    if (requesterId) return String(requesterId)
     return 'Chua co'
   }, [ticket])
 
   const assigneeDisplay = useMemo(() => {
     const assigneeId = ticket?.assignedTo
     const assigneeName = ticket?.assignedToName
-    if (assigneeId && assigneeName) return `${assigneeId} - ${assigneeName}`
-    if (assigneeId) return String(assigneeId)
     if (assigneeName) return assigneeName
+    if (assigneeId) return String(assigneeId)
     return 'Chưa có người tiếp nhận'
   }, [ticket])
+
+  const getUserOptionLabel = (option) => option.fullName || option.username || `User ${option.id}`
 
   useEffect(() => {
     async function loadTicketDetails() {
@@ -346,7 +346,7 @@ function TicketDetails() {
                 <div className="ticket-details__field-view">{ticket.categoryName || 'Chưa có'}</div>
 
                 <label>Nhà máy</label>
-                <div className="ticket-details__field-view">{ticket.factoryCode ? `${ticket.factoryCode} - ${ticket.factoryName}` : ticket.factoryName || 'Chua co'}</div>
+                <div className="ticket-details__field-view">{ticket.factoryName || 'Chua co'}</div>
 
                 {isMaintenance && (
                   <>
@@ -417,7 +417,7 @@ function TicketDetails() {
                         <option value="">Chọn nhà máy</option>
                         {availableFactories.map((option) => (
                           <option key={option.id} value={option.id}>
-                            {option.code} - {option.name}
+                            {option.name}
                           </option>
                         ))}
                       </select>
@@ -430,7 +430,7 @@ function TicketDetails() {
                           <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
-                              {type.code} - {type.name}
+                              {type.name}
                             </option>
                           ))}
                         </select>
@@ -483,7 +483,7 @@ function TicketDetails() {
                         <option value="">Chọn nhà máy</option>
                         {availableFactories.map((option) => (
                           <option key={option.id} value={option.id}>
-                            {option.code} - {option.name}
+                            {option.name}
                           </option>
                         ))}
                       </select>
@@ -496,7 +496,7 @@ function TicketDetails() {
                           <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
-                              {type.code} - {type.name}
+                              {type.name}
                             </option>
                           ))}
                         </select>
@@ -535,7 +535,7 @@ function TicketDetails() {
                           <option value="">Chọn người tiếp nhận</option>
                           {assignableUsers.map((option) => (
                             <option key={option.id} value={option.id}>
-                              {option.id} - {option.username}
+                              {getUserOptionLabel(option)}
                             </option>
                           ))}
                         </select>

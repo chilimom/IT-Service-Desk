@@ -3,6 +3,7 @@ import './App.css'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
 import AdminTickets from './pages/AdminTickets'
+import AccountProfile from './pages/AccountProfile'
 import CreateTicket from './pages/CreateTicket'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
@@ -43,6 +44,7 @@ function App() {
           }
         >
           <Route index element={<Navigate to={`${path.USER_TICKETS}/${path.USER_TICKETS_DASHBOARD}`} replace />} />
+          <Route path={path.ACCOUNT_PROFILE} element={<AccountProfile />} />
           <Route path={path.USER_TICKETS}>
             <Route index element={<Navigate to={path.USER_TICKETS_DASHBOARD} replace />} />
             <Route path={path.USER_TICKETS_DASHBOARD} element={<Dashboard />} />
@@ -61,6 +63,7 @@ function App() {
           }
         >
           <Route index element={<Navigate to={path.ADMIN_DASHBOARD} replace />} />
+          <Route path={path.ACCOUNT_PROFILE} element={<AccountProfile />} />
           <Route path={path.ADMIN_DASHBOARD} element={<Dashboard />} />
           <Route path={path.ADMIN_TICKETS} element={<AdminTickets />} />
           <Route

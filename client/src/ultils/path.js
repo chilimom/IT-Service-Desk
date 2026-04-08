@@ -1,6 +1,7 @@
 const path = {
   ROOT: '/',
   LOGIN: '/login',
+  ACCOUNT_PROFILE: 'profile',
   USER: 'user',
   USER_TICKETS: 'tickets',
   USER_TICKETS_DASHBOARD: 'dashboard',

@@ -33,9 +33,6 @@ function getMaintenanceTypeLabel(ticket) {
 }
 
 function getFactoryLabel(ticket) {
-  if (ticket?.factoryCode && ticket?.factoryName) {
-    return `${ticket.factoryCode} - ${ticket.factoryName}`
-  }
   return ticket?.factoryName || 'Chua co nha may'
 }
 

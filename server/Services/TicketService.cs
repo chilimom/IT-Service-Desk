@@ -64,12 +64,12 @@ namespace ITServiceDesk.Api.Services
                     RequestedBy = t.RequestedBy,
                     RequestedByName = _context.Users
                         .Where(u => u.Id == t.RequestedBy)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     AssignedTo = t.AssignedTo,
                     AssignedToName = _context.Users
                         .Where(u => u.Id == t.AssignedTo)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     MaintenanceTypeId = t.MaintenanceTypeId,
                     MaintenanceTypeCode = _context.MaintenanceTypes
@@ -127,12 +127,12 @@ namespace ITServiceDesk.Api.Services
                     RequestedBy = t.RequestedBy,
                     RequestedByName = _context.Users
                         .Where(u => u.Id == t.RequestedBy)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     AssignedTo = t.AssignedTo,
                     AssignedToName = _context.Users
                         .Where(u => u.Id == t.AssignedTo)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     MaintenanceTypeId = t.MaintenanceTypeId,
                     MaintenanceTypeCode = _context.MaintenanceTypes
@@ -172,12 +172,12 @@ namespace ITServiceDesk.Api.Services
                     t.RequestedBy,
                     RequestedByName = _context.Users
                         .Where(u => u.Id == t.RequestedBy)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     t.AssignedTo,
                     AssignedToName = _context.Users
                         .Where(u => u.Id == t.AssignedTo)
-                        .Select(u => u.Username)
+                        .Select(u => !string.IsNullOrEmpty(u.FullName) ? u.FullName : u.Username)
                         .FirstOrDefault(),
                     t.AssignedTeam,
                     t.OrderCode,

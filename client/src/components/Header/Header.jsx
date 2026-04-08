@@ -5,6 +5,7 @@ import { FaMessage } from 'react-icons/fa6'
 import { IoIosSunny } from 'react-icons/io'
 import avatar from '../../assets/image/account.png'
 import { useAuth } from '../../context/AuthContext'
+import { canManageTickets } from '../../ultils/auth'
 import icons from '../../ultils/icons'
 import path from '../../ultils/path'
 
@@ -14,6 +15,13 @@ const Header = ({ onToggleSidebar }) => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [isShowOption, setIsShowOption] = useState(false)
+  const displayName = user?.fullName || user?.username || 'User'
+  const profilePath = canManageTickets(user) ? `/${path.ADMIN}/${path.ACCOUNT_PROFILE}` : `/${path.USER}/${path.ACCOUNT_PROFILE}`
+
+  const handleOpenProfile = () => {
+    navigate(profilePath)
+    setIsShowOption(false)
+  }
 
   const handleLogout = () => {
     logout()
@@ -42,11 +50,14 @@ const Header = ({ onToggleSidebar }) => {
 
         <div className="topbar__profile" onClick={() => setIsShowOption((prev) => !prev)}>
           <img src={avatar} alt="avatar" className="topbar__avatar" />
-          <span className="topbar__name">{user?.username || 'User'} </span>
+          <span className="topbar__name">{displayName}</span>
           <FaSortDown />
 
           {isShowOption && (
             <div className="topbar__menu" onClick={(event) => event.stopPropagation()}>
+              <button type="button" className="topbar__menu-item" onClick={handleOpenProfile}>
+                Thong tin tai khoan
+              </button>
               <button type="button" className="topbar__menu-item topbar__menu-item--danger" onClick={handleLogout}>
                 Logout
               </button>

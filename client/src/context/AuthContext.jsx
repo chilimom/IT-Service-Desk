@@ -4,7 +4,7 @@ const AUTH_STORAGE_KEY = 'itservice_auth_user'
 
 function getStoredUser() {
   try {
-    const rawUser = window.localStorage.getItem(AUTH_STORAGE_KEY)
+    const rawUser = window.sessionStorage.getItem(AUTH_STORAGE_KEY)
     return rawUser ? JSON.parse(rawUser) : null
   } catch {
     return null
@@ -19,11 +19,11 @@ export function AuthProvider({ children }) {
       user,
       isAuthenticated: Boolean(user),
       login(authUser) {
-        window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser))
+        window.sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser))
         setUser(authUser)
       },
       logout() {
-        window.localStorage.removeItem(AUTH_STORAGE_KEY)
+        window.sessionStorage.removeItem(AUTH_STORAGE_KEY)
         setUser(null)
       },
     }
