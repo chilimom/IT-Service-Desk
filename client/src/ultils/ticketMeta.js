@@ -160,7 +160,7 @@ export function getOrderCodeDisplay(ticket) {
     normalizedStatus === 'inprogress' ||
     normalizedStatus === 'done'
 
-  return isAccepted ? 'Dang cho cap order' : 'Chờ tiếp nhận'
+  return isAccepted ? 'Đang chờ cấp Order' : 'Chờ tiếp nhận'
 }
 
 export function formatTicketCode(ticket) {
