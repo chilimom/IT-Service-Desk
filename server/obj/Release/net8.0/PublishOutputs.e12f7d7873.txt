@@ -1,6 +1,10 @@
 D:\ITService\server\bin\Release\net8.0\publish\server.exe
 D:\ITService\server\bin\Release\net8.0\publish\appsettings.Development.json
 D:\ITService\server\bin\Release\net8.0\publish\appsettings.json
+D:\ITService\server\bin\Release\net8.0\publish\build-check\appsettings.Development.json
+D:\ITService\server\bin\Release\net8.0\publish\build-check\appsettings.json
+D:\ITService\server\bin\Release\net8.0\publish\build-check\server.deps.json
+D:\ITService\server\bin\Release\net8.0\publish\build-check\server.runtimeconfig.json
 D:\ITService\server\bin\Release\net8.0\publish\server.dll
 D:\ITService\server\bin\Release\net8.0\publish\server.runtimeconfig.json
 D:\ITService\server\bin\Release\net8.0\publish\server.pdb

@@ -1,6 +1,10 @@
 D:\Deploy_IT\Api\server.exe
 D:\Deploy_IT\Api\appsettings.Development.json
 D:\Deploy_IT\Api\appsettings.json
+D:\Deploy_IT\Api\build-check\appsettings.Development.json
+D:\Deploy_IT\Api\build-check\appsettings.json
+D:\Deploy_IT\Api\build-check\server.deps.json
+D:\Deploy_IT\Api\build-check\server.runtimeconfig.json
 D:\Deploy_IT\Api\server.dll
 D:\Deploy_IT\Api\server.runtimeconfig.json
 D:\Deploy_IT\Api\server.pdb
