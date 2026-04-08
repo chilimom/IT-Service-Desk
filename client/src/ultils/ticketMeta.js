@@ -1,12 +1,12 @@
 export const maintenanceOptions = [
-  { code: 'PM01', name: 'Bao tri su co' },
-  { code: 'PM02', name: 'Bao tri nguoi co hoi' },
-  { code: 'PM03', name: 'Bao tri chien luoc' },
-  { code: 'PM05', name: 'Bao tri CBM' },
-  { code: 'ZPM5', name: 'Cai tao, cai tien' },
-  { code: 'ZPM6', name: 'Trung tu, dai tu' },
-  { code: 'ZPM7', name: 'Bao tri phuc hoi' },
-  { code: 'QMTD', name: 'Hieu chuan - kiem dinh' },
+  { code: 'PM01', name: 'Bảo trì sự cố' },
+  { code: 'PM02', name: 'Bảo trì nguội cơ hội' },
+  { code: 'PM03', name: 'Bảo trì chiến lược' },
+  { code: 'PM05', name: 'Bảo trì CBM' },
+  { code: 'ZPM5', name: 'Cải tạo, cải tiến' },
+  { code: 'ZPM6', name: 'Trung tu, đại tu' },
+  { code: 'ZPM7', name: 'Bảo trì phục hồi' },
+  { code: 'QMTD', name: 'Hiệu chuẩn - kiểm định' },
 ]
 
 export const factoryOptions = [
