@@ -108,6 +108,22 @@ function TicketDetails() {
   const statusText = useMemo(() => (ticket ? getStatusLabel(ticket.statusId, ticket.status) : ''), [ticket])
   const statusMeta = useMemo(() => getStatusMeta(statusText), [statusText])
   const StatusIcon = statusMeta.icon
+  const shouldShowAssignee = useMemo(() => {
+    if (!ticket) return false
+
+    const normalizedStatus = String(ticket.status || '').trim().toLowerCase()
+
+    return (
+      Boolean(ticket.assignedTo) ||
+      Boolean(ticket.assignedToName) ||
+      Number(ticket.statusId) === IN_PROGRESS_STATUS_ID ||
+      Number(ticket.statusId) === DONE_STATUS_ID ||
+      normalizedStatus === 'inprogress' ||
+      normalizedStatus === 'dang xu ly' ||
+      normalizedStatus === 'done' ||
+      normalizedStatus === 'hoan thanh'
+    )
+  }, [ticket])
   const canUserEdit = useMemo(() => !canProcessTickets && ticket?.statusId === SUBMITTED_STATUS_ID, [canProcessTickets, ticket])
   const showEditButton = canProcessTickets || canUserEdit
   const actionLabel = isEditing ? 'Đóng' : canProcessTickets ? 'Xử lý Ticket' : 'Sửa Ticket'
@@ -154,10 +170,12 @@ function TicketDetails() {
   const assigneeDisplay = useMemo(() => {
     const assigneeId = ticket?.assignedTo
     const assigneeName = ticket?.assignedToName
+    const assigneeOption = users.find((option) => Number(option.id) === Number(assigneeId))
     if (assigneeName) return assigneeName
+    if (assigneeOption) return assigneeOption.fullName || assigneeOption.username || `User ${assigneeOption.id}`
     if (assigneeId) return String(assigneeId)
     return 'Chưa có người tiếp nhận'
-  }, [ticket])
+  }, [ticket, users])
 
   const getUserOptionLabel = (option) => option.fullName || option.username || `User ${option.id}`
 
@@ -222,6 +240,18 @@ function TicketDetails() {
   function handleChange(event) {
     const { name, value } = event.target
     setMessage('')
+    setError('')
+
+    if (
+      canProcessTickets &&
+      name === 'statusId' &&
+      (Number(value) === IN_PROGRESS_STATUS_ID || Number(value) === DONE_STATUS_ID) &&
+      !form.assignedTo
+    ) {
+      setError('Hay chon nguoi tiep nhan truoc, sau do moi chuyen ticket sang Dang xu ly hoac Hoan thanh.')
+      return
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -233,6 +263,14 @@ function TicketDetails() {
 
     try {
       if (canProcessTickets) {
+        if (
+          (Number(form.statusId) === IN_PROGRESS_STATUS_ID || Number(form.statusId) === DONE_STATUS_ID) &&
+          !form.assignedTo
+        ) {
+          setError('Vui long chon nguoi tiep nhan truoc khi chuyen ticket sang Dang xu ly hoac Hoan thanh.')
+          return
+        }
+
         if (isMaintenance && Number(form.statusId) === DONE_STATUS_ID && !form.orderCode?.trim()) {
           setError('Lenh bao tri phai co so order truoc khi chuyen sang Done.')
           return
@@ -375,7 +413,7 @@ function TicketDetails() {
                 <label>Tổ xử lý</label>
                 <div className="ticket-details__field-view">{ticket.assignedTeam || 'Chua phan cong'}</div>
 
-                {!canProcessTickets && (
+                {shouldShowAssignee && (
                   <>
                     <label>Người tiếp nhận</label>
                     <div className="ticket-details__field-view">{assigneeDisplay}</div>
@@ -580,11 +618,11 @@ function TicketDetails() {
                 {(canProcessTickets || canUserEdit) && (
                   <button
                     type="submit"
-                    className="ticket-details__button ticket-details__button--icon"
+                    className="ticket-details__button ticket-details__button--submit"
                     disabled={isSaving}
-                    title={isSaving ? 'Dang luu...' : 'Luu thay doi'}
                   >
                     <FiSave size={18} />
+                    <span>{isSaving ? 'Dang luu...' : 'Luu thay doi'}</span>
                   </button>
                 )}
               </form>

@@ -164,7 +164,7 @@
 
 .ticket-details__form {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -177,6 +177,20 @@
 
 .ticket-details__form-field--full {
   grid-column: 1 / -1;
+}
+
+.ticket-details__form > .ticket-details__form-split,
+.ticket-details__form > .ticket-details__button {
+  grid-column: 1 / -1;
+}
+
+.ticket-details__form > .ticket-details__button {
+  justify-self: end;
+}
+
+.ticket-details__form > .ticket-details__form-field--full:has(select[name="factoryId"]):has(+ .ticket-details__form-field--full select[name="maintenanceTypeId"]),
+.ticket-details__form > .ticket-details__form-field--full:has(select[name="maintenanceTypeId"]) {
+  grid-column: auto;
 }
 
 .ticket-details__form-split {
@@ -219,6 +233,15 @@
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+}
+
+.ticket-details__button--submit {
+  min-width: 180px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .ticket-details__button:disabled {
@@ -374,6 +397,10 @@
 }
 
 @media (max-width: 640px) {
+  .ticket-details__form {
+    grid-template-columns: 1fr;
+  }
+
   .ticket-details__form-card {
     padding: 22px 20px;
     border-radius: 22px;
