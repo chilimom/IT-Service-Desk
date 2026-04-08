@@ -56,7 +56,7 @@ const Header = ({ onToggleSidebar }) => {
           {isShowOption && (
             <div className="topbar__menu" onClick={(event) => event.stopPropagation()}>
               <button type="button" className="topbar__menu-item" onClick={handleOpenProfile}>
-                Thong tin tai khoan
+                Thông tin tài khoản
               </button>
               <button type="button" className="topbar__menu-item topbar__menu-item--danger" onClick={handleLogout}>
                 Logout

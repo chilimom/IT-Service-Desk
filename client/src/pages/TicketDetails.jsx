@@ -6,7 +6,7 @@ import { buildApiUrl } from '../services/api'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
 import { getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
-import { canAccessFactory, canManageTickets, isProcessorRole } from '../ultils/auth'
+import { canAccessFactory, canManageTickets, isAdminRole, isProcessorRole } from '../ultils/auth'
 import '../styles/ticket-details.css'
 
 const SUBMITTED_STATUS_ID = 3
@@ -341,7 +341,7 @@ function TicketDetails() {
         statusId: String(updatedTicket.statusId || SUBMITTED_STATUS_ID),
         orderCode: updatedTicket.orderCode || '',
       })
-      setMessage('Cap nhat ticket thanh cong.')
+      setMessage('Cập nhật ticket thành công.')
       setHasPendingStatusValidation(false)
       setIsEditing(false)
     } catch {
