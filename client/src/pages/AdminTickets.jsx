@@ -150,13 +150,13 @@ function AdminTickets() {
     const columns = [
       { header: 'STT', align: 'center', width: 48 },
       { header: 'Equipment', align: 'left', width: 150 },
-      { header: 'Khu vuc', align: 'left', width: 170 },
-      { header: 'Loai bao tri', align: 'left', width: 240 },
-      { header: 'So order', align: 'center', width: 120 },
-      { header: 'Nha may', align: 'left', width: 220 },
-      { header: 'Nguoi yeu cau', align: 'center', width: 120 },
-      { header: 'Ngay xu ly', align: 'right', width: 140 },
-      { header: 'Trang thai', align: 'center', width: 110 },
+      { header: 'Khu vực', align: 'left', width: 170 },
+      { header: 'Loại bảo trì', align: 'left', width: 240 },
+      { header: 'Số order', align: 'center', width: 120 },
+      { header: 'Nhà máy', align: 'left', width: 220 },
+      { header: 'Người yêu cầu', align: 'center', width: 120 },
+      { header: 'Ngày xử lý', align: 'right', width: 140 },
+      { header: 'Trạng thái', align: 'center', width: 110 },
     ]
 
     const rows = filteredTickets.map((ticket, index) => ({
