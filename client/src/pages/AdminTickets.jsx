@@ -216,7 +216,7 @@ function AdminTickets() {
     const link = document.createElement('a')
     const exportDate = new Date().toISOString().slice(0, 10)
     link.href = url
-    link.download = `admin-tickets-${exportDate}.xls`
+    link.download = `Danh sách Ticket-${exportDate}.xls`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
