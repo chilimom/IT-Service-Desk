@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useAuth } from '../context/AuthContext'
-import { getTicketDashboard, getTickets } from '../services/ticketService'
-import { formatTicketCode, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
+import { getTickets } from '../services/ticketService'
+import { formatTicketCode, getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { filterTicketsByAccess } from '../ultils/auth'
 import '../styles/dashboard.css'
 
@@ -44,10 +44,7 @@ function getStatusClass(status) {
 
 function getDashboardMaintenanceType(ticket) {
   if (ticket?.categoryType !== 'Maintenance') return 'Không áp dụng'
-  if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
-    return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
-  }
-  return ticket?.maintenanceTypeName || 'Chua co loai bao tri'
+  return getMaintenanceTypeDisplay(ticket)
 }
 
 function getDashboardEquipment(ticket) {
@@ -65,20 +62,17 @@ function getDashboardFactory(ticket) {
 function Dashboard() {
   const { user } = useAuth()
   const [tickets, setTickets] = useState([])
-  const [dashboard, setDashboard] = useState({ total: 0, today: 0, byStatus: [] })
   const [error, setError] = useState('')
   const [activeIndex, setActiveIndex] = useState(null)
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [ticketData, dashboardData] = await Promise.all([getTickets(), getTicketDashboard()])
+        const ticketData = await getTickets()
         setTickets(Array.isArray(ticketData) ? ticketData : [])
-        setDashboard(dashboardData || { total: 0, today: 0, byStatus: [] })
       } catch {
         setError('Khong the tai du lieu tu he thong ticket.')
         setTickets([])
-        setDashboard({ total: 0, today: 0, byStatus: [] })
       }
     }
 
@@ -175,7 +169,7 @@ function Dashboard() {
         const [code, name] = key.split('|')
         return {
           code,
-          name: code && code !== 'N/A' ? `${code} - ${name}` : name,
+          name: getMaintenanceTypeDisplay({ maintenanceTypeCode: code === 'N/A' ? '' : code, maintenanceTypeName: name }),
           value,
           color: colors[index % colors.length],
         }

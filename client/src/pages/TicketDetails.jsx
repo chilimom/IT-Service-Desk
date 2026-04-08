@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
 import { getUsers } from '../services/userService'
-import { getMaintenanceCategory, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
-import { canAccessFactory, canManageTickets, isAdminRole, isProcessorRole } from '../ultils/auth'
+import { getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
+import { canAccessFactory, canManageTickets, isProcessorRole } from '../ultils/auth'
 import '../styles/ticket-details.css'
 
 const SUBMITTED_STATUS_ID = 3
@@ -36,7 +36,7 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
-function getStatusMeta(status) {
+/* function getStatusMeta(status) {
   const normalized = (status || '').toLowerCase()
 
   if (normalized === 'submitted' || normalized === 'cho xu ly') {
@@ -72,12 +72,11 @@ function getStatusMeta(status) {
     title: 'Trạng thái ticket',
     description: 'Trang thái hiện tại của ticket đang được cập nhật.',
   }
-}
+} */
 
 function TicketDetails() {
   const { ticketId } = useParams()
   const { user } = useAuth()
-  const isAdmin = isAdminRole(user?.role)
   const isProcessor = isProcessorRole(user?.role)
   const canProcessTickets = canManageTickets(user)
 
@@ -146,16 +145,18 @@ function TicketDetails() {
     if (ticket?.maintenanceTypeId) {
       const selectedType = maintenanceTypes.find((item) => Number(item.id) === Number(ticket.maintenanceTypeId))
       if (selectedType) {
-        return selectedType.name
+        return getMaintenanceTypeDisplay(selectedType)
       }
     }
 
     if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
-      return ticket.maintenanceTypeName
+      return getMaintenanceTypeDisplay({
+        maintenanceTypeCode: ticket.maintenanceTypeCode,
+        maintenanceTypeName: ticket.maintenanceTypeName,
+      })
     }
 
-    const maintenanceCategory = getMaintenanceCategory(ticket)
-    return maintenanceCategory ? maintenanceCategory.name : 'Chua co loai bao tri'
+    return 'Chua co loai bao tri'
   }, [maintenanceTypes, ticket])
 
   const requesterDisplay = useMemo(() => {
@@ -477,7 +478,7 @@ function TicketDetails() {
                           <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
-                              {type.name}
+                              {getMaintenanceTypeDisplay(type)}
                             </option>
                           ))}
                         </select>
@@ -543,7 +544,7 @@ function TicketDetails() {
                           <option value="">Chọn loại bảo trì</option>
                           {maintenanceTypes.map((type) => (
                             <option key={type.id} value={type.id}>
-                              {type.name}
+                              {getMaintenanceTypeDisplay(type)}
                             </option>
                           ))}
                         </select>

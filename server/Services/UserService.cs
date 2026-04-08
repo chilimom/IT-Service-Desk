@@ -9,14 +9,18 @@ namespace ITServiceDesk.Api.Services
     public class UserService
     {
         private readonly AppDbContext _context;
+        private readonly ExternalEmployeeService _externalEmployeeService;
 
-        public UserService(AppDbContext context)
+        public UserService(AppDbContext context, ExternalEmployeeService externalEmployeeService)
         {
             _context = context;
+            _externalEmployeeService = externalEmployeeService;
         }
 
         public object GetAll()
         {
+            _externalEmployeeService.SyncActiveEmployeesToLocalUsers();
+
             return _context.Users
                 .Select(user => new
                 {

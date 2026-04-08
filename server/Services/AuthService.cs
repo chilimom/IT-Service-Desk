@@ -6,10 +6,12 @@ namespace ITServiceDesk.Api.Services
     public class AuthService
     {
         private readonly AppDbContext _context;
+        private readonly ExternalEmployeeService _externalEmployeeService;
 
-        public AuthService(AppDbContext context)
+        public AuthService(AppDbContext context, ExternalEmployeeService externalEmployeeService)
         {
             _context = context;
+            _externalEmployeeService = externalEmployeeService;
         }
 
         public object? Login(LoginDto dto)
@@ -20,6 +22,15 @@ namespace ITServiceDesk.Api.Services
             var user = _context.Users.FirstOrDefault(item =>
                 item.Username.Trim().ToLower() == username.ToLower() &&
                 item.PasswordHash.Trim() == password);
+
+            if (user == null)
+            {
+                var employee = _externalEmployeeService.GetEmployeeByCredentials(username, password);
+                if (employee != null)
+                {
+                    user = _externalEmployeeService.EnsureLocalUserForEmployee(employee);
+                }
+            }
 
             if (user == null)
                 return null;

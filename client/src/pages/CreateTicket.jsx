@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import { createTicket } from '../services/ticketService'
+import { getMaintenanceTypeDisplay } from '../ultils/ticketMeta'
 import '../styles/form.css'
 
 const initialForm = {
@@ -198,7 +199,7 @@ function CreateTicket() {
                 <option value="">Chọn loại bảo trì</option>
                 {maintenanceTypes.map((type) => (
                   <option key={type.id} value={type.id}>
-                    {type.name}
+                    {getMaintenanceTypeDisplay(type)}
                   </option>
                 ))}
               </select>

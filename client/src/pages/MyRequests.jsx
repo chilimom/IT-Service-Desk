@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import path from '../ultils/path'
-import { formatTicketCode, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
+import { formatTicketCode, getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import '../styles/requests.css'
 
 const ITEMS_PER_PAGE = 10
@@ -26,10 +26,7 @@ function getStatusClass(status) {
 
 function getMaintenanceTypeLabel(ticket) {
   if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
-  if (ticket?.maintenanceTypeCode && ticket?.maintenanceTypeName) {
-    return `${ticket.maintenanceTypeCode} - ${ticket.maintenanceTypeName}`
-  }
-  return ticket?.maintenanceTypeName || 'Chua co loai bao tri'
+  return getMaintenanceTypeDisplay(ticket)
 }
 
 function getFactoryLabel(ticket) {

@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // ===== CONFIG PORT BACKEND =====
 builder.WebHost.UseUrls(
     "http://localhost:5018", "http://10.192.72.45:5018");
@@ -35,6 +38,7 @@ builder.Services.AddCors(options =>
 
 // ===== SERVICES =====
 builder.Services.AddControllers();
+builder.Services.AddScoped<ExternalEmployeeService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<UserService>();

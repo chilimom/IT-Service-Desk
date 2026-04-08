@@ -5,6 +5,8 @@ import { createUser, deleteUser, getUsers, resetUserPassword, updateUser } from 
 import '../styles/requests.css'
 import '../styles/user-management.css'
 
+const ITEMS_PER_PAGE = 10
+
 const initialForm = {
   username: '',
   password: '',
@@ -53,6 +55,7 @@ function UserManagement() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [resetPassword, setResetPassword] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     async function loadData() {
@@ -88,6 +91,12 @@ function UserManagement() {
     )
   }, [searchTerm, users])
 
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ITEMS_PER_PAGE))
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [currentPage, filteredUsers])
+
   const factoryMap = useMemo(() => {
     return factories.reduce((accumulator, factory) => {
       accumulator[factory.id] = factory
@@ -98,6 +107,14 @@ function UserManagement() {
   const selectedFactories = useMemo(() => {
     return new Set((form.authorizedFactoryIdList || []).map((value) => Number(value)))
   }, [form.authorizedFactoryIdList])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, users])
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages))
+  }, [totalPages])
 
   function resetFeedback() {
     setError('')
@@ -301,9 +318,9 @@ function UserManagement() {
                 </tr>
               )}
 
-              {!isLoading && filteredUsers.map((user, index) => (
+              {!isLoading && paginatedUsers.map((user, index) => (
                 <tr key={user.id}>
-                  <td>{index + 1}</td>
+                  <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                   <td>{user.fullName || '-'}</td>
                   <td>{user.username || '-'}</td>
                   <td>
@@ -338,6 +355,33 @@ function UserManagement() {
           </table>
         </div>
       </section>
+
+      {!isLoading && filteredUsers.length > 0 && (
+        <div className="requests-pagination">
+          <div className="requests-pagination__summary">
+            Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredUsers.length)} / {filteredUsers.length} user
+          </div>
+          <div className="requests-pagination__controls">
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+            >
+              Trước
+            </button>
+            <span className="requests-pagination__page">Trang {currentPage} / {totalPages}</span>
+            <button
+              type="button"
+              className="requests-pagination__button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="user-management__modal-backdrop" onClick={closeModal}>

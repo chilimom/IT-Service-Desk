@@ -21,6 +21,14 @@ function normalize(value) {
   return (value || '').toLowerCase()
 }
 
+function normalizeLoose(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
 export function getStatusDisplayLabel(status) {
   const normalizedStatus = normalize(status)
 
@@ -82,6 +90,28 @@ export function isSupportTicket(ticketOrType) {
 export function getMaintenanceCategory(ticket) {
   const categoryCode = extractMaintenanceCode(ticket)
   return maintenanceOptions.find((item) => item.code === categoryCode) || null
+}
+
+export function getMaintenanceTypeDisplay(value) {
+  if (!value) return 'Chua co loai bao tri'
+
+  const rawCode = String(value.code || value.maintenanceTypeCode || '').trim()
+  const rawName = String(value.name || value.maintenanceTypeName || '').trim()
+  const matchedByCode = maintenanceOptions.find((item) => item.code === rawCode.toUpperCase())
+  const normalizedName = normalizeLoose(rawName)
+  const matchedByName = maintenanceOptions.find((item) => normalizeLoose(item.name) === normalizedName)
+  const matchedOption = matchedByCode || matchedByName || null
+
+  if (matchedOption) {
+    return `${matchedOption.code} - ${matchedOption.name}`
+  }
+
+  const code = /^(PM0[1-5]|ZPM[567]|QMTD)$/i.test(rawCode) ? rawCode.toUpperCase() : ''
+
+  if (code && rawName) return `${code} - ${rawName}`
+  if (rawName) return rawName
+  if (code) return code
+  return 'Chua co loai bao tri'
 }
 
 export function getTicketTypeLabel(ticket) {

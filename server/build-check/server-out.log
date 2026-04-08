@@ -1,0 +1,26 @@
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+        IF COL_LENGTH('Tickets', 'Factory') IS NULL
+        BEGIN
+            ALTER TABLE Tickets ADD Factory NVARCHAR(100) NULL;
+        END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+        IF COL_LENGTH('Users', 'AuthorizedFactoryIds') IS NULL
+        BEGIN
+            ALTER TABLE Users ADD AuthorizedFactoryIds NVARCHAR(200) NULL;
+        END
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: D:\ITService\server\build-check\wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5018
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://10.192.72.45:5018
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: D:\ITService\server\build-check
