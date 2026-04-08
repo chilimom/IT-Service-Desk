@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { FiAlertCircle, FiCheckCircle, FiEdit2, FiInfo, FiSave, FiSettings, FiX } from 'react-icons/fi'
+import { FiEdit2, FiSave, FiSettings, FiX } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 import { buildApiUrl } from '../services/api'
 import { getTicketById, updateAdminTicket, updateUserTicket } from '../services/ticketService'
@@ -89,6 +89,7 @@ function TicketDetails() {
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [hasPendingStatusValidation, setHasPendingStatusValidation] = useState(false)
   const [form, setForm] = useState({
     type: 'Maintenance',
     factoryId: '',
@@ -106,8 +107,6 @@ function TicketDetails() {
 
   const isMaintenance = useMemo(() => ticket?.categoryType === 'Maintenance', [ticket])
   const statusText = useMemo(() => (ticket ? getStatusLabel(ticket.statusId, ticket.status) : ''), [ticket])
-  const statusMeta = useMemo(() => getStatusMeta(statusText), [statusText])
-  const StatusIcon = statusMeta.icon
   const shouldShowAssignee = useMemo(() => {
     if (!ticket) return false
 
@@ -240,7 +239,12 @@ function TicketDetails() {
   function handleChange(event) {
     const { name, value } = event.target
     setMessage('')
-    setError('')
+    if (name === 'assignedTo' && value) {
+      setError('')
+      setHasPendingStatusValidation(false)
+    } else if (name !== 'statusId') {
+      setError('')
+    }
 
     if (
       canProcessTickets &&
@@ -248,8 +252,14 @@ function TicketDetails() {
       (Number(value) === IN_PROGRESS_STATUS_ID || Number(value) === DONE_STATUS_ID) &&
       !form.assignedTo
     ) {
-      setError('Hay chon nguoi tiep nhan truoc, sau do moi chuyen ticket sang Dang xu ly hoac Hoan thanh.')
+      setHasPendingStatusValidation(true)
+      setError('Hãy chọn người tiếp nhận.')
       return
+    }
+
+    if (name === 'statusId') {
+      setHasPendingStatusValidation(false)
+      setError('')
     }
 
     setForm((prev) => ({ ...prev, [name]: value }))
@@ -257,6 +267,12 @@ function TicketDetails() {
 
   async function handleSave(event) {
     event.preventDefault()
+
+    if (hasPendingStatusValidation) {
+      setError('Hãy chọn người tiếp nhận.')
+      return
+    }
+
     setIsSaving(true)
     setError('')
     setMessage('')
@@ -325,6 +341,7 @@ function TicketDetails() {
         orderCode: updatedTicket.orderCode || '',
       })
       setMessage('Cap nhat ticket thanh cong.')
+      setHasPendingStatusValidation(false)
       setIsEditing(false)
     } catch {
       setError('Khong the cap nhat ticket.')
@@ -346,14 +363,6 @@ function TicketDetails() {
     <section className="ticket-details">
       {message && <div className="ticket-details__success">{message}</div>}
       {error && <div className="ticket-details__alert">{error}</div>}
-
-      <div className={statusMeta.className}>
-        <StatusIcon size={20} />
-        <div>
-          <strong>{statusMeta.title}</strong>
-          <p>{statusMeta.description}</p>
-        </div>
-      </div>
 
       <div className="ticket-details__grid ticket-details__grid--single">
         <section className="ticket-details__card ticket-details__card--primary">
@@ -619,10 +628,10 @@ function TicketDetails() {
                   <button
                     type="submit"
                     className="ticket-details__button ticket-details__button--submit"
-                    disabled={isSaving}
+                    disabled={isSaving || hasPendingStatusValidation}
                   >
                     <FiSave size={18} />
-                    <span>{isSaving ? 'Dang luu...' : 'Luu thay doi'}</span>
+                    <span>{isSaving ? 'Dang luu...' : ''}</span>
                   </button>
                 )}
               </form>
