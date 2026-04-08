@@ -56,14 +56,70 @@
   font-weight: 700;
 }
 
+.login-form__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #2f78ff;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.login-form__input-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c7f95;
+}
+
 .login-form input {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #d6e1ec;
-  border-radius: 14px;
-  background: #f9fbfe;
+  padding: 12px 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   color: #183a59;
   outline: none;
+}
+
+.login-form__password-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #8aa0b8;
+  box-shadow: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.login-form__password-toggle:hover {
+  color: #5f7690;
+  background: rgba(47, 120, 255, 0.08);
+}
+
+.login-form__remember {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+}
+
+.login-form__remember input {
+  width: 14px;
+  height: 14px;
+}
+
+.login-form__remember span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4f647c;
 }
 
 .login-form__error {
@@ -76,7 +132,7 @@
   font-weight: 600;
 }
 
-.login-form button {
+.login-form__submit {
   padding: 12px 18px;
   border: none;
   border-radius: 14px;
@@ -84,4 +140,9 @@
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+}
+
+.login-form__submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
