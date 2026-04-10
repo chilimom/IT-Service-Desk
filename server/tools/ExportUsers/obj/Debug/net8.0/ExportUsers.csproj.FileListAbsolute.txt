@@ -1,0 +1,5 @@
+D:\ITService\server\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITService\server\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.AssemblyInfoInputs.cache
+D:\ITService\server\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.AssemblyInfo.cs
+D:\ITService\server\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.csproj.CoreCompileInputs.cache
+D:\ITService\server\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.sourcelink.json
