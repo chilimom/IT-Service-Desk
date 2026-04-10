@@ -249,7 +249,7 @@ function MyRequests() {
 
           {filteredTickets.length === 0 && !loading && (
             <div className="requests-empty">
-              {error ? error : 'Khong tim thay ticket phu hop voi bo loc hoac tu khoa tim kiem.'}
+              {error ? error : 'Không tìm thấy ticket phù hợp với bộ lọc hoặc từ khóa tìm kiếm.'}
             </div>
           )}
         </div>
