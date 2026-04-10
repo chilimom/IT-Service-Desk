@@ -245,7 +245,7 @@ function UserManagement() {
       resetFeedback()
       await resetUserPassword(selectedUserId, resetPassword)
       setResetPassword('')
-      setMessage('Reset mat khau thanh cong.')
+      setMessage('Reset mật khẩu thành công.')
     } catch (resetError) {
       setError(resetError.message || 'Khong the reset mat khau.')
     } finally {
