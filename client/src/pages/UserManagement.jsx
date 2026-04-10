@@ -28,8 +28,8 @@ function sortUsers(users) {
 
 function getRoleLabel(role) {
   if (role === 'admin') return 'Admin'
-  if (role === 'processor') return 'Tiep nhan / xu ly'
-  return 'Tao ticket'
+  if (role === 'processor') return 'Tiếp nhận Ticket'
+  return 'Người dùng'
 }
 
 function formatDate(value) {
