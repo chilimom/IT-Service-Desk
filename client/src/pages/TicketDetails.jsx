@@ -400,7 +400,7 @@ function TicketDetails() {
 
                 {canProcessTickets && (
                   <>
-                    <label>Nguoi tao</label>
+                    <label>Nguời tạo</label>
                     <div className="ticket-details__field-view">{requesterDisplay}</div>
                   </>
                 )}

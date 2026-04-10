@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTicketPolling } from '../hooks/useTicketPolling'
 import { deleteTicket, getTickets } from '../services/ticketService'
+import { downloadExcelTable } from '../ultils/excel'
 import path from '../ultils/path'
 import { formatTicketCode, getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { filterTicketsByAccess, isAdminRole } from '../ultils/auth'
@@ -52,12 +53,32 @@ function getMaintenanceFilterValue(ticket) {
   return getMaintenanceTypeLabel(ticket)
 }
 
-function escapeExcelValue(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+function buildExportColumns() {
+  return [
+    { header: 'STT', align: 'center', width: 48 },
+    { header: 'Equipment', align: 'left', width: 150 },
+    { header: 'Khu vuc', align: 'left', width: 170 },
+    { header: 'Loai bao tri', align: 'left', width: 240 },
+    { header: 'So order', align: 'center', width: 120 },
+    { header: 'Nha may', align: 'left', width: 220 },
+    { header: 'Nguoi yeu cau', align: 'center', width: 120 },
+    { header: 'Ngay xu ly', align: 'right', width: 140 },
+    { header: 'Trang thai', align: 'center', width: 110 },
+  ]
+}
+
+function buildExportRows(tickets) {
+  return tickets.map((ticket, index) => [
+    index + 1,
+    getEquipmentLabel(ticket),
+    getAreaLabel(ticket),
+    getMaintenanceTypeLabel(ticket),
+    getOrderCodeDisplay(ticket),
+    getFactoryLabel(ticket),
+    getRequesterLabel(ticket),
+    formatDate(ticket.dueDate),
+    getStatusDisplayLabel(ticket.status),
+  ])
 }
 
 function AdminTickets() {
@@ -140,10 +161,7 @@ function AdminTickets() {
   const visibleTickets = useMemo(() => filterTicketsByAccess(tickets, user), [tickets, user])
   const factories = useMemo(() => ['ALL', ...new Set(visibleTickets.map((ticket) => ticket.factoryName).filter(Boolean))], [visibleTickets])
   const statuses = useMemo(() => ['ALL', ...new Set(visibleTickets.map((ticket) => ticket.status).filter(Boolean))], [visibleTickets])
-
-  const maintenanceTypes = useMemo(() => {
-    return ['ALL', ...new Set(visibleTickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))]
-  }, [visibleTickets])
+  const maintenanceTypes = useMemo(() => ['ALL', ...new Set(visibleTickets.map((ticket) => getMaintenanceFilterValue(ticket)).filter(Boolean))], [visibleTickets])
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ITEMS_PER_PAGE))
   const paginatedTickets = useMemo(() => {
@@ -160,80 +178,13 @@ function AdminTickets() {
   }, [totalPages])
 
   function handleExportExcel() {
-    const columns = [
-      { header: 'STT', align: 'center', width: 48 },
-      { header: 'Equipment', align: 'left', width: 150 },
-      { header: 'Khu vực', align: 'left', width: 170 },
-      { header: 'Loại bảo trì', align: 'left', width: 240 },
-      { header: 'Số order', align: 'center', width: 120 },
-      { header: 'Nhà máy', align: 'left', width: 220 },
-      { header: 'Người yêu cầu', align: 'center', width: 120 },
-      { header: 'Ngày xử lý', align: 'right', width: 140 },
-      { header: 'Trạng thái', align: 'center', width: 110 },
-    ]
-
-    const rows = filteredTickets.map((ticket, index) => ({
-      values: [
-        index + 1,
-        getEquipmentLabel(ticket),
-        getAreaLabel(ticket),
-        getMaintenanceTypeLabel(ticket),
-        getOrderCodeDisplay(ticket),
-        getFactoryLabel(ticket),
-        getRequesterLabel(ticket),
-        formatDate(ticket.dueDate),
-        getStatusDisplayLabel(ticket.status),
-      ],
-    }))
-
-    const html = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office"
-            xmlns:x="urn:schemas-microsoft-com:office:excel"
-            xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="UTF-8" />
-          <style>
-            table { border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; }
-            th, td { border: 1px solid #9fb6ce; padding: 8px 10px; vertical-align: middle; line-height: 1.4; }
-            th { background: #dbe9f8; color: #12385f; font-weight: 700; text-align: center; }
-            .text-left { text-align: left; }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-          </style>
-        </head>
-        <body>
-          <table>
-            <colgroup>
-              ${columns.map((column) => `<col style="width:${column.width}px" />`).join('')}
-            </colgroup>
-            <thead>
-              <tr>${columns.map((column) => `<th>${escapeExcelValue(column.header)}</th>`).join('')}</tr>
-            </thead>
-            <tbody>
-              ${rows
-                .map(
-                  (row) =>
-                    `<tr>${row.values
-                      .map((cell, index) => `<td class="text-${columns[index].align}">${escapeExcelValue(cell)}</td>`)
-                      .join('')}</tr>`
-                )
-                .join('')}
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `
-
-    const blob = new Blob([`\uFEFF${html}`], { type: 'application/vnd.ms-excel;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
     const exportDate = new Date().toISOString().slice(0, 10)
-    link.href = url
-    link.download = `Danh sách Ticket-${exportDate}.xls`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+
+    downloadExcelTable({
+      columns: buildExportColumns(),
+      rows: buildExportRows(filteredTickets),
+      fileName: `Danh sach Ticket-${exportDate}.xls`,
+    })
   }
 
   return (
@@ -247,7 +198,7 @@ function AdminTickets() {
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tìm kiếm Ticket</span>
+          <span>Tim kiem Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FaSearch size={14} />
@@ -319,7 +270,7 @@ function AdminTickets() {
             <article key={ticket.id} className="requests-row">
               <div>
                 <strong>{formatTicketCode(ticket)}</strong>
-                <p>{ticket.title || 'Chưa có tiêu đề'}</p>
+                <p>{ticket.title || 'Chua co tieu de'}</p>
               </div>
               <span>{getEquipmentLabel(ticket)}</span>
               <span>{getAreaLabel(ticket)}</span>
@@ -362,7 +313,7 @@ function AdminTickets() {
           ))}
 
           {filteredTickets.length === 0 && (
-            <div className="requests-empty">Khong tim thay ticket phu hop voi bo loc hoac tu khoa tim kiem.</div>
+            <div className="requests-empty">Không tìm thấy Ticket.</div>
           )}
         </div>
       </section>
