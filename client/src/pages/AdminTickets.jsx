@@ -183,7 +183,7 @@ function AdminTickets() {
     downloadExcelTable({
       columns: buildExportColumns(),
       rows: buildExportRows(filteredTickets),
-      fileName: `Danh sach Ticket-${exportDate}.xls`,
+      fileName: `Danh sách Ticket-${exportDate}.xls`,
     })
   }
 
@@ -198,7 +198,7 @@ function AdminTickets() {
 
       <section className="requests-search">
         <label className="requests-search__field">
-          <span>Tim kiem Ticket</span>
+          <span>Tìm kiếm Ticket</span>
           <div className="requests-search__input-wrap">
             <span className="requests-search__icon">
               <FaSearch size={14} />
