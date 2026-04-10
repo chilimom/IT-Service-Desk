@@ -414,13 +414,13 @@ function UserManagement() {
                   <span>Phân quyền</span>
                   <select name="role" value={form.role} onChange={handleChange}>
                     <option value="admin">Admin</option>
-                    <option value="processor">User tiep nhan ticket</option>
-                    <option value="user">User tao ticket</option>
+                    <option value="processor">Tiếp nhận ticket</option>
+                    <option value="user">Tạo ticket</option>
                   </select>
                 </label>
 
                 <label className="user-form__field user-form__field--full">
-                  <span>{selectedUserId ? 'Mật khẩu mới (de trong neu khong doi)' : 'Mật khẩu'}</span>
+                  <span>{selectedUserId ? 'Mật khẩu mới (Để trống nếu không đổi)' : 'Mật khẩu'}</span>
                   <input
                     type="password"
                     name="password"
