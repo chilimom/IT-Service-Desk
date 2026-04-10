@@ -160,7 +160,7 @@ function AccountProfile() {
     try {
       setIsSubmittingPassword(true)
       await resetUserPassword(profile?.id || user?.id, nextPassword)
-      setPasswordMessage('Da cap nhat mat khau thanh cong.')
+      setPasswordMessage('Cập nhật mật khẩu thành công.')
       setPasswordForm({ newPassword: '', confirmPassword: '' })
     } catch (error) {
       setPasswordError(error.message || 'Khong the cap nhat mat khau.')

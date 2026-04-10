@@ -24,8 +24,6 @@ namespace ITServiceDesk.Api.Services
 
         public object GetAll()
         {
-            _externalEmployeeService.SyncActiveEmployeesToLocalUsers();
-
             return _context.Users
                 .Select(user => new
                 {

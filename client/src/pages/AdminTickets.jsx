@@ -3,6 +3,7 @@ import { FaSearch } from 'react-icons/fa'
 import { FiSettings, FiTrash2 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTicketPolling } from '../hooks/useTicketPolling'
 import { deleteTicket, getTickets } from '../services/ticketService'
 import path from '../ultils/path'
 import { formatTicketCode, getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
@@ -71,9 +72,21 @@ function AdminTickets() {
   const [currentPage, setCurrentPage] = useState(1)
   const canDeleteTicket = isAdminRole(user?.role)
 
+  async function loadTickets() {
+    try {
+      const ticketData = await getTickets()
+      setTickets(Array.isArray(ticketData) ? ticketData : [])
+      setError('')
+    } catch {
+      setError('Khong the tai danh sach ticket.')
+    }
+  }
+
   useEffect(() => {
-    getTickets().then(setTickets).catch(() => setError('Khong the tai danh sach ticket.'))
+    loadTickets()
   }, [])
+
+  useTicketPolling(loadTickets, { intervalMs: 10000 })
 
   async function handleDelete(ticket) {
     const ticketCode = formatTicketCode(ticket)

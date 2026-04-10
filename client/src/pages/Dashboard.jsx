@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useAuth } from '../context/AuthContext'
+import { useTicketPolling } from '../hooks/useTicketPolling'
 import { getTickets } from '../services/ticketService'
 import { formatTicketCode, getMaintenanceTypeDisplay, getOrderCodeDisplay, getStatusDisplayLabel } from '../ultils/ticketMeta'
 import { filterTicketsByAccess } from '../ultils/auth'
@@ -65,19 +66,22 @@ function Dashboard() {
   const [error, setError] = useState('')
   const [activeIndex, setActiveIndex] = useState(null)
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const ticketData = await getTickets()
-        setTickets(Array.isArray(ticketData) ? ticketData : [])
-      } catch {
-        setError('Khong the tai du lieu tu he thong ticket.')
-        setTickets([])
-      }
+  async function loadTickets() {
+    try {
+      const ticketData = await getTickets()
+      setTickets(Array.isArray(ticketData) ? ticketData : [])
+      setError('')
+    } catch {
+      setError('Khong the tai du lieu tu he thong ticket.')
+      setTickets([])
     }
+  }
 
-    loadData()
+  useEffect(() => {
+    loadTickets()
   }, [])
+
+  useTicketPolling(loadTickets, { intervalMs: 10000 })
 
   const statusLookup = useMemo(() => {
     const visibleTickets = filterTicketsByAccess(tickets, user)
