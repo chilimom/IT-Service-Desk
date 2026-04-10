@@ -143,7 +143,7 @@ function Dashboard() {
   const factoryChartData = useMemo(() => {
     const grouped = visibleTickets.reduce((accumulator, ticket) => {
       const key =
-        ticket.factoryName || 'Chua co nha may'
+        ticket.factoryName || 'Chưa có nhà máy' // Đặt tên chung cho các ticket không có thông tin nhà máy
       accumulator[key] = (accumulator[key] || 0) + 1
       return accumulator
     }, {})
@@ -162,7 +162,7 @@ function Dashboard() {
       if (!isMaintenance) return accumulator
 
       const code = ticket.maintenanceTypeCode || 'N/A'
-      const name = ticket.maintenanceTypeName || 'Chua phan loai'
+      const name = ticket.maintenanceTypeName || 'Chưa phân loại'
       const key = `${code}|${name}`
       accumulator[key] = (accumulator[key] || 0) + 1
       return accumulator
@@ -277,9 +277,9 @@ function Dashboard() {
                 </svg>
 
                 <div className="maintenance-donut-center">
-                  <div className="maintenance-donut-center__label">{activeItem ? activeItem.name : 'Lenh bao tri'}</div>
+                  <div className="maintenance-donut-center__label">{activeItem ? activeItem.name : 'Lệnh bảo trì'}</div>
                   <div className="maintenance-donut-center__meta">
-                    {activeItem && totalMaintenance > 0 ? `${percent}% tong` : 'Tong so'}
+                    {activeItem && totalMaintenance > 0 ? `${percent}% Tổng` : 'Tổng số'}
                   </div>
                   <div
                     className="maintenance-donut-center__value"

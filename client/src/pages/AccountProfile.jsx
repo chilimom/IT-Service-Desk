@@ -38,6 +38,7 @@ function AccountProfile() {
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false)
 
   useEffect(() => {
+    // Lấy thêm thông tin hồ sơ mới nhất từ danh sách user để làm giàu dữ liệu hiển thị.
     let isMounted = true
 
     async function loadProfile() {
@@ -62,6 +63,7 @@ function AccountProfile() {
   }, [user])
 
   useEffect(() => {
+    // Quy đổi danh sách nhà máy được phân quyền từ ID sang tên để hiển thị thân thiện hơn.
     let isMounted = true
 
     async function loadFactories() {
@@ -91,6 +93,7 @@ function AccountProfile() {
   }, [profile, user])
 
   const profileFields = useMemo(() => {
+    // Gom dữ liệu hồ sơ thành mảng field để render đồng nhất trên UI.
     const currentProfile = profile || user || {}
 
     return [
@@ -134,6 +137,7 @@ function AccountProfile() {
   async function handlePasswordSubmit(event) {
     event.preventDefault()
 
+    // Chuẩn hóa dữ liệu trước khi kiểm tra để tránh sai lệch do khoảng trắng.
     const nextPassword = passwordForm.newPassword.trim()
     const confirmPassword = passwordForm.confirmPassword.trim()
 
@@ -158,6 +162,7 @@ function AccountProfile() {
     }
 
     try {
+      // Gọi API cập nhật mật khẩu và reset form nếu thao tác thành công.
       setIsSubmittingPassword(true)
       await resetUserPassword(profile?.id || user?.id, nextPassword)
       setPasswordMessage('Cập nhật mật khẩu thành công.')
