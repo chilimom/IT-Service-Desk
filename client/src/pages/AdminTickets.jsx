@@ -99,7 +99,7 @@ function AdminTickets() {
       setTickets(Array.isArray(ticketData) ? ticketData : [])
       setError('')
     } catch {
-      setError('Khong the tai danh sach ticket.')
+      setError('Không thể tải danh sách Ticket.')
     }
   }
 
@@ -111,7 +111,7 @@ function AdminTickets() {
 
   async function handleDelete(ticket) {
     const ticketCode = formatTicketCode(ticket)
-    const confirmed = window.confirm(`Ban co chac muon xoa ticket ${ticketCode} khong?`)
+    const confirmed = window.confirm(`Bạn có chắc muốn xóa ticket ${ticketCode} không?`)
     if (!confirmed) return
 
     setDeletingTicketId(ticket.id)
@@ -121,7 +121,7 @@ function AdminTickets() {
       await deleteTicket(ticket.id)
       setTickets((currentTickets) => currentTickets.filter((item) => item.id !== ticket.id))
     } catch {
-      setError('Khong the xoa ticket. Vui long thu lai.')
+      setError('Không thể xóa ticket. Vui lòng thử lại.')
     } finally {
       setDeletingTicketId(null)
     }
