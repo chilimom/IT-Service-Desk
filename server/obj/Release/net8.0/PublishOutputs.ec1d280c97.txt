@@ -5,6 +5,12 @@ D:\Deploy_IT\Api\build-check\appsettings.Development.json
 D:\Deploy_IT\Api\build-check\appsettings.json
 D:\Deploy_IT\Api\build-check\server.deps.json
 D:\Deploy_IT\Api\build-check\server.runtimeconfig.json
+D:\Deploy_IT\Api\build-check\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.sourcelink.json
+D:\Deploy_IT\Api\build-check\tools\ExportUsers\obj\ExportUsers.csproj.nuget.dgspec.json
+D:\Deploy_IT\Api\build-check\tools\ExportUsers\obj\project.assets.json
+D:\Deploy_IT\Api\tools\ExportUsers\obj\Debug\net8.0\ExportUsers.sourcelink.json
+D:\Deploy_IT\Api\tools\ExportUsers\obj\ExportUsers.csproj.nuget.dgspec.json
+D:\Deploy_IT\Api\tools\ExportUsers\obj\project.assets.json
 D:\Deploy_IT\Api\server.dll
 D:\Deploy_IT\Api\server.runtimeconfig.json
 D:\Deploy_IT\Api\server.pdb
