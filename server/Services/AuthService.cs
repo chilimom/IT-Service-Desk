@@ -6,16 +6,13 @@ namespace ITServiceDesk.Api.Services
     public class AuthService
     {
         private readonly AppDbContext _context;
-        private readonly ExternalEmployeeService _externalEmployeeService;
         private readonly PasswordService _passwordService;
 
         public AuthService(
             AppDbContext context,
-            ExternalEmployeeService externalEmployeeService,
             PasswordService passwordService)
         {
             _context = context;
-            _externalEmployeeService = externalEmployeeService;
             _passwordService = passwordService;
         }
 
@@ -33,15 +30,6 @@ namespace ITServiceDesk.Api.Services
                 if (verificationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed)
                 {
                     user = null;
-                }
-            }
-
-            if (user == null)
-            {
-                var employee = _externalEmployeeService.GetEmployeeByCredentials(username, password);
-                if (employee != null)
-                {
-                    user = _externalEmployeeService.EnsureLocalUserForEmployee(employee);
                 }
             }
 

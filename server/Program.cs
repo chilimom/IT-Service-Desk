@@ -39,7 +39,6 @@ builder.Services.AddCors(options =>
 // ===== SERVICES =====
 builder.Services.AddControllers();
 builder.Services.AddScoped<PasswordService>();
-builder.Services.AddScoped<ExternalEmployeeService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<UserService>();

@@ -9,16 +9,13 @@ namespace ITServiceDesk.Api.Services
     public class UserService
     {
         private readonly AppDbContext _context;
-        private readonly ExternalEmployeeService _externalEmployeeService;
         private readonly PasswordService _passwordService;
 
         public UserService(
             AppDbContext context,
-            ExternalEmployeeService externalEmployeeService,
             PasswordService passwordService)
         {
             _context = context;
-            _externalEmployeeService = externalEmployeeService;
             _passwordService = passwordService;
         }
 

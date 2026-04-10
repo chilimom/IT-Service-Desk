@@ -379,7 +379,7 @@ function Dashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            {ticketTypeChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu loai ticket.</p>}
+            {ticketTypeChartData.length === 0 && <p className="dashboard-empty">Chưa có dữ liệu loại Ticket.</p>}
           </div>
         </section>
 
@@ -419,7 +419,7 @@ function Dashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            {factoryChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu nha may.</p>}
+            {factoryChartData.length === 0 && <p className="dashboard-empty">Chưa có dữ liệu nhà máy.</p>}
           </div>
         </section>
       </div>
@@ -459,7 +459,7 @@ function Dashboard() {
                 <span className={getStatusClass(ticket.status)}>{getStatusDisplayLabel(ticket.status)}</span>
               </article>
             ))}
-            {recentTickets.length === 0 && <div className="dashboard-empty dashboard-empty--table">Chua co ticket de hien thi.</div>}
+            {recentTickets.length === 0 && <div className="dashboard-empty dashboard-empty--table">Chưa có Ticket để hiển thị.</div>}
           </div>
         </div>
       </section>
