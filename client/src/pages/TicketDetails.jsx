@@ -36,44 +36,6 @@ function getStatusClass(status) {
   return 'status-pill'
 }
 
-/* function getStatusMeta(status) {
-  const normalized = (status || '').toLowerCase()
-
-  if (normalized === 'submitted' || normalized === 'cho xu ly') {
-    return {
-      className: 'ticket-details__status-banner ticket-details__status-banner--submitted',
-      icon: FiInfo,
-      title: 'Ticket đã gửi và chưa được tiếp nhận',
-      // description: 'Ban co the sua noi dung ticket trong giai doan nay truoc khi bo phan xu ly bat dau tiep nhan.',
-    }
-  }
-
-  if (normalized === 'inprogress' || normalized === 'dang xu ly') {
-    return {
-      className: 'ticket-details__status-banner ticket-details__status-banner--progress',
-      icon: FiAlertCircle,
-      title: 'Ticket đang được tiếp nhận và xử lý',
-      // description: 'Ticket da vao quy trinh xu ly, noi dung yeu cau tam thoi khong con cho phep sua.',
-    }
-  }
-
-  if (normalized === 'done' || normalized === 'hoan thanh') {
-    return {
-      className: 'ticket-details__status-banner ticket-details__status-banner--done',
-      icon: FiCheckCircle,
-      title: 'Ticket đã hoàn thành',
-      // description: 'Thong tin ticket duoc luu lai de theo doi, hien tai khong the sua noi dung.',
-    }
-  }
-
-  return {
-    className: 'ticket-details__status-banner',
-    icon: FiInfo,
-    title: 'Trạng thái ticket',
-    description: 'Trang thái hiện tại của ticket đang được cập nhật.',
-  }
-} */
-
 function TicketDetails() {
   const { ticketId } = useParams()
   const { user } = useAuth()
