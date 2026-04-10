@@ -318,7 +318,7 @@ function Dashboard() {
                         <span className="maintenance-legend-card__dot" style={{ backgroundColor: item.color }} />
                         <div>
                           <div className="maintenance-legend-card__name">{item.name}</div>
-                          <div className="maintenance-legend-card__meta">{itemPercent}% tong lenh</div>
+                          <div className="maintenance-legend-card__meta">{itemPercent}% Tổng lệnh</div>
                         </div>
                       </div>
                       <div className="maintenance-legend-card__value" style={{ color: item.color }}>
@@ -340,7 +340,7 @@ function Dashboard() {
               })}
             </div>
 
-            {maintenanceChartData.length === 0 && <p className="dashboard-empty">Chua co du lieu loai bao tri.</p>}
+            {maintenanceChartData.length === 0 && <p className="dashboard-empty">Chưa có dữ liệu bảo trì.</p>}
           </div>
         </section>
 
