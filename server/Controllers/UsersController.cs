@@ -64,6 +64,20 @@ namespace ITServiceDesk.Api.Controllers
             }
         }
 
+        [HttpPut("{id}/change-password")]
+        public IActionResult ChangePassword(int id, [FromBody] ChangePasswordDto dto)
+        {
+            try
+            {
+                _userService.ChangePassword(id, dto.CurrentPassword, dto.NewPassword);
+                return Ok(new { message = "Cap nhat mat khau thanh cong." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

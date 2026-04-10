@@ -10,11 +10,16 @@ namespace ITServiceDesk.Api.Services
     {
         private readonly AppDbContext _context;
         private readonly ExternalEmployeeService _externalEmployeeService;
+        private readonly PasswordService _passwordService;
 
-        public UserService(AppDbContext context, ExternalEmployeeService externalEmployeeService)
+        public UserService(
+            AppDbContext context,
+            ExternalEmployeeService externalEmployeeService,
+            PasswordService passwordService)
         {
             _context = context;
             _externalEmployeeService = externalEmployeeService;
+            _passwordService = passwordService;
         }
 
         public object GetAll()
@@ -64,6 +69,8 @@ namespace ITServiceDesk.Api.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new InvalidOperationException("Mat khau khong duoc de trong.");
 
+            ValidatePasswordStrength(password);
+
             if (!IsValidRole(normalizedRole))
                 throw new InvalidOperationException("Role khong hop le.");
 
@@ -75,13 +82,13 @@ namespace ITServiceDesk.Api.Services
             var user = new User
             {
                 Username = username,
-                PasswordHash = password,
                 FullName = string.IsNullOrWhiteSpace(dto.FullName) ? null : dto.FullName.Trim(),
                 Role = normalizedRole,
                 Department = string.IsNullOrWhiteSpace(dto.Department) ? null : dto.Department.Trim(),
                 AuthorizedFactoryIds = authorizedFactoryIds,
                 CreatedAt = DateTime.UtcNow,
             };
+            _passwordService.SetPassword(user, password);
 
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -116,7 +123,8 @@ namespace ITServiceDesk.Api.Services
 
             if (!string.IsNullOrWhiteSpace(password))
             {
-                user.PasswordHash = password;
+                ValidatePasswordStrength(password);
+                _passwordService.SetPassword(user, password);
             }
 
             _context.SaveChanges();
@@ -144,10 +152,34 @@ namespace ITServiceDesk.Api.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new InvalidOperationException("Mat khau moi khong duoc de trong.");
 
-            user.PasswordHash = password;
+            ValidatePasswordStrength(password);
+            _passwordService.SetPassword(user, password);
             _context.SaveChanges();
 
             return MapUserResponse(user);
+        }
+
+        public void ChangePassword(int id, string? currentPassword, string? newPassword)
+        {
+            var user = _context.Users.FirstOrDefault(item => item.Id == id);
+            if (user == null)
+                throw new InvalidOperationException("Khong tim thay user.");
+
+            var normalizedCurrentPassword = (currentPassword ?? string.Empty).Trim();
+            var normalizedNewPassword = (newPassword ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(normalizedCurrentPassword))
+                throw new InvalidOperationException("Mat khau hien tai khong duoc de trong.");
+
+            if (string.IsNullOrWhiteSpace(normalizedNewPassword))
+                throw new InvalidOperationException("Mat khau moi khong duoc de trong.");
+
+            if (_passwordService.Verify(user, normalizedCurrentPassword) == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed)
+                throw new InvalidOperationException("Mat khau hien tai khong dung.");
+
+            ValidatePasswordStrength(normalizedNewPassword);
+            _passwordService.SetPassword(user, normalizedNewPassword);
+            _context.SaveChanges();
         }
 
         private static string NormalizeRole(string? role)
@@ -158,6 +190,12 @@ namespace ITServiceDesk.Api.Services
         private static bool IsValidRole(string role)
         {
             return role == "admin" || role == "processor" || role == "user";
+        }
+
+        private static void ValidatePasswordStrength(string password)
+        {
+            if (password.Length < 8)
+                throw new InvalidOperationException("Mat khau phai co it nhat 8 ky tu.");
         }
 
         private string? NormalizeAuthorizedFactoryIds(string role, List<int>? factoryIds)

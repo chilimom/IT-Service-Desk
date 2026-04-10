@@ -38,6 +38,7 @@ builder.Services.AddCors(options =>
 
 // ===== SERVICES =====
 builder.Services.AddControllers();
+builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<ExternalEmployeeService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TicketService>();
@@ -62,6 +63,22 @@ using (var scope = app.Services.CreateScope())
         IF COL_LENGTH('Users', 'AuthorizedFactoryIds') IS NULL
         BEGIN
             ALTER TABLE Users ADD AuthorizedFactoryIds NVARCHAR(200) NULL;
+        END
+    ");
+
+    dbContext.Database.ExecuteSqlRaw(@"
+        IF EXISTS (
+            SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = 'Users'
+              AND COLUMN_NAME = 'PasswordHash'
+              AND (
+                    CHARACTER_MAXIMUM_LENGTH IS NULL
+                    OR CHARACTER_MAXIMUM_LENGTH < 256
+                  )
+        )
+        BEGIN
+            ALTER TABLE Users ALTER COLUMN PasswordHash NVARCHAR(256) NOT NULL;
         END
     ");
 }

@@ -21,7 +21,7 @@ namespace ITServiceDesk.Api.Controllers
             var user = _authService.Login(dto);
 
             if (user == null)
-                return Unauthorized(new { message = "Sai ten dang nhap hoac mat khau" });
+                return Unauthorized(new { message = "Sai tên đăng nhập hoặc mật khẩu" });
 
             return Ok(user);
         }

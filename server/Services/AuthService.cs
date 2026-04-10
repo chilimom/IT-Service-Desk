@@ -7,11 +7,16 @@ namespace ITServiceDesk.Api.Services
     {
         private readonly AppDbContext _context;
         private readonly ExternalEmployeeService _externalEmployeeService;
+        private readonly PasswordService _passwordService;
 
-        public AuthService(AppDbContext context, ExternalEmployeeService externalEmployeeService)
+        public AuthService(
+            AppDbContext context,
+            ExternalEmployeeService externalEmployeeService,
+            PasswordService passwordService)
         {
             _context = context;
             _externalEmployeeService = externalEmployeeService;
+            _passwordService = passwordService;
         }
 
         public object? Login(LoginDto dto)
@@ -20,8 +25,16 @@ namespace ITServiceDesk.Api.Services
             var password = (dto.Password ?? string.Empty).Trim();
 
             var user = _context.Users.FirstOrDefault(item =>
-                item.Username.Trim().ToLower() == username.ToLower() &&
-                item.PasswordHash.Trim() == password);
+                item.Username.Trim().ToLower() == username.ToLower());
+
+            if (user != null)
+            {
+                var verificationResult = _passwordService.Verify(user, password);
+                if (verificationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed)
+                {
+                    user = null;
+                }
+            }
 
             if (user == null)
             {

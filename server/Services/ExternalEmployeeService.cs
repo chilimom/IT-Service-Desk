@@ -8,10 +8,12 @@ namespace ITServiceDesk.Api.Services
     public class ExternalEmployeeService
     {
         private readonly AppDbContext _context;
+        private readonly PasswordService _passwordService;
 
-        public ExternalEmployeeService(AppDbContext context)
+        public ExternalEmployeeService(AppDbContext context, PasswordService passwordService)
         {
             _context = context;
+            _passwordService = passwordService;
         }
 
         public ExternalEmployeeRecord? GetEmployeeByCredentials(string username, string password)
@@ -39,13 +41,16 @@ namespace ITServiceDesk.Api.Services
                 user = new User
                 {
                     Username = employee.Username,
-                    PasswordHash = employee.PasswordHash,
                     FullName = employee.FullName,
                     Department = employee.Department,
                     Role = MapRole(employee.RoleName, employee.Department),
                     AuthorizedFactoryIds = BuildAuthorizedFactoryIds(employee.RoleName, employee.Department),
                     CreatedAt = employee.CreatedAt ?? DateTime.UtcNow,
                 };
+                if (!string.IsNullOrWhiteSpace(employee.PasswordHash))
+                {
+                    _passwordService.SetPassword(user, employee.PasswordHash);
+                }
 
                 _context.Users.Add(user);
                 _context.SaveChanges();
@@ -72,9 +77,11 @@ namespace ITServiceDesk.Api.Services
                 hasChanges = true;
             }
 
-            if (string.IsNullOrWhiteSpace(user.PasswordHash) && !string.IsNullOrWhiteSpace(employee.PasswordHash))
+            if (!string.IsNullOrWhiteSpace(employee.PasswordHash) &&
+                (string.IsNullOrWhiteSpace(user.PasswordHash) ||
+                 !_passwordService.VerifyExternalPassword(user.PasswordHash, employee.PasswordHash)))
             {
-                user.PasswordHash = employee.PasswordHash;
+                _passwordService.SetPassword(user, employee.PasswordHash);
                 hasChanges = true;
             }
 
@@ -121,13 +128,16 @@ namespace ITServiceDesk.Api.Services
                     user = new User
                     {
                         Username = employee.Username,
-                        PasswordHash = employee.PasswordHash,
                         FullName = employee.FullName,
                         Department = employee.Department,
                         Role = MapRole(employee.RoleName, employee.Department),
                         AuthorizedFactoryIds = BuildAuthorizedFactoryIds(employee.RoleName, employee.Department),
                         CreatedAt = employee.CreatedAt ?? DateTime.UtcNow,
                     };
+                    if (!string.IsNullOrWhiteSpace(employee.PasswordHash))
+                    {
+                        _passwordService.SetPassword(user, employee.PasswordHash);
+                    }
 
                     _context.Users.Add(user);
                     localLookup[normalizedUsername] = user;
@@ -153,9 +163,11 @@ namespace ITServiceDesk.Api.Services
                     hasChanges = true;
                 }
 
-                if (string.IsNullOrWhiteSpace(user.PasswordHash) && !string.IsNullOrWhiteSpace(employee.PasswordHash))
+                if (!string.IsNullOrWhiteSpace(employee.PasswordHash) &&
+                    (string.IsNullOrWhiteSpace(user.PasswordHash) ||
+                     !_passwordService.VerifyExternalPassword(user.PasswordHash, employee.PasswordHash)))
                 {
-                    user.PasswordHash = employee.PasswordHash;
+                    _passwordService.SetPassword(user, employee.PasswordHash);
                     hasChanges = true;
                 }
 
