@@ -214,7 +214,7 @@ function AccountProfile() {
               </div>
               <div className="account-profile-card__meta-chip">
                 <MdOutlineCalendarMonth size={18} />
-                <span>Tao ngay {formatDate(profile?.createdAt)}</span>
+                <span>Tạo ngày {formatDate(profile?.createdAt)}</span>
               </div>
               <div className="account-profile-card__meta-chip">
                 <MdFactory size={18} />
