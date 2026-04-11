@@ -128,6 +128,8 @@ function AccountProfile() {
   const displayRole = getRoleLabel(profile?.role || user?.role)
   const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
   console.log("avatarUrl", avatarUrl)
+  console.log("profile:", profile)
+console.log("user:", user)
 
   function handlePasswordChange(event) {
     const { name, value } = event.target
