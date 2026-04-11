@@ -128,10 +128,7 @@ function AccountProfile() {
 
   const displayName = profile?.fullName || user?.fullName || user?.username || 'Nguoi dung'
   const displayRole = getRoleLabel(profile?.role || user?.role)
-//   const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
-//   console.log("avatarUrl", avatarUrl)
-//   console.log("profile:", profile)
-// console.log("user:", user)
+
 
   function handlePasswordChange(event) {
     const { name, value } = event.target
@@ -139,10 +136,7 @@ function AccountProfile() {
     setPasswordMessage('')
     setPasswordForm((previous) => ({ ...previous, [name]: value }))
   }
-  
-  async function handlePasswordSubmit(event) {
-    event.preventDefault()
-    //Mới thêm
+  //Mới thêm
     function handleAvatarChange(event) {
   const file = event.target.files[0]
   if (!file) return
@@ -162,6 +156,10 @@ function AccountProfile() {
   setAvatarUrl(previewUrl)
   setAvatarFile(file)
 }
+  
+  async function handlePasswordSubmit(event) {
+    event.preventDefault()
+    
 
     // Chuẩn hóa dữ liệu trước khi kiểm tra để tránh sai lệch do khoảng trắng.
     const nextPassword = passwordForm.newPassword.trim()
