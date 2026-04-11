@@ -271,15 +271,20 @@
   .account-profile-card__field-value {
     font-size: 16px;
   }
-  .account-profile-card__avatar {
+ .account-profile-card__avatar-wrap {
+  position: relative;
   width: 126px;
   height: 126px;
+  overflow: hidden;   /* chặn ảnh tràn */
+}
+
+.account-profile-card__avatar {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #e5e7eb;
-}
-.avatar-upload {
-  position: relative;
+  display: block;
 }
 
 .avatar-upload-btn {
@@ -291,6 +296,7 @@
   padding: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .avatar-upload-btn:hover {
