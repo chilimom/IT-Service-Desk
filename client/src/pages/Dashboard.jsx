@@ -134,9 +134,9 @@ function Dashboard() {
     )
 
     return [
-      { name: 'Lenh bao tri', value: grouped.maintenance, fill: 'url(#ticketTypeMaintenance)' },
-      { name: 'Ho tro CNTT', value: grouped.support, fill: 'url(#ticketTypeSupport)' },
-      { name: 'Khac', value: grouped.other, fill: 'url(#ticketTypeOther)' },
+      { name: 'Lệnh bảo trì', value: grouped.maintenance, fill: 'url(#ticketTypeMaintenance)' },
+      { name: 'Hỗ trợ CNTT', value: grouped.support, fill: 'url(#ticketTypeSupport)' },
+      { name: 'Khác', value: grouped.other, fill: 'url(#ticketTypeOther)' },
     ].filter((item) => item.value > 0)
   }, [visibleTickets])
 
