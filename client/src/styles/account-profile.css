@@ -278,4 +278,22 @@
   object-fit: cover;
   border: 3px solid #e5e7eb;
 }
+.avatar-upload {
+  position: relative;
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: white;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+}
+
+.avatar-upload-btn:hover {
+  background: #f3f4f6;
+}
 }

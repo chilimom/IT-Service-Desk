@@ -36,6 +36,8 @@ function AccountProfile() {
   const [passwordError, setPasswordError] = useState('')
   const [passwordMessage, setPasswordMessage] = useState('')
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl || '')
+  const[avatarFile, setAvatarFile] = useState(null)
 
   useEffect(() => {
     // Lấy thêm thông tin hồ sơ mới nhất từ danh sách user để làm giàu dữ liệu hiển thị.
@@ -126,10 +128,10 @@ function AccountProfile() {
 
   const displayName = profile?.fullName || user?.fullName || user?.username || 'Nguoi dung'
   const displayRole = getRoleLabel(profile?.role || user?.role)
-  const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
-  console.log("avatarUrl", avatarUrl)
-  console.log("profile:", profile)
-console.log("user:", user)
+//   const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
+//   console.log("avatarUrl", avatarUrl)
+//   console.log("profile:", profile)
+// console.log("user:", user)
 
   function handlePasswordChange(event) {
     const { name, value } = event.target
@@ -137,9 +139,29 @@ console.log("user:", user)
     setPasswordMessage('')
     setPasswordForm((previous) => ({ ...previous, [name]: value }))
   }
-
+  
   async function handlePasswordSubmit(event) {
     event.preventDefault()
+    //Mới thêm
+    function handleAvatarChange(event) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (!file.type.startsWith("image/")) {
+    alert("Vui lòng chọn file ảnh")
+    return
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Ảnh phải nhỏ hơn 2MB")
+    return
+  }
+
+  const previewUrl = URL.createObjectURL(file)
+
+  setAvatarUrl(previewUrl)
+  setAvatarFile(file)
+}
 
     // Chuẩn hóa dữ liệu trước khi kiểm tra để tránh sai lệch do khoảng trắng.
     const nextPassword = passwordForm.newPassword.trim()
@@ -190,14 +212,23 @@ console.log("user:", user)
           <aside className="account-profile-card__identity">
             <div className="account-profile-card__avatar-wrap">
               {avatarUrl ? (
-                <img 
-                  src={buildApiUrl(avatarUrl)}
-                  alt="Avatar"
-                  className="account-profile-card__avatar"
-                />
-              ) : (
-              <HiOutlineUserCircle size={132}/>
-              )}
+    <img
+      src={avatarUrl}
+      alt="Avatar"
+      className="account-profile-card__avatar"
+    />
+  ) : (
+    <HiOutlineUserCircle size={132} />
+  )}
+            <label className="avatar-upload-btn">
+    📷
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleAvatarChange}
+      hidden
+    />
+  </label>
             </div>
             <div className="account-profile-card__identity-copy">
               <strong>{displayName}</strong>
