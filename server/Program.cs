@@ -9,7 +9,7 @@ builder.Logging.AddConsole();
 
 // ===== CONFIG PORT BACKEND =====
 builder.WebHost.UseUrls(
-    "http://localhost:5016", "http://10.192.72.45:5016");
+    "http://localhost:5018", "http://10.192.72.45:5018");
 
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 
@@ -24,11 +24,11 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:8081",
+                "http://localhost:8080",
 
-                "http://127.0.0.1:8081",
+                "http://127.0.0.1:8080",
 
-                "http://10.192.72.45:8081")
+                "http://10.192.72.45:8080")
 
             .AllowAnyHeader()
             .AllowAnyMethod()
