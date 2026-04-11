@@ -209,6 +209,7 @@ function AccountProfile() {
         <div className="account-profile-card__body">
           <aside className="account-profile-card__identity">
             <div className="account-profile-card__avatar-wrap">
+            <div className="avatar-box">
               {avatarUrl ? (
     <img
       src={avatarUrl}
@@ -218,6 +219,7 @@ function AccountProfile() {
   ) : (
     <HiOutlineUserCircle size={132} />
   )}
+  </div>
             <label className="avatar-upload-btn">
     📷
     <input
@@ -226,6 +228,7 @@ function AccountProfile() {
       onChange={handleAvatarChange}
       hidden
     />
+    
   </label>
             </div>
             <div className="account-profile-card__identity-copy">
