@@ -127,6 +127,7 @@ function AccountProfile() {
   const displayName = profile?.fullName || user?.fullName || user?.username || 'Nguoi dung'
   const displayRole = getRoleLabel(profile?.role || user?.role)
   const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
+  console.log("avatarUrl", avatarUrl)
 
   function handlePasswordChange(event) {
     const { name, value } = event.target
