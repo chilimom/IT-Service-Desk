@@ -211,22 +211,22 @@ function AccountProfile() {
             <div className="account-profile-card__avatar-wrap">
             <div className="avatar-box">
               {avatarUrl ? (
-    <img
-      src={avatarUrl}
-      alt="Avatar"
-      className="account-profile-card__avatar"
-    />
-  ) : (
-    <HiOutlineUserCircle size={132} />
-  )}
-  </div>
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+              className="account-profile-card__avatar"
+              />
+            ) : (
+              <HiOutlineUserCircle size={132} />
+                )}
+            </div>
             <label className="avatar-upload-btn">
-    📷
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleAvatarChange}
-      hidden
+              📷
+                 <input
+                  type="file"
+                   accept="image/*"
+                  onChange={handleAvatarChange}
+                   hidden
     />
     
   </label>
