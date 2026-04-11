@@ -126,6 +126,7 @@ function AccountProfile() {
 
   const displayName = profile?.fullName || user?.fullName || user?.username || 'Nguoi dung'
   const displayRole = getRoleLabel(profile?.role || user?.role)
+  const avatarUrl = profile?.avatarUrl ||user?.avatarUrl
 
   function handlePasswordChange(event) {
     const { name, value } = event.target
@@ -185,7 +186,15 @@ function AccountProfile() {
         <div className="account-profile-card__body">
           <aside className="account-profile-card__identity">
             <div className="account-profile-card__avatar-wrap">
-              <HiOutlineUserCircle size={132} />
+              {avatarUrl ? (
+                <img 
+                  src={buildApiUrl(avatarUrl)}
+                  alt="Avatar"
+                  className="account-profile-card__avatar"
+                />
+              ) : (
+              <HiOutlineUserCircle size={132}/>
+              )}
             </div>
             <div className="account-profile-card__identity-copy">
               <strong>{displayName}</strong>
