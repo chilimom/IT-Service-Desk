@@ -37,7 +37,7 @@ function AccountProfile() {
   const [passwordMessage, setPasswordMessage] = useState('')
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl || '')
-  const[avatarFile, setAvatarFile] = useState(null)
+  
 
   useEffect(() => {
     // Lấy thêm thông tin hồ sơ mới nhất từ danh sách user để làm giàu dữ liệu hiển thị.
