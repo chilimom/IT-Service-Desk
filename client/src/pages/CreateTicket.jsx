@@ -206,14 +206,14 @@ function CreateTicket() {
             </>
           )}
 
-          {/* {!isMaintenance && (
+          {!isMaintenance && (
             <input
               name="title"
               value={form.title}
               onChange={handleChange}
               placeholder="Ví dụ: Lỗi máy in, không đăng nhập được..."
             />
-          )} */}
+          )}
 
           {isMaintenance && (
             <>
@@ -221,8 +221,9 @@ function CreateTicket() {
               <input name="equipmentCode" value={form.equipmentCode} onChange={handleChange} placeholder="Khu vực" />
             </>
           )}
-
-          <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" />
+          {isMaintenance && (
+            <input name="assignedTeam" value={form.assignedTeam} onChange={handleChange} placeholder="Tổ bảo trì" />
+          )}
           <textarea
             name="description"
             value={form.description}
@@ -234,7 +235,7 @@ function CreateTicket() {
 
           {errorMessage && <div className="form-error">{errorMessage}</div>}
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang tao...' : 'Tạo Ticket'}
+            {isSubmitting ? 'Đang tạo...' : 'Tạo Ticket'}
           </button>
         </form>
       </div>
