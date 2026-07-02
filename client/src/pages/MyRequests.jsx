@@ -10,7 +10,7 @@ import '../styles/requests.css'
 const ITEMS_PER_PAGE = 10
 
 function formatDate(value) {
-  if (!value) return 'Chua co'
+  if (!value) return 'Chưa có'
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Khong hop le'
   return date.toLocaleString('vi-VN')
@@ -25,20 +25,20 @@ function getStatusClass(status) {
 }
 
 function getMaintenanceTypeLabel(ticket) {
-  if (ticket?.categoryType !== 'Maintenance') return 'Khong ap dung'
+  if (ticket?.categoryType !== 'Maintenance') return 'Không áp dụng'
   return getMaintenanceTypeDisplay(ticket)
 }
 
 function getFactoryLabel(ticket) {
-  return ticket?.factoryName || 'Chua co nha may'
+  return ticket?.factoryName || 'Chưa có nhà máy'
 }
 
 function getEquipmentLabel(ticket) {
-  return ticket?.area || 'Chua co'
+  return ticket?.area || 'Chưa có'
 }
 
 function getAreaLabel(ticket) {
-  return ticket?.equipmentCode || 'Chua co'
+  return ticket?.equipmentCode || 'Chưa có'
 }
 
 function getMaintenanceFilterValue(ticket) {
@@ -74,7 +74,7 @@ function MyRequests() {
         const data = await response.json()
         setTickets(Array.isArray(data) ? data : [])
       } catch {
-        setError('Khong the tai danh sach yeu cau da gui.')
+        setError('Không thể tải danh sách yêu cầu đã gửi.')
         setTickets([])
       } finally {
         setLoading(false)
@@ -141,7 +141,7 @@ function MyRequests() {
   }
 
   if (loading) {
-    return <div className="requests-page__loading">Dang tai du lieu...</div>
+    return <div className="requests-page__loading">Đang tải dữ liệu...</div>
   }
 
   return (
@@ -223,7 +223,7 @@ function MyRequests() {
             <article key={ticket.id} className="requests-row">
               <div>
                 <strong>{formatTicketCode(ticket)}</strong>
-                <p>{ticket.title || 'Chua co tieu de'}</p>
+                <p>{ticket.title || 'Chưa có tiêu đề'}</p>
               </div>
               <span>{getEquipmentLabel(ticket)}</span>
               <span>{getAreaLabel(ticket)}</span>
