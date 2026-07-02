@@ -28,7 +28,7 @@ function CreateTicket() {
 
   // Fetch tất cả categories
   useEffect(() => {
-    fetch('http://localhost:5017/api/categories')
+    fetch('http://localhost:5016/api/categories')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -47,7 +47,7 @@ function CreateTicket() {
 
   // Fetch factories
   useEffect(() => {
-    fetch("http://localhost:5017/api/Tickets/factories")
+    fetch("http://localhost:5016/api/Tickets/factories")
       .then(res => res.json())
       .then(data => {
         setFactories(data)

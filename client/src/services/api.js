@@ -1,6 +1,6 @@
-const LOCAL_API_ORIGIN = 'http://127.0.0.1:5017'
-const LOCALHOST_API_ORIGIN = 'http://localhost:5017'
-const IIS_API_PORT = '5017'
+const LOCAL_API_ORIGIN = 'http://127.0.0.1:5016'
+const LOCALHOST_API_ORIGIN = 'http://localhost:5016'
+const IIS_API_PORT = '5016'
 
 function getDefaultApiOrigin() {
   if (typeof window === 'undefined') {
