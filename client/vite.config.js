@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const devHost = process.env.VITE_DEV_HOST || '10.192.72.45'
-const devPort = Number(process.env.VITE_DEV_PORT || '8081')
+const devHost = process.env.VITE_DEV_HOST || 'localhost'
+const devPort = Number(process.env.VITE_DEV_PORT || '8082')
 
 // https://vite.dev/config/
 export default defineConfig({

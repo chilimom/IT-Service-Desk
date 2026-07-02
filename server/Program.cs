@@ -24,11 +24,11 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:8080",
+                "http://localhost:8082",
 
-                "http://127.0.0.1:8080",
+                "http://127.0.0.1:8082",
 
-                "http://10.192.72.45:8080")
+                "http://10.192.72.45:8082")
 
             .AllowAnyHeader()
             .AllowAnyMethod()
